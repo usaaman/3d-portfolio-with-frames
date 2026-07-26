@@ -125,7 +125,7 @@ export default function HeroAboutScroll() {
     const dw = iw * scale;
     const dh = ih * scale;
     const dx = cw - dw; // right-anchored
-    const dy = (ch - dh) / 2; // vertical crop stays centered
+    const dy = 0; // top-anchored (crop from bottom instead of top)
 
     ctx.clearRect(0, 0, cw, ch);
     ctx.drawImage(img, dx, dy, dw, dh);

@@ -1,0 +1,84 @@
+:root {
+  --bg: #06050a;
+  --bg-elevated: #0c0a16;
+  --purple-900: #1e1147;
+  --purple-700: #5b21b6;
+  --purple-600: #7c3aed;
+  --purple-400: #a78bfa;
+  --cyan-500: #22d3ee;
+  --cyan-300: #8be9f8;
+
+  --text-primary: #f6f4fb;
+  --text-secondary: #b6b2c9;
+  --text-muted: #7d7a94;
+
+  --glass-bg: rgba(246, 244, 251, 0.06);
+  --glass-bg-strong: rgba(246, 244, 251, 0.09);
+  --glass-border: rgba(246, 244, 251, 0.14);
+  --glass-highlight: rgba(255, 255, 255, 0.35);
+
+  --font-display: 'Space Grotesk', 'Inter', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+#root {
+  min-height: 100%;
+}
+
+/* shared glass surface utility */
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cyan-300);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

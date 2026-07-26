@@ -1,6 +1,8 @@
-# Portfolio — Phase 1 (Hero + About)
+# 3d-portfolio-with-frames
 
-Scroll-scrubbed frame-sequence Hero and About sections, built with Vite + React.
+A modern full-stack developer portfolio featuring premium UI, cinematic animations, 3D-inspired design, AI-powered experiences, and immersive interactions built with React and TypeScript.
+
+## Scroll-scrubbed frame-sequence Hero and About sections, built with Vite + React.
 
 ## What changed in this update
 

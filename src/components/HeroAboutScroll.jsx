@@ -194,8 +194,6 @@ export default function HeroAboutScroll() {
       canvas.height = window.innerHeight * dpr;
       canvas.style.width = '100%';
       canvas.style.height = '100%';
-      const ctx = canvas.getContext('2d');
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       drawFrame(currentFrameRef.current);
     };
     resize();

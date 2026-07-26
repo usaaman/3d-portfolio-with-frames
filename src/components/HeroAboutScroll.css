@@ -44,7 +44,7 @@
 
 .hero-card {
   position: relative;
-  width: min(600px, 92vw);
+  width: min(640px, 94vw);
   padding: 46px 44px;
   border-radius: 26px;
   overflow: hidden;
@@ -173,7 +173,7 @@
 
 .about-content {
   align-items: center;
-  padding-top: 40px;
+  padding-top: 104px;
   padding-bottom: 40px;
 }
 
@@ -183,7 +183,7 @@
   flex-direction: column;
   gap: 16px;
   will-change: transform;
-  max-height: 88vh;
+  max-height: 78vh;
   overflow-y: auto;
   scrollbar-width: none;
 }
@@ -198,10 +198,11 @@
   gap: 0;
   border-radius: 24px;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .about-left {
-  padding: 34px 34px 30px;
+  padding: 34px 34px 34px;
 }
 
 .pill-badge {
@@ -276,7 +277,7 @@
 }
 
 .about-right {
-  padding: 30px 28px;
+  padding: 30px 28px 30px;
   display: flex;
   flex-direction: column;
 }
@@ -290,29 +291,40 @@
   border-bottom: 1px solid var(--glass-border);
 }
 
-.glance-list {
+.glance-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.glance-card {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.02);
   display: flex;
   flex-direction: column;
+  gap: 6px;
+  transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
-.glance-item {
+.glance-card:hover {
+  border-color: rgba(139, 233, 248, 0.3);
+  transform: translateY(-2px);
+}
+
+.glance-card-header {
   display: flex;
-  align-items: flex-start;
-  gap: 13px;
-  padding: 16px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.glance-item:last-child {
-  border-bottom: none;
-  padding-bottom: 2px;
+  align-items: center;
+  gap: 8px;
 }
 
 .glance-icon {
   flex: none;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
   display: grid;
   place-items: center;
   color: #ffffff;
@@ -334,28 +346,30 @@
 
 .glance-num {
   font-family: var(--font-display);
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--text-primary);
 }
 
 .glance-sub {
-  font-size: 12.5px;
+  font-size: 11px;
   color: var(--text-secondary);
-  line-height: 1.4;
+  line-height: 1.35;
 }
 
 .glance-sub.muted {
   color: var(--text-muted);
 }
 
+
 .explore-strip {
-  border-radius: 24px;
-  padding: 26px 30px 28px;
+  border-radius: 15px;
+  padding: 16px 16px;
+  flex-shrink: 0;
 }
 
 .explore-badge {
-  margin-bottom: 18px;
+  margin-bottom: 12px;
 }
 
 .explore-grid {
@@ -365,8 +379,11 @@
 }
 
 .explore-card {
-  padding: 18px 16px;
-  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
   border: 1px solid var(--glass-border);
   background: rgba(255, 255, 255, 0.03);
   transition: border-color 0.2s ease, transform 0.2s ease;
@@ -378,29 +395,23 @@
 }
 
 .explore-icon {
+  flex: none;
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
+  width: 28px;
+  height: 28px;
   border-radius: 10px;
-  margin-bottom: 12px;
   color: var(--cyan-300);
   background: rgba(124, 58, 237, 0.18);
 }
 
 .explore-card h3 {
   font-family: var(--font-display);
-  font-size: 14.5px;
+  font-size: 13.5px;
   font-weight: 600;
   color: var(--text-primary);
-  line-height: 1.3;
-}
-
-.explore-card p {
-  margin-top: 8px;
-  font-size: 12.5px;
-  line-height: 1.55;
-  color: var(--text-secondary);
+  line-height: 1.2;
+  margin: 0;
 }
 
 /* ================= Scroll cue ================= */
@@ -430,9 +441,23 @@
 }
 
 @keyframes cue-flow {
-  0% { transform: scaleY(0.3); opacity: 0.4; transform-origin: top; }
-  50% { transform: scaleY(1); opacity: 1; transform-origin: top; }
-  100% { transform: scaleY(0.3); opacity: 0.4; transform-origin: bottom; }
+  0% {
+    transform: scaleY(0.3);
+    opacity: 0.4;
+    transform-origin: top;
+  }
+
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+    transform-origin: top;
+  }
+
+  100% {
+    transform: scaleY(0.3);
+    opacity: 0.4;
+    transform-origin: bottom;
+  }
 }
 
 /* ================= Loader ================= */
@@ -516,6 +541,10 @@
   }
 
   .about-wrap {
-    max-height: 82vh;
+    max-height: 76vh;
+  }
+
+  .about-content {
+    padding-top: 80px;
   }
 }

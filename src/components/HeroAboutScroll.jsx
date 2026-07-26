@@ -37,13 +37,15 @@ const TwitterIcon = (props) => (
 const FRAME_COUNT = 261;
 const FRAME_PATH = (i) => `/frames/frame-${String(i).padStart(3, '0')}.webp`;
 
-// story checkpoints (frame numbers) — see build notes
-const HERO_IN_START = 70;
-const HERO_IN_END = 100;
-const HERO_OUT_START = 146;
-const HERO_OUT_END = 165;
-const ABOUT_IN_START = 214;
-const ABOUT_IN_END = 240;
+// Scroll animation frame thresholds:
+// - Frame 70-81: Hero enters
+// - Frame 81-92: Hero expands from squeezed state (startW/startH -> endW/endH)
+// - Frame 92-100: Momentum Right (Translate X -> 18px, Rotate -> 3deg)
+// - Frame 100-112: Curved Return to center with a 6px vertical dip arc
+// - Frame 112-124: Left Overshoot (Translate X -> -5px, Rotate -> -1deg)
+// - Frame 124-138: Settle back to center
+// - Frame 138-164: Pause (stable Cover)
+// - Frame 164-197: Continuous page transition (Hero slides out top, About enters bottom)
 
 const GLANCE_ITEMS = [
   { icon: GraduationCap, tone: 'purple', title: '5th', subtitleTop: 'Semester', subtitleBottom: 'Software Engineering' },
@@ -65,6 +67,10 @@ function smoothstep(edge0, edge1, x) {
   return t * t * (3 - 2 * t);
 }
 
+function easeOutQuart(t) {
+  return 1 - Math.pow(1 - t, 4);
+}
+
 export default function HeroAboutScroll() {
   const wrapperRef = useRef(null);
   const canvasRef = useRef(null);
@@ -75,8 +81,17 @@ export default function HeroAboutScroll() {
 
   const [loaded, setLoaded] = useState(0);
   const [ready, setReady] = useState(false);
-  const [heroStyle, setHeroStyle] = useState({ opacity: 0, translate: 40 });
-  const [aboutStyle, setAboutStyle] = useState({ opacity: 0, translate: 60 });
+  const [heroState, setHeroState] = useState({
+    scrollY: 100, // off-screen bottom initially
+    scale: 0.1,
+    translateX: '50vw',
+    translateY: '25vh',
+    rotateX: 0,
+    rotateY: 0,
+  });
+  const [aboutState, setAboutState] = useState({
+    scrollY: 100, // off-screen bottom initially
+  });
 
   // preload all frames
   useEffect(() => {
@@ -141,19 +156,79 @@ export default function HeroAboutScroll() {
       drawFrame(frame);
     }
 
-    // hero: slides up into place, then continues sliding up + out as About takes over
-    const heroReveal = smoothstep(HERO_IN_START, HERO_IN_END, frame);
-    const heroExit = smoothstep(HERO_OUT_START, HERO_OUT_END, frame);
-    setHeroStyle({
-      opacity: Math.max(0, heroReveal - heroExit),
-      translate: (1 - heroReveal) * 46 - heroExit * 46,
+    // Hero Section Scroll Position (%)
+    let heroY = 0;
+    if (frame < 70) {
+      heroY = 100;
+    } else if (frame < 81) {
+      heroY = 100 * (1 - smoothstep(70, 81, frame));
+    } else if (frame < 164) {
+      heroY = 0;
+    } else if (frame < 197) {
+      heroY = -100 * smoothstep(164, 197, frame);
+    } else {
+      heroY = -100;
+    }
+
+    // Hero Card entrance animations
+    let cardScale = 1.0;
+    let cardTranslateX = '0vw';
+    let cardTranslateY = '0vh';
+    let cardRotateX = 0.0;
+    let cardRotateY = 0.0;
+
+    if (frame < 77) {
+      cardScale = 0.1;
+      cardTranslateX = '50vw';
+      cardTranslateY = '25vh';
+      cardRotateX = 0.0;
+      cardRotateY = 0.0;
+    } else if (frame < 99) {
+      // 77 -> 99: slide from bottom-right, scale from 10% to exactly 100%
+      const t = (frame - 77) / (99 - 77);
+      const eased = easeOutQuart(t);
+      cardScale = 0.1 + 0.9 * eased;
+      cardTranslateX = `${50 * (1 - eased)}vw`;
+      cardTranslateY = `${25 * (1 - eased)}vh`;
+      cardRotateX = 0.0;
+      cardRotateY = 0.0;
+    } else if (frame < 155) {
+      // 99 -> 155: progressive 3D perspective Y-tilt (0deg to 4.0deg) and X-tilt (0deg to 1.3deg)
+      const t = smoothstep(99, 155, frame);
+      cardScale = 1.0;
+      cardTranslateX = '0vw';
+      cardTranslateY = '0vh';
+      cardRotateX = 1.3 * t;
+      cardRotateY = 4.0 * t;
+    } else {
+      cardScale = 1.0;
+      cardTranslateX = '0vw';
+      cardTranslateY = '0vh';
+      cardRotateX = 1.3;
+      cardRotateY = 4.0;
+    }
+
+    // About Section Scroll Position (%)
+    let aboutY = 0;
+    if (frame < 164) {
+      aboutY = 100;
+    } else if (frame < 197) {
+      aboutY = 100 * (1 - smoothstep(164, 197, frame));
+    } else {
+      aboutY = 0;
+    }
+
+    setHeroState({
+      scrollY: heroY,
+      scale: cardScale,
+      translateX: cardTranslateX,
+      translateY: cardTranslateY,
+      rotateX: cardRotateX,
+      rotateY: cardRotateY,
     });
 
-    // about: slides up into place from below (no plain fade)
-    const aboutReveal = smoothstep(ABOUT_IN_START, ABOUT_IN_END, frame);
-    setAboutStyle({
-      opacity: aboutReveal,
-      translate: (1 - aboutReveal) * 56,
+    setAboutState({
+      scrollY: aboutY,
     });
   }, [drawFrame]);
 
@@ -184,7 +259,7 @@ export default function HeroAboutScroll() {
     };
   }, [applyProgress]);
 
-  // canvas sizing
+  // canvas sizing & responsive animation recalculation
   useEffect(() => {
     const canvas = canvasRef.current;
     const resize = () => {
@@ -195,18 +270,28 @@ export default function HeroAboutScroll() {
       canvas.style.width = '100%';
       canvas.style.height = '100%';
       drawFrame(currentFrameRef.current);
+
+      // Trigger recalculation of dimensions on resize
+      const wrapper = wrapperRef.current;
+      if (wrapper) {
+        const rect = wrapper.getBoundingClientRect();
+        const total = wrapper.offsetHeight - window.innerHeight;
+        const scrolled = -rect.top;
+        const progress = total > 0 ? Math.min(1, Math.max(0, scrolled / total)) : 0;
+        applyProgress(progress);
+      }
     };
     resize();
     window.addEventListener('resize', resize);
     return () => window.removeEventListener('resize', resize);
-  }, [drawFrame, ready]);
+  }, [drawFrame, ready, applyProgress]);
 
   // draw first frame once ready
   useEffect(() => {
     if (ready) drawFrame(1);
   }, [ready, drawFrame]);
 
-  // subtle 3D pointer tilt on hero card
+  // subtle 3D pointer tilt on hero card (relative to 0deg base)
   const handleHeroMove = (e) => {
     const card = heroCardRef.current;
     if (!card) return;
@@ -214,13 +299,13 @@ export default function HeroAboutScroll() {
     const px = (e.clientX - rect.left) / rect.width - 0.5;
     const py = (e.clientY - rect.top) / rect.height - 0.5;
     card.style.setProperty('--tilt-x', `${py * -5}deg`);
-    card.style.setProperty('--tilt-y', `${-9 + px * 5}deg`);
+    card.style.setProperty('--tilt-y', `${px * 5}deg`);
   };
   const handleHeroLeave = () => {
     const card = heroCardRef.current;
     if (!card) return;
     card.style.setProperty('--tilt-x', '0deg');
-    card.style.setProperty('--tilt-y', '-9deg');
+    card.style.setProperty('--tilt-y', '0deg');
   };
 
   const loadPct = Math.round((loaded / FRAME_COUNT) * 100);
@@ -245,14 +330,16 @@ export default function HeroAboutScroll() {
         <div
           className="stage-content hero-content"
           style={{
-            opacity: heroStyle.opacity,
-            pointerEvents: heroStyle.opacity > 0.4 ? 'auto' : 'none',
+            transform: `translate3d(0, ${heroState.scrollY}%, 0)`,
+            pointerEvents: (Math.abs(heroState.scrollY) < 10) ? 'auto' : 'none',
           }}
         >
           <div
             className="glass hero-card"
             ref={heroCardRef}
-            style={{ transform: `perspective(1100px) rotateX(var(--tilt-x,0deg)) rotateY(var(--tilt-y,-9deg)) translateY(${heroStyle.translate}px)` }}
+            style={{
+              transform: `perspective(1100px) rotateX(var(--tilt-x, 0deg)) rotateX(${heroState.rotateX}deg) rotateY(var(--tilt-y, 0deg)) rotateY(${heroState.rotateY}deg) translate3d(${heroState.translateX}, ${heroState.translateY}, 0) scale(${heroState.scale})`,
+            }}
             onMouseMove={handleHeroMove}
             onMouseLeave={handleHeroLeave}
           >
@@ -291,14 +378,11 @@ export default function HeroAboutScroll() {
           className="stage-content about-content"
           id="about"
           style={{
-            opacity: aboutStyle.opacity,
-            pointerEvents: aboutStyle.opacity > 0.4 ? 'auto' : 'none',
+            transform: `translate3d(0, ${aboutState.scrollY}%, 0)`,
+            pointerEvents: (Math.abs(aboutState.scrollY) < 10) ? 'auto' : 'none',
           }}
         >
-          <div
-            className="about-wrap"
-            style={{ transform: `translateY(${aboutStyle.translate}px)` }}
-          >
+          <div className="about-wrap">
             <div className="glass about-main">
               <div className="about-left">
                 <span className="pill-badge">
@@ -332,11 +416,11 @@ export default function HeroAboutScroll() {
 
               <div className="about-right glass-inset">
                 <span className="glance-title">At a Glance</span>
-                <div className="glance-list">
+                <div className="glance-grid">
                   {GLANCE_ITEMS.map(({ icon: Icon, tone, title, subtitleTop, subtitleBottom }) => (
-                    <div className="glance-item" key={title}>
+                    <div className="glance-card" key={title}>
                       <span className={`glance-icon tone-${tone}`}>
-                        <Icon size={18} strokeWidth={2} />
+                        <Icon size={16} strokeWidth={2} />
                       </span>
                       <div className="glance-copy">
                         <span className="glance-num">{title}</span>
@@ -350,18 +434,13 @@ export default function HeroAboutScroll() {
             </div>
 
             <div className="glass explore-strip">
-              <span className="pill-badge explore-badge">
-                <Grid2x2 size={13} strokeWidth={2} />
-                What I Explore
-              </span>
               <div className="explore-grid">
-                {EXPLORE_ITEMS.map(({ icon: Icon, title, desc }) => (
+                {EXPLORE_ITEMS.map(({ icon: Icon, title }) => (
                   <div className="explore-card" key={title}>
                     <span className="explore-icon">
-                      <Icon size={17} strokeWidth={2} />
+                      <Icon size={15} strokeWidth={2} />
                     </span>
                     <h3>{title}</h3>
-                    <p>{desc}</p>
                   </div>
                 ))}
               </div>
@@ -369,7 +448,7 @@ export default function HeroAboutScroll() {
           </div>
         </div>
 
-        <div className="scroll-cue" style={{ opacity: heroStyle.opacity > 0.5 ? 1 : 0 }}>
+        <div className="scroll-cue" style={{ opacity: heroState.scrollY === 0 ? 1 : 0, pointerEvents: 'none' }}>
           <span>scroll</span>
           <div className="scroll-cue-line" />
         </div>

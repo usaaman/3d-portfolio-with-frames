@@ -3,16 +3,9 @@ import {
   Briefcase,
   Download,
   Mail,
-  GraduationCap,
-  Code2,
-  Sparkles,
-  BrainCircuit,
-  Quote,
-  Grid2x2,
-  Shield,
-  Globe,
-  Gamepad2,
 } from 'lucide-react';
+import About from './About';
+import { GLANCE_ITEMS, EXPLORE_ITEMS } from './aboutData';
 import './HeroAboutScroll.css';
 import SkillsMarquee from './SkillsMarquee';
 import GlowLayer from './GlowLayer';
@@ -48,20 +41,9 @@ const TwitterIcon = (props) => (
 // - Frame 138-164: Pause (stable Cover)
 // - Frame 164-197: Continuous page transition (Hero slides out top, About enters bottom)
 
-const GLANCE_ITEMS = [
-  { icon: GraduationCap, tone: 'purple', title: '5th', subtitleTop: 'Semester', subtitleBottom: 'Software Engineering' },
-  { icon: Code2, tone: 'cyan', title: '2+', subtitleTop: 'Full-Stack Projects', subtitleBottom: 'Built & Deployed' },
-  { icon: Sparkles, tone: 'purple', title: 'Creative', subtitleTop: 'Video Editing', subtitleBottom: 'Graphic Design' },
-  { icon: BrainCircuit, tone: 'cyan', title: 'AI Explorer', subtitleTop: 'AI Chat Systems', subtitleBottom: '& Integrations' },
-];
 
-const EXPLORE_ITEMS = [
-  { icon: Shield, title: 'Cybersecurity', desc: 'Exploring security principles and building safer digital systems.' },
-  { icon: Code2, title: 'Software Engineering', desc: 'Designing scalable solutions with clean and efficient code.' },
-  { icon: Globe, title: 'Web Development', desc: 'Building responsive web apps with modern technologies.' },
-  { icon: Gamepad2, title: 'Game Development', desc: 'Creating interactive experiences and immersive worlds.' },
-  { icon: BrainCircuit, title: 'AI Applications', desc: 'Experimenting with AI-powered tools and intelligent applications.' },
-];
+
+
 
 // ==========================================
 // ARCHITECTURE CONSTANTS & CONFIGURATION
@@ -500,81 +482,15 @@ export default function HeroAboutScroll() {
           </div>
         </div>
 
-        {/* ABOUT CONTENT */}
-        <section
-          className="stage-content about-content"
-          id="about"
-          aria-label="About Me"
-          style={{
-            transform: `translate3d(0, ${aboutState.scrollY}%, 0)`,
-            pointerEvents: (Math.abs(aboutState.scrollY) < 10) ? 'auto' : 'none',
-          }}
-        >
-          <div className="about-wrap">
-            <div className="glass about-main">
-              <div className="about-left">
-                <span className="pill-badge" aria-hidden="true">
-                  <Grid2x2 size={13} strokeWidth={2} />
-                  ABOUT ME
-                </span>
-                <h2 className="about-title">
-                  Curious mind,<br />
-                  <span className="about-title-accent">creative hands</span>
-                </h2>
-                <p className="about-text">
-                  I'm Muhammad Usman, a Software Engineering student at Capital University
-                  of Science &amp; Technology, Islamabad, currently in my{' '}
-                  <span className="highlight">5th semester</span>.
-                </p>
-                <p className="about-text">
-                  My journey started with a passion for video editing and visual
-                  storytelling, which naturally evolved into web development and AI
-                  integration. Today, I build full-stack applications with React and
-                  Firebase, experiment with AI-powered chat systems, and still keep my
-                  creative side alive through video editing and graphic design.
-                </p>
-                <div className="quote-box">
-                  <Quote size={16} strokeWidth={2} className="quote-icon" aria-hidden="true" />
-                  <p>
-                    I love solving real-world problems — whether that's through clean
-                    code or a well-cut video.
-                  </p>
-                </div>
-              </div>
-
-              <div className="about-right">
-                <span className="glance-title">At a Glance</span>
-                <div className="glass glance-card-container">
-                  {GLANCE_ITEMS.map(({ icon: Icon, tone, title, subtitleTop, subtitleBottom }) => (
-                    <div className="glance-card" key={title}>
-                      <span className={`glance-icon tone-${tone}`} aria-hidden="true">
-                        <Icon size={16} strokeWidth={2} />
-                      </span>
-                      <div className="glance-copy">
-                        <span className="glance-num">{title}</span>
-                        <span className="glance-sub">{subtitleTop}</span>
-                        <span className="glance-sub muted">{subtitleBottom}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="glass explore-strip">
-              <div className="explore-grid">
-                {EXPLORE_ITEMS.map(({ icon: Icon, title }) => (
-                  <div className="explore-card" key={title}>
-                    <span className="explore-icon" aria-hidden="true">
-                      <Icon size={15} strokeWidth={2} />
-                    </span>
-                    <h3>{title}</h3>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
+          {/* ABOUT CONTENT */}
+          <About
+            style={{
+              transform: `translate3d(0, ${aboutState.scrollY}%, 0)`,
+              pointerEvents: (Math.abs(aboutState.scrollY) < 10) ? 'auto' : 'none',
+            }}
+            glanceItems={GLANCE_ITEMS}
+            exploreItems={EXPLORE_ITEMS}
+          />
 
         {/* SKILLS CONTENT */}
         <section

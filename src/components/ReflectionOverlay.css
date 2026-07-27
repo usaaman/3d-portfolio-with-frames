@@ -1,0 +1,37 @@
+.reflection-overlay-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: inherit;
+  z-index: 1;
+}
+
+.reflection-line {
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 100%
+  );
+  transform: skewX(-45deg);
+  animation: ds-reflection-sweep 10s ease-in-out infinite;
+  animation-delay: var(--reflection-delay, 0s);
+}
+
+@keyframes ds-reflection-sweep {
+  0% {
+    left: -150%;
+  }
+  15% {
+    left: 150%;
+  }
+  100% {
+    left: 150%;
+  }
+}

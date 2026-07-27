@@ -14,6 +14,7 @@ import {
   Gamepad2,
 } from 'lucide-react';
 import './HeroAboutScroll.css';
+import SkillsMarquee from './SkillsMarquee';
 
 // lucide-react dropped brand/logo icons — small inline SVGs instead
 const GithubIcon = (props) => (
@@ -92,6 +93,9 @@ export default function HeroAboutScroll() {
   const [aboutState, setAboutState] = useState({
     scrollY: 100, // off-screen bottom initially
   });
+  const [skillsState, setSkillsState] = useState({
+    scrollY: 100, // off-screen bottom initially
+  });
 
   // preload all frames
   useEffect(() => {
@@ -147,9 +151,13 @@ export default function HeroAboutScroll() {
   }, []);
 
   const applyProgress = useCallback((progress) => {
+    // 1. Map progress to frame (runs from 0.0 to 0.82)
+    // Frame count should reach 261 at progress = 0.82
+    const frameProgressLimit = 0.82;
+    const frameProgress = Math.min(1.0, progress / frameProgressLimit);
     const frame = Math.min(
       FRAME_COUNT,
-      Math.max(1, Math.round(progress * (FRAME_COUNT - 1)) + 1)
+      Math.max(1, Math.round(frameProgress * (FRAME_COUNT - 1)) + 1)
     );
     if (frame !== currentFrameRef.current) {
       currentFrameRef.current = frame;
@@ -218,6 +226,19 @@ export default function HeroAboutScroll() {
       aboutY = 0;
     }
 
+    // Skills Section Scroll Position (%) - only starts after all frames end (reaches 261)
+    let skillsY = 100;
+    if (progress > frameProgressLimit) {
+      // Scale slide-in to run from progress 0.82 to 0.96
+      const slideStart = 0.82;
+      const slideEnd = 0.96;
+      const t = Math.min(1.0, Math.max(0.0, (progress - slideStart) / (slideEnd - slideStart)));
+      const eased = smoothstep(0.0, 1.0, t);
+      skillsY = 100 * (1 - eased);
+    } else {
+      skillsY = 100;
+    }
+
     setHeroState({
       scrollY: heroY,
       scale: cardScale,
@@ -229,6 +250,10 @@ export default function HeroAboutScroll() {
 
     setAboutState({
       scrollY: aboutY,
+    });
+
+    setSkillsState({
+      scrollY: skillsY,
     });
   }, [drawFrame]);
 
@@ -414,9 +439,9 @@ export default function HeroAboutScroll() {
                 </div>
               </div>
 
-              <div className="about-right glass-inset">
+              <div className="about-right">
                 <span className="glance-title">At a Glance</span>
-                <div className="glance-grid">
+                <div className="glass glance-card-container">
                   {GLANCE_ITEMS.map(({ icon: Icon, tone, title, subtitleTop, subtitleBottom }) => (
                     <div className="glance-card" key={title}>
                       <span className={`glance-icon tone-${tone}`}>
@@ -446,6 +471,17 @@ export default function HeroAboutScroll() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* SKILLS CONTENT */}
+        <div
+          className="stage-content skills-stage-content"
+          style={{
+            transform: `translate3d(0, ${skillsState.scrollY}%, 0)`,
+            pointerEvents: (Math.abs(skillsState.scrollY) < 10) ? 'auto' : 'none',
+          }}
+        >
+          <SkillsMarquee />
         </div>
 
         <div className="scroll-cue" style={{ opacity: heroState.scrollY === 0 ? 1 : 0, pointerEvents: 'none' }}>

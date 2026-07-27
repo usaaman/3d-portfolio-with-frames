@@ -1,0 +1,149 @@
+:root {
+  /* ==========================================
+     BRAND & SURFACE COLORS
+     ========================================== */
+  --ds-color-bg-primary: #0E1525;        /* Primary background canvas */
+  --ds-color-bg-secondary: #2A2E37;      /* Secondary background card/subsections */
+  --ds-color-bg-gradient-start: #0E1525; /* Starting color of main background gradient */
+  --ds-color-bg-gradient-mid: #1A2438;   /* Middle color of main background gradient */
+  --ds-color-bg-gradient-end: #2A2E37;   /* End color of main background gradient */
+  
+  --ds-color-accent-primary: #4F8CFF;    /* Primary interaction brand blue */
+  --ds-color-accent-secondary: #65D6FF;  /* Secondary accent cyan highlight */
+
+  /* ==========================================
+     TEXT COLORS
+     ========================================== */
+  --ds-color-text-primary: #F6F4FB;      /* Default high-contrast text */
+  --ds-color-text-secondary: #B6B2C9;    /* Medium-contrast supporting text */
+  --ds-color-text-muted: #7D7A94;        /* Low-contrast captions and borders */
+
+  /* ==========================================
+     GLASS MATERIAL TOKENS
+     ========================================== */
+  --ds-glass-bg: rgba(255, 255, 255, 0.08);        /* Glass panel fill */
+  --ds-glass-highlight: rgba(255, 255, 255, 0.06);   /* Internal edge highlight shine */
+  --ds-glass-border: rgba(255, 255, 255, 0.12);      /* Outline border stroke */
+  --ds-glass-blur: 22px;                            /* Backdrop blur radius */
+
+  /* ==========================================
+     BORDER STROKE OPACITIES
+     ========================================== */
+  --ds-border-opacity-subtle: 0.10;
+  --ds-border-opacity-default: 0.12;
+  --ds-border-opacity-strong: 0.18;
+
+  /* ==========================================
+     TYPOGRAPHY SYSTEM
+     ========================================== */
+  /* Font Families */
+  --ds-font-display: 'Space Grotesk', 'Inter', sans-serif;
+  --ds-font-body: 'Inter', sans-serif;
+  --ds-font-mono: 'JetBrains Mono', monospace;
+
+  /* Font Sizes */
+  --ds-font-size-hero: 72px;
+  --ds-font-size-section: 48px;
+  --ds-font-size-card: 28px;
+  --ds-font-size-subtitle: 22px;
+  --ds-font-size-body: 18px;
+  --ds-font-size-small: 15px;
+  --ds-font-size-caption: 13px;
+
+  /* Font Weights */
+  --ds-font-weight-regular: 400;
+  --ds-font-weight-medium: 600;
+  --ds-font-weight-bold: 800;
+
+  /* Letter Spacing */
+  --ds-letter-spacing-tight: -0.02em;
+  --ds-letter-spacing-normal: 0em;
+  --ds-letter-spacing-wide: 0.14em;
+
+  /* Line Heights */
+  --ds-line-height-display: 1.1;
+  --ds-line-height-heading: 1.2;
+  --ds-line-height-body: 1.6;
+  --ds-line-height-tight: 1.4;
+
+  /* ==========================================
+     GEOMETRY & BORDER RADII
+     ========================================== */
+  --ds-radius-small: 12px;       /* Chips, tags, small items */
+  --ds-radius-button: 16px;      /* Buttons, inline inputs */
+  --ds-radius-medium: 18px;      /* Medium size components */
+  --ds-radius-card: 28px;        /* Project cards, feature elements */
+  --ds-radius-large: 24px;       /* Sections containers */
+  --ds-radius-panel: 32px;       /* Large overlays, hero containers */
+  --ds-radius-circular: 50%;     /* Circular elements */
+
+  /* ==========================================
+     ELEVATION, BLURS & SHADOWS
+     ========================================== */
+  /* Shadows */
+  --ds-shadow-small: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --ds-shadow-medium: 0 12px 32px rgba(0, 0, 0, 0.20);
+  --ds-shadow-large: 0 30px 80px rgba(0, 0, 0, 0.30);    /* Glass material shadow */
+
+  /* Blurs */
+  --ds-blur-small: 8px;
+  --ds-blur-medium: 16px;
+  --ds-blur-large: 22px;
+  --ds-blur-deep: 32px;
+
+  /* Opacity levels */
+  --ds-opacity-hover: 0.85;
+  --ds-opacity-disabled: 0.50;
+  --ds-opacity-glass-fill: 0.08;
+
+  /* ==========================================
+     SPACING & LAYOUT GRID
+     ========================================== */
+  /* Spacing Scale */
+  --ds-space-8: 8px;
+  --ds-space-16: 16px;
+  --ds-space-24: 24px;
+  --ds-space-32: 32px;
+  --ds-space-48: 48px;
+  --ds-space-64: 64px;
+  --ds-space-96: 96px;
+  --ds-space-128: 128px;
+
+  /* Z-Index Scale */
+  --ds-z-behind: -10;
+  --ds-z-base: 0;
+  --ds-z-card: 10;
+  --ds-z-floating: 30;
+  --ds-z-nav: 100;
+  --ds-z-overlay: 500;
+  --ds-z-modal: 1000;
+  --ds-z-max: 9999;              /* Toasts, floating AI widget */
+
+  /* Container & Grid specifications */
+  --ds-container-width: 1280px;
+  --ds-container-margin: 80px;
+  --ds-container-gap: 24px;
+
+  /* Responsive Breakpoints */
+  --ds-breakpoint-mobile: 480px;
+  --ds-breakpoint-sm: 640px;
+  --ds-breakpoint-md: 768px;
+  --ds-breakpoint-lg: 1024px;
+  --ds-breakpoint-xl: 1280px;
+  --ds-breakpoint-xxl: 1536px;
+
+  /* ==========================================
+     MOTION & INTERACTION SYSTEMS
+     ========================================== */
+  /* Transition Durations */
+  --ds-duration-fast: 150ms;       /* Hover states, micro-interactions */
+  --ds-duration-button: 200ms;     /* Physical clicks, button state changes */
+  --ds-duration-medium: 300ms;     /* Cards expansion, fades, glass loading */
+  --ds-duration-slow: 600ms;       /* Major reveals, sections unfolding */
+  --ds-duration-cinematic: 1500ms; /* Scene transitions, Hero opening sequence */
+
+  /* Animation Easings */
+  --ds-ease-out-natural: cubic-bezier(0.16, 1, 0.3, 1);
+  --ds-ease-in-out-natural: cubic-bezier(0.76, 0, 0.24, 1);
+  --ds-ease-soft-spring: cubic-bezier(0.25, 1, 0.5, 1);
+}

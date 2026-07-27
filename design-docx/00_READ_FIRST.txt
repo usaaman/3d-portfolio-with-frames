@@ -1,0 +1,276 @@
+===========================================================
+PORTFOLIO EXPERIENCE BIBLE
+File: 00_READ_FIRST.txt
+Version: 1.0
+Status: LOCKED
+===========================================================
+
+# Portfolio Experience Bible
+
+## Read Before Anything Else
+
+This document is the official design specification for the entire portfolio.
+
+It is **not** a prompt library.
+
+It is **not** documentation.
+
+It is **not** a UI inspiration collection.
+
+It is the complete product blueprint that defines how the portfolio should look, feel, move, and behave.
+
+Every future design decision must follow this document.
+
+If a new idea conflicts with this specification, this specification takes priority unless a newer version explicitly replaces it.
+
+---
+
+# Objective
+
+The purpose of this document is to eliminate design inconsistency.
+
+Instead of repeatedly explaining the same design decisions to AI or developers, every decision is written once and becomes the permanent reference.
+
+This allows the portfolio to evolve without losing its identity.
+
+---
+
+# What This Portfolio Is
+
+This project is a premium digital product that represents one person's capabilities through storytelling, interaction design, software engineering, and user experience.
+
+It is **not** a traditional portfolio website.
+
+The visitor should never feel like they are browsing sections stacked on top of each other.
+
+Instead, the experience should feel like progressing through a carefully directed product presentation.
+
+---
+
+# What This Portfolio Is Not
+
+The following styles are permanently rejected.
+
+• Neon RGB interfaces
+
+• Gaming inspired dashboards
+
+• Hacker aesthetics
+
+• Generic template layouts
+
+• Heavy glowing borders
+
+• Overcrowded screens
+
+• Random animations
+
+• Animation for decoration only
+
+• Fake 3D effects
+
+• Cheap gradients
+
+• Inconsistent spacing
+
+• Multiple visual languages
+
+---
+
+# Design Goal
+
+Every visitor should leave with one thought.
+
+> "This person doesn't only write code.
+
+> They understand products, user experience, interaction design, visual communication, and engineering."
+
+The portfolio exists to communicate this naturally through experience rather than simply claiming it with text.
+
+---
+
+# Core Philosophy
+
+The portfolio follows one simple principle.
+
+**Design for memory, not decoration.**
+
+Beautiful interfaces are forgotten.
+
+Meaningful experiences are remembered.
+
+Every section must create one memorable moment.
+
+Nothing should exist purely because it looks impressive.
+
+Everything must support the story.
+
+---
+
+# Reading Order
+
+This specification has been intentionally divided into small files.
+
+Never skip the reading order.
+
+Read them in this sequence.
+
+```
+01_Vision
+
+↓
+
+02_Design_System
+
+↓
+
+03_Motion_Bible
+
+↓
+
+Current Section Blueprint
+
+↓
+
+12_Global_Rules
+
+↓
+
+13_AntiPatterns
+
+↓
+
+14_Implementation_Guide
+```
+
+Reading only one section without understanding the previous ones can produce inconsistent results.
+
+---
+
+# Dependency System
+
+Every blueprint depends on the files above it.
+
+Example
+
+```
+Projects
+
+depends on
+
+Vision
+
++
+
+Design System
+
++
+
+Motion Bible
+```
+
+This prevents every section from becoming visually different.
+
+---
+
+# AI Usage Instructions
+
+When implementing a section:
+
+Step 1
+
+Read the Vision document.
+
+Step 2
+
+Read the Design System.
+
+Step 3
+
+Read the Motion Bible.
+
+Step 4
+
+Read only the blueprint of the section currently being developed.
+
+Do not redesign completed sections unless explicitly instructed.
+
+Maintain complete consistency with all previous decisions.
+
+---
+
+# Decision Priority
+
+When two rules appear to conflict, always follow this priority.
+
+```
+Vision
+
+↓
+
+User Experience
+
+↓
+
+Storytelling
+
+↓
+
+Consistency
+
+↓
+
+Performance
+
+↓
+
+Visual Effects
+```
+
+Visual effects should never override usability.
+
+---
+
+# Non-Negotiable Rules
+
+The following rules cannot be broken.
+
+Every section must support the story.
+
+Every animation must have a purpose.
+
+Every interaction must improve usability.
+
+Every spacing value must follow the spacing system.
+
+Every color must come from the design token system.
+
+Every glass component must use the same material language.
+
+Every transition must feel connected.
+
+Every component must justify its existence.
+
+---
+
+# Product Identity
+
+This portfolio should feel like a premium software product rather than a personal website.
+
+The visitor should experience confidence, clarity, craftsmanship, and thoughtful engineering from the first scroll until the final interaction.
+
+---
+
+# Final Statement
+
+This document is the single source of truth for the portfolio.
+
+Future prompts, AI implementations, developer decisions, and design revisions should all begin here.
+
+If something is not defined in this specification, it should be added through a future version rather than solved with inconsistent improvisation.
+
+END OF FILE
+
+Next File
+
+01_Vision.txt

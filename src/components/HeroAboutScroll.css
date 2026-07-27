@@ -1,6 +1,6 @@
 .scroll-wrapper {
   position: relative;
-  height: 500vh;
+  height: 600vh;
   background: var(--bg);
 }
 
@@ -173,23 +173,29 @@
 
 .about-content {
   align-items: center;
-  padding-top: 104px;
-  padding-bottom: 40px;
+  justify-content: flex-start;
+  padding: 64px 5vw 24px;
+  z-index: 10;
+}
+
+.skills-stage-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 68px 5vw;
+  background: linear-gradient(135deg, #E6EFF9, #CFDFF2, #AEC8E6);
+  z-index: 20;
+  will-change: transform;
 }
 
 .about-wrap {
   width: min(900px, 92vw);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   will-change: transform;
-  max-height: 78vh;
-  overflow-y: auto;
-  scrollbar-width: none;
-}
-
-.about-wrap::-webkit-scrollbar {
-  display: none;
 }
 
 .about-main {
@@ -202,7 +208,7 @@
 }
 
 .about-left {
-  padding: 34px 34px 34px;
+  padding: 24px 28px;
 }
 
 .pill-badge {
@@ -251,9 +257,9 @@
   display: flex;
   gap: 12px;
   align-items: flex-start;
-  margin-top: 20px;
-  padding: 16px 18px;
-  border-radius: 14px;
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
   border: 1px solid rgba(34, 211, 238, 0.28);
   background: rgba(34, 211, 238, 0.05);
 }
@@ -277,7 +283,7 @@
 }
 
 .about-right {
-  padding: 30px 28px 30px;
+  padding: 24px 20px;
   display: flex;
   flex-direction: column;
 }
@@ -291,40 +297,40 @@
   border-bottom: 1px solid var(--glass-border);
 }
 
-.glance-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+.glance-card-container {
+  flex: 1;
+  overflow: hidden;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   margin-top: 14px;
 }
 
 .glance-card {
-  padding: 10px 12px;
-  border-radius: 12px;
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 10px;
   border: 1px solid var(--glass-border);
   background: rgba(255, 255, 255, 0.02);
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
   transition: border-color 0.2s ease, transform 0.2s ease;
+  min-height: 0;
 }
 
 .glance-card:hover {
   border-color: rgba(139, 233, 248, 0.3);
-  transform: translateY(-2px);
-}
-
-.glance-card-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  transform: translateY(-1px);
 }
 
 .glance-icon {
   flex: none;
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   display: grid;
   place-items: center;
   color: #ffffff;
@@ -374,8 +380,8 @@
 
 .explore-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
 }
 
 .explore-card {

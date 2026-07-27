@@ -1,0 +1,420 @@
+===========================================================
+PORTFOLIO EXPERIENCE BIBLE
+File: 06_Skills.txt
+Version: 1.0
+Status: LOCKED
+===========================================================
+
+# CHAPTER 06 — SKILLS
+
+---
+
+# Purpose
+
+The Skills section is not a technology list.
+
+It is visual evidence of capability.
+
+Most portfolios display logos inside grids.
+
+This portfolio communicates movement, growth, confidence, and technical depth.
+
+The visitor should immediately understand that these technologies are tools used to build products—not decorations added to fill space.
+
+The section answers one question.
+
+> **"What is this developer capable of building?"**
+
+---
+
+# Story Role
+
+Within the portfolio journey, Skills acts as the bridge between identity and proof.
+
+The narrative becomes:
+
+```text
+Who I Am
+
+↓
+
+How I Think
+
+↓
+
+What I Can Build
+
+↓
+
+Projects
+```
+
+Without this bridge, Projects feel disconnected.
+
+---
+
+# Emotional Goal
+
+Visitors should feel:
+
+Confidence
+
+↓
+
+Breadth
+
+↓
+
+Professionalism
+
+↓
+
+Curiosity
+
+↓
+
+"I want to see the projects."
+
+The Skills section should naturally create anticipation for the Projects section.
+
+---
+
+# Design Philosophy
+
+Technology is always moving.
+
+The interface should communicate this visually.
+
+Instead of static icons sitting in rows, technologies continuously travel through the scene.
+
+The motion represents continuous learning.
+
+The visitor should feel that the developer's skillset is alive and evolving.
+
+---
+
+# Layout
+
+The section follows a vertical structure.
+
+```text
+Section Heading
+
+↓
+
+Short Description
+
+↓
+
+Moving Technology Environment
+
+↓
+
+Category Summary
+
+↓
+
+Transition Into Projects
+```
+
+The technology environment occupies most of the section.
+
+---
+
+# Technology Environment
+
+The primary visual element consists of two continuous horizontal technology strips.
+
+These strips create depth and movement without distracting from the content.
+
+The strips are not carousels.
+
+They are infinite loops.
+
+The movement should never visibly restart.
+
+---
+
+# Strip System
+
+Upper Strip
+
+Direction:
+
+Left → Right
+
+Lower Strip
+
+Direction:
+
+Right → Left
+
+Because both strips move in opposite directions, the interface feels balanced and dynamic.
+
+---
+
+# Motion Behaviour
+
+Movement speed remains slow.
+
+Average speed:
+
+25–35 pixels per second.
+
+The objective is not to showcase animation.
+
+The objective is to create an ambient technological environment.
+
+---
+
+# Cursor Interaction
+
+Mouse movement influences the strips slightly.
+
+When the cursor approaches either strip:
+
+Movement gradually slows.
+
+Icons gently separate.
+
+Nearby technologies receive a subtle emphasis.
+
+The effect resembles magnetic influence rather than hover animation.
+
+Once the cursor leaves, motion smoothly returns to its original speed.
+
+Nothing should stop abruptly.
+
+---
+
+# Infinite Loop
+
+The strips must loop seamlessly.
+
+The visitor should never discover where the animation begins or ends.
+
+Looping should feel mathematically perfect.
+
+---
+
+# Icon Style
+
+Icons must use official branding.
+
+Flat logos.
+
+High quality.
+
+Consistent visual size.
+
+No colored backgrounds.
+
+No inconsistent padding.
+
+No circular badges unless provided by the official brand.
+
+---
+
+# Icon Size
+
+Desktop:
+
+48–56px
+
+Tablet:
+
+44px
+
+Mobile:
+
+36–40px
+
+Visual weight must remain consistent even when logo proportions differ.
+
+---
+
+# Spacing
+
+Every logo should maintain identical spacing.
+
+Recommended gap:
+
+40–56px
+
+The eye should perceive rhythm.
+
+Not randomness.
+
+---
+
+# Categories
+
+Technologies should be mentally grouped even if the strips appear continuous.
+
+Suggested groups include:
+
+Programming Languages
+
+Frontend
+
+Backend
+
+Databases
+
+Cloud
+
+AI
+
+Tools
+
+DevOps
+
+Design
+
+Version Control
+
+Each technology belongs to only one category.
+
+---
+
+# Glass Interaction
+
+The strips move above a subtle glass environment.
+
+The glass should never overpower the logos.
+
+Its purpose is to create depth.
+
+Not decoration.
+
+---
+
+# Lighting
+
+A soft diagonal reflection occasionally passes across the strips.
+
+Duration:
+
+6–8 seconds.
+
+Opacity:
+
+Very low.
+
+The visitor should perceive premium materials rather than animation.
+
+---
+
+# Ambient Effects
+
+Allowed:
+
+Subtle floating particles.
+
+Very soft bloom.
+
+Environmental lighting.
+
+Background gradient movement.
+
+Not allowed:
+
+Fire.
+
+Electricity.
+
+Neon streaks.
+
+RGB trails.
+
+Spark explosions.
+
+Gaming effects.
+
+---
+
+# Typography
+
+Typography remains minimal.
+
+The section title introduces the capability.
+
+The supporting description explains the philosophy behind continuous learning.
+
+Avoid listing every technology in text.
+
+The logos already communicate that information.
+
+---
+
+# Performance
+
+The animation must remain lightweight.
+
+The strips should rely on GPU-friendly transforms.
+
+Avoid unnecessary re-renders.
+
+Target:
+
+60 FPS desktop.
+
+Stable mobile performance.
+
+Smoothness is more important than visual complexity.
+
+---
+
+# Accessibility
+
+If reduced motion is enabled:
+
+Pause strip movement.
+
+Display technologies in a clean static layout.
+
+Maintain spacing.
+
+Maintain hierarchy.
+
+Remove only motion.
+
+Never remove information.
+
+---
+
+# Transition Into Projects
+
+This transition is one of the most important moments in the portfolio.
+
+The technology strips should not simply disappear.
+
+Instead, their movement gradually slows.
+
+The environment becomes calmer.
+
+The visitor subconsciously understands that the technologies are about to become real products.
+
+The transition should feel like moving from preparation into execution.
+
+Projects are the natural consequence of the skills shown here.
+
+---
+
+# Success Criteria
+
+The Skills section succeeds when visitors think:
+
+> "This developer has a broad and organized technical foundation."
+
+Immediately afterward, they should want to answer the next question:
+
+> "What have they actually built?"
+
+If the visitor reaches the Projects section with genuine curiosity rather than obligation, the Skills section has fulfilled its purpose.
+
+END OF FILE
+
+Next File
+
+07_Projects.txt

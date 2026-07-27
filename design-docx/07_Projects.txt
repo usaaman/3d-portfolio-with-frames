@@ -1,0 +1,548 @@
+===========================================================
+PORTFOLIO EXPERIENCE BIBLE
+File: 07_Projects.txt
+Version: 1.0
+Status: LOCKED
+===========================================================
+
+# CHAPTER 07 — PROJECTS
+
+---
+
+# Purpose
+
+Projects are the proof.
+
+Everything before this section has been building toward one question.
+
+> **"Can this developer actually build great software?"**
+
+The Projects section answers that question.
+
+Not with claims.
+
+Not with certifications.
+
+Not with statistics.
+
+With products.
+
+The visitor should immediately feel that these projects are real, polished, and thoughtfully engineered.
+
+---
+
+# Story Role
+
+Within the portfolio narrative:
+
+```text
+Identity
+
+↓
+
+Thinking
+
+↓
+
+Skills
+
+↓
+
+Proof
+```
+
+Projects are the first undeniable evidence.
+
+This is the section where confidence becomes trust.
+
+---
+
+# Design Philosophy
+
+Most portfolios display projects as cards inside a grid.
+
+This portfolio tells a story.
+
+Each project deserves its own moment.
+
+The visitor should experience every project individually instead of seeing six projects competing for attention simultaneously.
+
+Quality over quantity.
+
+---
+
+# Core Principle
+
+One Project.
+
+One Moment.
+
+One Memory.
+
+Every project receives the visitor's complete attention before the next one appears.
+
+---
+
+# Layout Philosophy
+
+Only one project is active at a time.
+
+The screen is intentionally uncluttered.
+
+The visitor should never wonder where to look.
+
+The active project occupies visual priority.
+
+Everything else disappears.
+
+---
+
+# Section Structure
+
+```text
+Section Title
+
+↓
+
+Introduction
+
+↓
+
+Project Stage
+
+↓
+
+Project Navigation
+
+↓
+
+Transition To Next Project
+```
+
+The Project Stage occupies nearly the full viewport.
+
+It is the hero of this section.
+
+---
+
+# Project Stage
+
+The stage represents a premium presentation area.
+
+Nothing outside the active project should distract the visitor.
+
+Think of it as a product launch stage rather than a card carousel.
+
+---
+
+# Story Sequence
+
+Every project follows the same rhythm.
+
+```text
+Arrival
+
+↓
+
+Reveal
+
+↓
+
+Explore
+
+↓
+
+Understand
+
+↓
+
+Leave
+
+↓
+
+Next Project
+```
+
+Consistency makes the experience feel intentional.
+
+---
+
+# Arrival
+
+A project never suddenly appears.
+
+It gradually enters the stage.
+
+The visitor should feel that the previous project naturally hands attention to the next.
+
+The transition should feel continuous.
+
+Not interrupted.
+
+---
+
+# Active Project
+
+Only one project receives full emphasis.
+
+Everything important belongs here.
+
+• Project Image
+
+• Project Name
+
+• Short Description
+
+• Technology Stack
+
+• Key Features
+
+• Live Demo
+
+• GitHub Repository
+
+Nothing unnecessary.
+
+---
+
+# Screenshot Philosophy
+
+The screenshot is the strongest visual proof.
+
+It should always appear before technical information.
+
+Visitors understand visuals faster than text.
+
+The screenshot should feel like a premium product presentation.
+
+Never like a thumbnail.
+
+---
+
+# Screenshot Style
+
+Rounded Corners
+
+Large Glass Frame
+
+Soft Shadow
+
+Premium Reflection
+
+Subtle Depth
+
+No browser mockups unless they genuinely improve presentation.
+
+The product itself should remain the focus.
+
+---
+
+# Project Name
+
+Large.
+
+Readable.
+
+Confident.
+
+The title should become the first readable element after the screenshot.
+
+---
+
+# Description
+
+Limit description to one concise paragraph.
+
+Explain:
+
+Problem.
+
+Solution.
+
+Impact.
+
+Avoid technical implementation details.
+
+Those belong elsewhere.
+
+---
+
+# Technology Stack
+
+Technologies should appear as compact glass chips.
+
+Each chip uses:
+
+Consistent Height
+
+Consistent Padding
+
+Consistent Radius
+
+Consistent Spacing
+
+No oversized logos.
+
+Typography remains primary.
+
+---
+
+# Action Buttons
+
+Only meaningful actions.
+
+Recommended:
+
+Live Demo
+
+GitHub
+
+Case Study (Optional)
+
+Buttons should follow the global component system.
+
+Never invent a new button style.
+
+---
+
+# Motion Philosophy
+
+Projects should feel premium.
+
+Not theatrical.
+
+Animations should support understanding.
+
+Not compete with content.
+
+---
+
+# Reveal Sequence
+
+Every project follows the exact reveal order.
+
+```text
+Stage
+
+↓
+
+Screenshot
+
+↓
+
+Project Name
+
+↓
+
+Description
+
+↓
+
+Tech Stack
+
+↓
+
+Buttons
+```
+
+Never reveal everything simultaneously.
+
+The eye should naturally travel downward.
+
+---
+
+# Glass Behaviour
+
+The active project card behaves like physical glass.
+
+Reflection slowly moves diagonally.
+
+The border softly catches environmental light.
+
+No excessive glow.
+
+No neon.
+
+No RGB effects.
+
+The material should feel real.
+
+---
+
+# Depth
+
+Depth is created using:
+
+Spacing.
+
+Layering.
+
+Soft Shadows.
+
+Glass Blur.
+
+Lighting.
+
+Not through exaggerated perspective.
+
+---
+
+# Scroll Behaviour
+
+Scrolling advances the story.
+
+The visitor controls pacing.
+
+The interface never forces waiting.
+
+If the visitor scrolls quickly,
+
+the project transitions should accelerate naturally.
+
+If they pause,
+
+the project remains comfortably readable.
+
+---
+
+# Navigation
+
+The section should subtly communicate progress.
+
+Examples:
+
+```text
+01 / 06
+
+02 / 06
+
+03 / 06
+```
+
+The indicator remains minimal.
+
+Never dominate the interface.
+
+---
+
+# Project Order
+
+Projects should be arranged strategically.
+
+Never chronologically.
+
+Recommended order:
+
+Most Impressive
+
+↓
+
+Most Technical
+
+↓
+
+Most Creative
+
+↓
+
+Most Practical
+
+↓
+
+Most Complex
+
+↓
+
+Current Portfolio
+
+The strongest first impression matters more than historical order.
+
+---
+
+# Background Behaviour
+
+The global background continues uninterrupted.
+
+No section-specific colors.
+
+No visual reset.
+
+The environment remains consistent.
+
+Only the content changes.
+
+---
+
+# Performance
+
+Only one project is fully rendered at maximum emphasis.
+
+This improves focus and performance simultaneously.
+
+Animations should remain GPU accelerated whenever possible.
+
+Target:
+
+Desktop: 60 FPS
+
+Minimum: 50 FPS
+
+---
+
+# Accessibility
+
+Reduced Motion:
+
+Replace transitions with fade.
+
+Keep hierarchy.
+
+Keep layout.
+
+Keep content identical.
+
+Motion should never be required to understand the project.
+
+---
+
+# Transition Into Services
+
+Projects answer:
+
+> "What have I built?"
+
+Services answer:
+
+> "What can I build for you?"
+
+The final project should slowly reduce visual dominance.
+
+The stage becomes lighter.
+
+The environment becomes more open.
+
+The visitor should naturally feel the conversation shifting from past achievements toward future collaboration.
+
+There should never be an abrupt section break.
+
+The transition should feel like the story continuing.
+
+---
+
+# Success Criteria
+
+The Projects section succeeds when visitors stop evaluating technologies and begin evaluating thinking.
+
+The goal is not for someone to remember six project names.
+
+The goal is for them to remember the quality, polish, and craftsmanship behind those projects.
+
+After leaving this section, the visitor should naturally believe:
+
+> "If this is how they present their work, I can imagine the quality of the products they build."
+
+END OF FILE
+
+Next File
+
+08_Services.txt

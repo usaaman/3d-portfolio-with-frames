@@ -1,0 +1,488 @@
+===========================================================
+PORTFOLIO EXPERIENCE BIBLE
+File: 15_Implementation_Rules.txt
+Version: 1.0
+Status: LOCKED
+===========================================================
+CHAPTER 15 — IMPLEMENTATION RULES
+Purpose
+
+This document defines how the portfolio must be built.
+
+The previous chapters define what the experience should feel like.
+
+This chapter defines how developers and AI assistants must implement it.
+
+These rules are non-negotiable.
+
+If implementation choices conflict with these rules, the rules always win.
+
+Core Philosophy
+
+The implementation should prioritize:
+
+Quality
+
+↓
+
+Maintainability
+
+↓
+
+Performance
+
+↓
+
+Scalability
+
+↓
+
+Visual Consistency
+
+Never sacrifice long-term maintainability for short-term visual effects.
+
+Tech Stack
+
+The portfolio is built using:
+
+• React
+
+• TypeScript
+
+• Vite
+
+• Tailwind CSS
+
+• Framer Motion
+
+• GSAP (only where necessary)
+
+Three.js is not required.
+
+Heavy 3D engines should be avoided unless absolutely necessary.
+
+The portfolio achieves a premium 3D feeling primarily through:
+
+Lighting
+
+Depth
+
+Glass
+
+Perspective
+
+Motion
+
+Not real-time 3D rendering.
+
+Architecture
+
+The project follows a modular architecture.
+
+Every major section exists as its own component.
+
+Example:
+
+Hero/
+
+About/
+
+Skills/
+
+Projects/
+
+Services/
+
+Experience/
+
+Contact/
+
+Footer/
+
+Each section manages only its own logic.
+
+Cross-section behavior is handled globally.
+
+Component Rules
+
+Every reusable element belongs inside a shared component library.
+
+Examples:
+
+GlassCard
+
+GlassButton
+
+SectionHeading
+
+GlassInput
+
+Badge
+
+IconButton
+
+Container
+
+Spacer
+
+Never duplicate component logic.
+
+Styling Rules
+
+Tailwind utilities should be preferred.
+
+Custom CSS should exist only when Tailwind cannot express the design cleanly.
+
+Avoid deeply nested CSS.
+
+Avoid global overrides.
+
+Every visual decision should be reusable.
+
+State Management
+
+Prefer local component state whenever possible.
+
+Global state should only manage:
+
+Theme
+
+Navigation
+
+AI Assistant
+
+Shared animations
+
+Portfolio configuration
+
+Avoid unnecessary global stores.
+
+Animation Rules
+
+Framer Motion handles:
+
+Component reveals
+
+Hover states
+
+Layout transitions
+
+GSAP handles:
+
+Scroll timelines
+
+Pinned sections
+
+Complex sequencing
+
+Never mix two libraries for the same animation.
+
+Each animation has one owner.
+
+Scroll Rules
+
+Scrolling always belongs to the browser.
+
+Animations respond to scrolling.
+
+Animations never block scrolling.
+
+Pinned sections exist only when storytelling genuinely benefits.
+
+Performance Budget
+
+Target:
+
+Desktop
+
+60 FPS
+
+Tablet
+
+60 FPS
+
+Mobile
+
+50–60 FPS
+
+If performance drops:
+
+Reduce visual effects first.
+
+Never reduce usability.
+
+Image Strategy
+
+Every image should be optimized.
+
+Preferred formats:
+
+WebP
+
+AVIF
+
+Fallback:
+
+PNG
+
+JPEG only when necessary.
+
+Never load oversized assets.
+
+Lazy Loading
+
+Lazy load:
+
+Projects
+
+AI Assistant
+
+Large images
+
+Heavy libraries
+
+The Hero should load immediately.
+
+Everything else may load progressively.
+
+Code Splitting
+
+Split large sections into independent bundles.
+
+The visitor should never download code for features they have not reached.
+
+Accessibility
+
+Every section supports:
+
+Keyboard navigation.
+
+Screen readers.
+
+Reduced motion.
+
+High contrast.
+
+Semantic HTML.
+
+Accessibility is part of the product,
+
+not an optional enhancement.
+
+Responsive Rules
+
+Design for:
+
+Desktop first.
+
+Tablet second.
+
+Mobile third.
+
+Layouts adapt.
+
+Experiences remain identical.
+
+Only presentation changes.
+
+Naming Convention
+
+Components:
+
+PascalCase
+
+GlassCard.tsx
+
+ProjectSection.tsx
+
+HeroCharacter.tsx
+
+Hooks:
+
+camelCase
+
+useScrollProgress()
+
+useGlassReflection()
+
+useTimeline()
+
+Constants:
+
+UPPER_CASE
+
+Variables:
+
+camelCase
+
+Consistency improves maintainability.
+
+Folder Structure
+
+Recommended:
+
+src/
+
+components/
+
+sections/
+
+hooks/
+
+animations/
+
+utils/
+
+constants/
+
+assets/
+
+styles/
+
+types/
+
+Never place unrelated files together.
+
+AI Development Rules
+
+When using AI tools (Claude, ChatGPT, Antigravity, etc.):
+
+Generate one feature at a time.
+
+Never ask the AI to redesign the whole portfolio.
+
+Every prompt must reference the Design Bible.
+
+Every generated feature must preserve existing architecture.
+
+The AI should modify,
+
+not replace.
+
+Git Workflow
+
+Commit after every completed feature.
+
+Examples:
+
+Hero complete
+
+About complete
+
+Skills complete
+
+Projects complete
+
+Avoid massive commits containing unrelated changes.
+
+Clear history improves maintenance.
+
+Error Handling
+
+Every asynchronous action should handle:
+
+Loading
+
+Success
+
+Failure
+
+Timeout
+
+Never leave the interface in an undefined state.
+
+AI Assistant Integration
+
+The AI Assistant should remain isolated from the UI.
+
+Conversation logic.
+
+Knowledge base.
+
+Prompt templates.
+
+Streaming.
+
+Memory.
+
+These should exist independently from presentation components.
+
+Future AI providers should be replaceable without redesigning the interface.
+
+Future Expansion
+
+The architecture should support:
+
+New sections.
+
+Additional projects.
+
+Multiple languages.
+
+Themes.
+
+Voice AI.
+
+Blog integration.
+
+CMS.
+
+Without requiring structural redesign.
+
+What Must Never Change
+
+The following principles are permanent:
+
+• Story-first navigation.
+
+• Premium glass design language.
+
+• Physical material feeling.
+
+• Minimalism.
+
+• Cinematic pacing.
+
+• Consistent component system.
+
+• Honest communication.
+
+• Performance-first implementation.
+
+These define the identity of the portfolio.
+
+Definition of Done
+
+A feature is considered complete only when it satisfies all of the following:
+
+✓ Matches the Design Bible.
+
+✓ Works on desktop.
+
+✓ Works on tablet.
+
+✓ Works on mobile.
+
+✓ Meets accessibility requirements.
+
+✓ Maintains 60 FPS where possible.
+
+✓ Preserves component consistency.
+
+✓ Passes visual review.
+
+If any of these fail, the feature is not complete.
+
+Final Principle
+
+Every implementation decision should answer one question:
+
+"Does this make the portfolio feel more premium, more intentional, and more memorable?"
+
+If the answer is no, the feature should not be added.
+
+Implementation exists to protect the vision—not to complicate it.
+
+END OF FILE
+
+ALL CORE DESIGN BIBLE CHAPTERS COMPLETE

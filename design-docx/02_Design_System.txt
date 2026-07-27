@@ -1,0 +1,524 @@
+===========================================================
+PORTFOLIO EXPERIENCE BIBLE
+File: 02_Design_System.txt
+Version: 1.0
+Status: LOCKED
+===========================================================
+
+# CHAPTER 02 — DESIGN SYSTEM
+
+---
+
+# Introduction
+
+A premium interface is not created by beautiful colors or expensive animations.
+
+It is created through consistency.
+
+Users rarely notice consistent spacing, typography, alignment, lighting, or motion individually.
+
+Instead, they perceive them together as "quality."
+
+This Design System exists to ensure every screen feels like it belongs to the same product.
+
+No section should ever introduce a different visual language.
+
+---
+
+# Design Philosophy
+
+The portfolio follows a single visual philosophy.
+
+> **Calm interfaces create confidence.**
+
+Instead of competing for attention, every element works together to guide the user naturally through the experience.
+
+The interface should never feel loud.
+
+It should feel intentional.
+
+---
+
+# Visual Identity
+
+The portfolio should communicate five characteristics immediately.
+
+• Premium
+
+• Modern
+
+• Minimal
+
+• Cinematic
+
+• Product-Focused
+
+If a new component weakens one of these characteristics, it should be redesigned or removed.
+
+---
+
+# Color Philosophy
+
+Color is used to guide hierarchy rather than decorate the interface.
+
+Large areas remain calm.
+
+Accent colors exist only to direct attention.
+
+Every color should have a functional purpose.
+
+No color should exist only because it looks attractive.
+
+---
+
+# Background System
+
+The entire portfolio uses one continuous background language.
+
+The background should never restart between sections.
+
+Instead, it flows through the entire experience.
+
+Primary Background
+
+```
+#0E1525
+```
+
+Secondary Background
+
+```
+#2A2E37
+```
+
+Primary Gradient
+
+```
+135°
+
+#0E1525
+
+↓
+
+#1A2438
+
+↓
+
+#2A2E37
+```
+
+The gradient should move almost imperceptibly over time.
+
+Target duration:
+
+120 seconds per cycle.
+
+Visitors should feel the movement rather than consciously notice it.
+
+---
+
+# Accent Colors
+
+Only two accent colors exist.
+
+Primary Accent
+
+```
+#4F8CFF
+```
+
+Secondary Accent
+
+```
+#65D6FF
+```
+
+These colors are reserved for interactive elements, highlights, active states, and important visual hierarchy.
+
+No additional accent colors should be introduced.
+
+---
+
+# Glass Philosophy
+
+Glass is not decoration.
+
+Glass separates information from the environment while preserving depth.
+
+Every glass surface should appear as though it exists within the environment rather than floating above it.
+
+All glass components must share identical material properties.
+
+---
+
+# Glass Material Specification
+
+Glass Fill
+
+```
+rgba(255,255,255,0.08)
+```
+
+Backdrop Blur
+
+```
+22px
+```
+
+Border
+
+```
+1px solid rgba(255,255,255,0.12)
+```
+
+Inner Highlight
+
+```
+rgba(255,255,255,0.06)
+```
+
+Corner Radius
+
+```
+28px
+```
+
+Large Shadow
+
+```
+0 30px 80px rgba(0,0,0,.30)
+```
+
+No section is allowed to create its own glass style.
+
+One material.
+
+One identity.
+
+---
+
+# Reflection System
+
+Every premium glass surface shares one reflection language.
+
+Direction
+
+45°
+
+Opacity
+
+8%
+
+Animation
+
+Very slow.
+
+Every 8–12 seconds.
+
+The reflection should resemble light moving across physical glass.
+
+It should never resemble a loading animation.
+
+---
+
+# Lighting System
+
+The portfolio uses a simulated studio lighting setup.
+
+Primary Light
+
+Top Left.
+
+Secondary Bounce Light
+
+Bottom Right.
+
+Soft Ambient Light
+
+Center.
+
+No hard light sources.
+
+No colored lighting.
+
+No RGB glow.
+
+Lighting should enhance depth rather than attract attention.
+
+---
+
+# Shadow Philosophy
+
+Shadows define distance.
+
+Not importance.
+
+Larger elevation equals softer and wider shadows.
+
+Never darker shadows.
+
+Shadow values remain consistent across the entire product.
+
+---
+
+# Typography Philosophy
+
+Typography carries the majority of the visual hierarchy.
+
+Large headings should create confidence.
+
+Body text should maximize readability.
+
+Spacing between text blocks is more important than increasing font size.
+
+---
+
+# Typography Scale
+
+Hero Title
+
+72px
+
+Section Title
+
+48px
+
+Card Title
+
+28px
+
+Subtitle
+
+22px
+
+Body
+
+18px
+
+Small Text
+
+15px
+
+Caption
+
+13px
+
+Only three font weights are permitted.
+
+400
+
+600
+
+800
+
+Avoid unnecessary weight variations.
+
+---
+
+# Spacing Philosophy
+
+Spacing creates rhythm.
+
+Random spacing destroys rhythm.
+
+Every measurement must come from one spacing scale.
+
+Approved spacing values
+
+```
+8
+
+16
+
+24
+
+32
+
+48
+
+64
+
+96
+
+128
+```
+
+No custom values unless absolutely required.
+
+---
+
+# Layout Grid
+
+Desktop Grid
+
+12 Columns
+
+Container Width
+
+1280px
+
+Horizontal Margin
+
+80px
+
+Column Gap
+
+24px
+
+The layout should remain aligned across every section.
+
+---
+
+# Border Radius System
+
+Small Components
+
+16px
+
+Cards
+
+28px
+
+Floating Panels
+
+32px
+
+Buttons
+
+16px
+
+Circular Elements
+
+50%
+
+Avoid mixing too many corner styles.
+
+Rounded geometry should remain consistent.
+
+---
+
+# Iconography
+
+Icons should appear physical rather than decorative.
+
+Preferred characteristics.
+
+Simple
+
+Rounded
+
+Minimal
+
+Readable
+
+Consistent stroke width
+
+No cartoon styling.
+
+No gaming style.
+
+No futuristic sci-fi icons.
+
+---
+
+# Buttons
+
+Buttons should feel like premium physical controls.
+
+States
+
+Default
+
+Hover
+
+Pressed
+
+Disabled
+
+Loading
+
+Hover should slightly lift.
+
+Reflection passes gently.
+
+No aggressive scaling.
+
+---
+
+# Cards
+
+Cards represent information containers.
+
+They should appear lightweight.
+
+Never overcrowded.
+
+Every card should have clear hierarchy.
+
+Primary content first.
+
+Supporting information second.
+
+Actions last.
+
+---
+
+# White Space
+
+Empty space is considered a design element.
+
+Never attempt to fill every area.
+
+Silence creates focus.
+
+The interface should breathe.
+
+---
+
+# Visual Consistency Rules
+
+Every section must reuse.
+
+The same glass.
+
+The same typography.
+
+The same shadows.
+
+The same spacing.
+
+The same lighting.
+
+The same animation language.
+
+Users should feel one continuous product.
+
+Never multiple design styles.
+
+---
+
+# Final Principle
+
+The visitor should never consciously notice the Design System.
+
+They should simply describe the portfolio using words like.
+
+Professional.
+
+Elegant.
+
+Premium.
+
+Smooth.
+
+Clean.
+
+Thoughtful.
+
+When the system becomes invisible, it has succeeded.
+
+END OF FILE
+
+Next File
+
+03_Motion_Bible.txt

@@ -1,0 +1,324 @@
+===========================================================
+PORTFOLIO EXPERIENCE BIBLE
+File: 04_Hero.txt
+Version: 1.0
+Status: LOCKED
+===========================================================
+CHAPTER 04 — HERO
+Purpose
+
+The Hero is not an introduction.
+
+It is the opening scene of the entire experience.
+
+Within the first five seconds the visitor should immediately understand that this portfolio is fundamentally different from a traditional developer website.
+
+The Hero is responsible for creating curiosity.
+
+It should never attempt to explain everything.
+
+Its job is to make the visitor continue scrolling.
+
+User Psychology
+
+When the Hero appears, the visitor should subconsciously experience the following sequence.
+
+Curiosity
+
+↓
+
+Visual Surprise
+
+↓
+
+Exploration
+
+↓
+
+Scroll
+
+↓
+
+Engagement
+
+The Hero succeeds only if the visitor naturally wants to discover what comes next.
+
+Story Role
+
+The Hero introduces the person.
+
+It does not introduce the projects.
+
+It does not introduce services.
+
+It introduces the creator behind everything.
+
+The character becomes the visual representation of the developer.
+
+The visitor begins connecting with a person instead of a résumé.
+
+Layout Philosophy
+
+The Hero occupies the entire screen.
+
+Nothing should compete with the character.
+
+The composition follows one dominant focal point.
+
+Background
+
+↓
+
+Character
+
+↓
+
+Headline
+
+↓
+
+Supporting Text
+
+↓
+
+Primary CTA
+
+Every additional element reduces focus.
+
+Only essential information belongs here.
+
+Character
+
+The character is the heart of the Hero.
+
+It is not decoration.
+
+It is the identity of the portfolio.
+
+The character should appear calm, confident, and approachable.
+
+The character never behaves like a game character.
+
+No exaggerated expressions.
+
+No unnecessary movements.
+
+No cartoon-like actions.
+
+Every motion should feel deliberate.
+
+Character Animation
+
+The animation is created from image frames rather than a real-time 3D engine.
+
+This ensures visual consistency while maintaining high performance.
+
+The visitor should never realize the sequence is frame-based.
+
+The animation should feel like a premium cinematic render.
+
+Scroll Behavior
+
+The Hero uses scroll as its timeline.
+
+Scrolling should control the progression naturally.
+
+The visitor should never feel that scrolling has been hijacked.
+
+The Hero remains pinned while the animation completes.
+
+Once the sequence finishes, the page transitions seamlessly into the About section.
+
+Background
+
+The Hero background establishes the visual identity of the entire portfolio.
+
+It uses the global gradient defined in the Design System.
+
+The background should contain subtle environmental lighting.
+
+Never use distracting objects.
+
+Never place decorative graphics behind the character.
+
+Negative space is intentional.
+
+Typography
+
+Typography must remain secondary to the character.
+
+The heading should communicate confidence without occupying excessive space.
+
+Large.
+
+Simple.
+
+Readable.
+
+Timeless.
+
+The supporting text explains the creator's philosophy in one concise statement.
+
+Avoid paragraphs.
+
+Primary Heading
+
+The heading follows this hierarchy.
+
+Small introductory phrase.
+
+↓
+
+Primary name.
+
+↓
+
+Optional highlighted keyword.
+
+The visitor's eye should naturally stop on the developer's name.
+
+Background Typography
+
+Very large low-opacity typography may exist behind the character.
+
+Its purpose is environmental depth.
+
+It should never compete with foreground content.
+
+Opacity should remain extremely low.
+
+The user should notice it only after a few seconds.
+
+Call To Action
+
+Only essential actions belong inside the Hero.
+
+Recommended actions.
+
+Resume
+
+Contact
+
+Projects
+
+No more than two primary actions.
+
+Too many buttons weaken focus.
+
+Glass Components
+
+Buttons follow the global glass specification.
+
+The Hero should not introduce a unique component style.
+
+Consistency is more valuable than experimentation.
+
+Camera Language
+
+Although the animation is frame-based, it should simulate professional cinematography.
+
+The camera should feel stable.
+
+No rapid movements.
+
+No dramatic zooms.
+
+The experience should resemble a premium product advertisement.
+
+Lighting
+
+Studio lighting remains soft.
+
+Primary light originates from the upper left.
+
+Secondary bounce light fills darker areas.
+
+Reflections should enhance facial definition without becoming dramatic.
+
+Ambient Motion
+
+Environmental movement remains subtle.
+
+Allowed examples.
+
+• Slow gradient drift.
+
+• Tiny floating dust particles.
+
+• Glass reflections.
+
+• Gentle atmospheric light.
+
+Everything moves slowly enough that visitors feel the environment rather than consciously observing animation.
+
+Scroll Indicator
+
+A minimal scroll indicator may appear near the bottom of the Hero.
+
+It should disappear naturally after scrolling begins.
+
+Never blink.
+
+Never bounce aggressively.
+
+Transition Into About
+
+This is one of the most important transitions in the portfolio.
+
+The Hero must never abruptly end.
+
+Instead, it transforms into the About section.
+
+The character gradually moves toward its final resting position.
+
+The environment remains visually connected.
+
+The visitor should perceive one continuous scene instead of two independent sections.
+
+This transition is considered one of the portfolio's signature moments.
+
+Performance Rules
+
+The Hero is allowed to consume more resources than ordinary sections because it represents the strongest first impression.
+
+However, interaction must remain smooth.
+
+Target frame rate:
+
+Desktop: 60 FPS
+
+Minimum acceptable: 50 FPS
+
+If performance drops, visual complexity should be reduced before responsiveness.
+
+Accessibility
+
+If reduced motion is enabled.
+
+Replace scroll-scrub animation with a static hero.
+
+Keep typography.
+
+Keep layout.
+
+Keep hierarchy.
+
+Remove cinematic transitions.
+
+The portfolio must remain equally understandable without animation.
+
+Success Criteria
+
+The Hero succeeds when visitors immediately think:
+
+"This doesn't feel like a normal portfolio."
+
+and then continue scrolling without hesitation.
+
+If the Hero creates curiosity without overwhelming the visitor, it has achieved its purpose.
+
+END OF FILE
+
+Next File
+
+05_About.txt

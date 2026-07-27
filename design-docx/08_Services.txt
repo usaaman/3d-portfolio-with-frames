@@ -1,0 +1,456 @@
+===========================================================
+PORTFOLIO EXPERIENCE BIBLE
+File: 08_Services.txt
+Version: 1.0
+Status: LOCKED
+===========================================================
+
+# CHAPTER 08 — SERVICES
+
+---
+
+# Purpose
+
+The Services section is not a pricing page.
+
+It is not a freelance advertisement.
+
+It is the moment where the portfolio shifts from showing previous work to discussing future possibilities.
+
+Everything before this section answers:
+
+> **"What have I done?"**
+
+This section answers:
+
+> **"What can I build for you?"**
+
+The visitor should stop looking backward and start imagining working together.
+
+---
+
+# Story Role
+
+Within the overall portfolio narrative:
+
+```text
+Identity
+
+↓
+
+Thinking
+
+↓
+
+Skills
+
+↓
+
+Projects
+
+↓
+
+Future Collaboration
+```
+
+The Services section creates this shift.
+
+Without it, the story ends at the Projects section.
+
+With it, the visitor begins imagining possibilities.
+
+---
+
+# Emotional Goal
+
+The visitor should experience:
+
+```text
+Trust
+
+↓
+
+Possibility
+
+↓
+
+Confidence
+
+↓
+
+Curiosity
+
+↓
+
+Conversation
+```
+
+The goal is to transform admiration into interest.
+
+---
+
+# Design Philosophy
+
+Most portfolios display services as large pricing cards.
+
+This portfolio does not sell services.
+
+It demonstrates capability.
+
+Every service should represent a type of problem the developer enjoys solving.
+
+The visitor should think:
+
+> "This person understands complete digital products."
+
+Not:
+
+> "This person is trying to sell me something."
+
+---
+
+# Layout
+
+The section remains clean and spacious.
+
+Structure:
+
+```text
+Section Heading
+
+↓
+
+Short Introduction
+
+↓
+
+Service Cards
+
+↓
+
+Closing Statement
+```
+
+The cards become the primary focus.
+
+---
+
+# Number Of Services
+
+Recommended:
+
+Four to Six services.
+
+Never more than six.
+
+Every service should feel important.
+
+Quality over quantity.
+
+---
+
+# Recommended Services
+
+Based on the portfolio vision, the primary services are:
+
+• Full-Stack Web Development
+
+• AI Integration & Intelligent Applications
+
+• UI / UX Engineering
+
+• Frontend Development
+
+• Backend & API Development
+
+• Performance Optimization
+
+The wording may evolve over time, but the overall categories should remain stable.
+
+---
+
+# Card Philosophy
+
+Each service is presented as a premium glass card.
+
+Cards should feel physical.
+
+Lightweight.
+
+Readable.
+
+Elegant.
+
+They are not feature boxes.
+
+They are product capability cards.
+
+---
+
+# Card Layout
+
+Each card contains:
+
+```text
+Icon
+
+↓
+
+Service Title
+
+↓
+
+Short Description
+
+↓
+
+Key Capabilities
+```
+
+Everything remains vertically aligned.
+
+The eye should naturally move downward.
+
+---
+
+# Icons
+
+Icons should represent real disciplines.
+
+Avoid decorative illustrations.
+
+Preferred style:
+
+Minimal.
+
+Rounded.
+
+Professional.
+
+Consistent stroke width.
+
+Realistic enough to feel premium.
+
+---
+
+# Card Size
+
+Every service card shares identical dimensions.
+
+Equal height.
+
+Equal width.
+
+Equal spacing.
+
+Visual rhythm is more important than filling space.
+
+---
+
+# Description
+
+Descriptions remain concise.
+
+One short paragraph.
+
+Focus on outcomes.
+
+Not implementation details.
+
+Example philosophy:
+
+Instead of:
+
+"I use React, Node.js and Firebase."
+
+Prefer:
+
+"I build responsive full-stack applications designed for performance, scalability and user experience."
+
+The visitor cares about value before technology.
+
+---
+
+# Key Capabilities
+
+Each card may contain three or four short capability bullets.
+
+Example:
+
+• Responsive Applications
+
+• Secure Architecture
+
+• Scalable Solutions
+
+• Modern User Experience
+
+Keep each point short.
+
+Never use long paragraphs.
+
+---
+
+# Motion
+
+Cards reveal sequentially.
+
+Top row first.
+
+Bottom row second.
+
+Animation remains subtle.
+
+Allowed:
+
+Fade
+
+Slide
+
+Soft elevation
+
+Glass reflection
+
+Avoid:
+
+Rotation
+
+Bounce
+
+Large scaling
+
+Elastic movement
+
+---
+
+# Hover Behaviour
+
+Hover should confirm interactivity.
+
+Effects:
+
+• Slight elevation
+
+• Reflection movement
+
+• Tiny shadow increase
+
+• Border brightness enhancement
+
+Nothing dramatic.
+
+Cards should still feel solid and physical.
+
+---
+
+# Glass Material
+
+Services use the same material language defined globally.
+
+Never invent:
+
+New blur.
+
+New borders.
+
+New shadows.
+
+Consistency reinforces craftsmanship.
+
+---
+
+# Background
+
+The background remains continuous.
+
+The environment does not change.
+
+No dramatic graphics.
+
+No decorative illustrations.
+
+Negative space is intentional.
+
+---
+
+# Typography
+
+Title:
+
+Large and confident.
+
+Description:
+
+Comfortable reading width.
+
+Service titles:
+
+Short.
+
+Clear.
+
+Professional.
+
+---
+
+# White Space
+
+Generous spacing separates services.
+
+The section should feel premium.
+
+Not crowded.
+
+Visitors should comfortably scan every capability.
+
+---
+
+# Accessibility
+
+Cards remain fully readable without blur.
+
+Keyboard navigation supports every interactive element.
+
+Reduced motion replaces reveals with simple fades.
+
+Content hierarchy remains identical.
+
+---
+
+# Transition Into Experience
+
+Services answer:
+
+> "What can I build?"
+
+The Experience section answers:
+
+> "How did I get here?"
+
+As the visitor leaves Services, the interface becomes slightly calmer.
+
+The emphasis shifts away from capabilities and toward personal growth.
+
+The transition should feel reflective rather than promotional.
+
+---
+
+# Success Criteria
+
+The Services section succeeds when visitors naturally imagine themselves collaborating with the developer.
+
+Instead of thinking:
+
+> "These are services."
+
+They should think:
+
+> "This is exactly the type of person I would trust with my product."
+
+Every card should reinforce competence, professionalism, and product thinking.
+
+END OF FILE
+
+Next File
+
+09_Experience.txt

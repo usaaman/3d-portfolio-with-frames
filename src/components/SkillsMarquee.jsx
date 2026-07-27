@@ -16,8 +16,6 @@ const SLOW_SPEED = 0.20; // px per frame when hovering the section
 const EASE = 0.06; // speed easing toward target (smooth accel/decel)
 
 const CURVE_RADIUS = 300; // range of scaling effect relative to center
-const MAX_SCALE_BOOST = 0.18; // center item gets up to +18% scale
-const MAX_LIFT = 3; // px, center item lifts up slightly
 
 export default function SkillsMarquee() {
   const sectionRef = useRef(null);
@@ -28,6 +26,19 @@ export default function SkillsMarquee() {
   const currentSpeedRef = useRef(NORMAL_SPEED);
   const hoverRef = useRef(false);
   const rafRef = useRef(null);
+
+  const mouseRef = useRef({ x: -1000, y: -1000, active: false });
+  const animStatesRef = useRef(
+    SKILL_ROWS.map(() =>
+      Array.from({ length: 30 }, () => ({
+        scale: 1,
+        lift: 0,
+        tiltX: 0,
+        tiltY: 0,
+        influence: 0,
+      }))
+    )
+  );
 
   useEffect(() => {
     const tick = () => {
@@ -51,21 +62,75 @@ export default function SkillsMarquee() {
         const track = trackRefs.current[rowIndex];
         if (track) track.style.transform = `translate3d(${m}px,0,0)`;
 
+        const rowEl = rowRefs.current[rowIndex];
+        let rowCenterY = 0;
+        let rowLeft = 0;
+        if (rowEl) {
+          const rect = rowEl.getBoundingClientRect();
+          rowCenterY = rect.top + rect.height / 2;
+          rowLeft = rect.left;
+        }
+
         // per-item curve/scale effect based on live position relative to
-        // the row's horizontal center
+        // the row's horizontal center + cursor attraction proximity
         const items = itemRefs.current[rowIndex];
         items.forEach((el, i) => {
           if (!el) return;
           const copyIndex = Math.floor(i / 10);
           const subIndex = i % 10;
-          const itemCenter = m + copyIndex * STRIP_STEP + STRIP_PADDING + subIndex * (ITEM_WIDTH + ITEM_GAP) + ITEM_WIDTH / 2;
-          const distance = Math.abs(itemCenter - center);
-          const t = Math.max(0, 1 - distance / CURVE_RADIUS);
-          const eased = t * t * (3 - 2 * t); // smoothstep
-          const scale = 1 + eased * MAX_SCALE_BOOST;
-          const lift = eased * MAX_LIFT;
-          el.style.transform = `translateY(${-lift}px) scale(${scale})`;
-          el.style.zIndex = String(Math.round(eased * 10));
+
+          const relativeX = m + copyIndex * STRIP_STEP + STRIP_PADDING + subIndex * (ITEM_WIDTH + ITEM_GAP) + ITEM_WIDTH / 2;
+          const itemCenterX = rowLeft + relativeX;
+          const itemCenterY = rowCenterY;
+
+          // Scroll center effect calculation
+          const centerDistance = Math.abs(relativeX - center);
+          const centerT = Math.max(0, 1 - centerDistance / CURVE_RADIUS);
+          const centerInfluence = centerT * centerT * (3 - 2 * centerT);
+
+          // Cursor proximity calculation
+          let influence = 0;
+          let dx = 0;
+          let dy = 0;
+          let dist = 0;
+          if (mouseRef.current.active) {
+            dx = mouseRef.current.x - itemCenterX;
+            dy = mouseRef.current.y - itemCenterY;
+            dist = Math.sqrt(dx * dx + dy * dy);
+            const attractionRadius = 220;
+            if (dist < attractionRadius) {
+              const progress = 1 - dist / attractionRadius;
+              influence = progress * progress * (3 - 2 * progress); // smoothstep
+            }
+          }
+
+          // Target values
+          const targetScale = (1.0 + centerInfluence * 0.08) * (1.0 + influence * 0.22);
+          const targetLift = (centerInfluence * 2) + (influence * 12);
+
+          let targetTiltX = 0;
+          let targetTiltY = 0;
+          if (influence > 0 && dist > 0) {
+            targetTiltX = (dy / dist) * 12 * influence;
+            targetTiltY = (dx / dist) * -12 * influence;
+          }
+
+          // LERP dynamics
+          if (!animStatesRef.current[rowIndex][i]) {
+            animStatesRef.current[rowIndex][i] = { scale: 1, lift: 0, tiltX: 0, tiltY: 0, influence: 0 };
+          }
+          const animState = animStatesRef.current[rowIndex][i];
+          animState.scale += (targetScale - animState.scale) * 0.12;
+          animState.lift += (targetLift - animState.lift) * 0.12;
+          animState.tiltX += (targetTiltX - animState.tiltX) * 0.12;
+          animState.tiltY += (targetTiltY - animState.tiltY) * 0.12;
+          animState.influence += (influence - animState.influence) * 0.12;
+
+          // Apply styles
+          el.style.transform = `translate3d(0, ${-animState.lift}px, 0) scale(${animState.scale}) rotateX(${animState.tiltX}deg) rotateY(${animState.tiltY}deg)`;
+          el.style.borderColor = `rgba(37, 99, 235, ${0.05 + animState.influence * 0.4})`;
+          el.style.boxShadow = `0 ${3 + animState.influence * 8}px ${12 + animState.influence * 16}px rgba(37, 99, 235, ${0.02 + animState.influence * 0.12})`;
+          el.style.zIndex = String(Math.round(10 + animState.influence * 20));
         });
       });
 
@@ -93,8 +158,21 @@ export default function SkillsMarquee() {
 
       <div
         className="marquee-rows"
-        onMouseEnter={() => { hoverRef.current = true; }}
-        onMouseLeave={() => { hoverRef.current = false; }}
+        onMouseEnter={() => {
+          hoverRef.current = true;
+          mouseRef.current.active = true;
+        }}
+        onMouseMove={(e) => {
+          mouseRef.current.x = e.clientX;
+          mouseRef.current.y = e.clientY;
+          mouseRef.current.active = true;
+        }}
+        onMouseLeave={() => {
+          hoverRef.current = false;
+          mouseRef.current.active = false;
+          mouseRef.current.x = -1000;
+          mouseRef.current.y = -1000;
+        }}
       >
         {SKILL_ROWS.map((row, rowIndex) => (
           <div className="marquee-row" key={rowIndex} ref={(el) => (rowRefs.current[rowIndex] = el)}>

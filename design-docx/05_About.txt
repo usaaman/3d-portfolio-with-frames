@@ -1,0 +1,444 @@
+===========================================================
+PORTFOLIO EXPERIENCE BIBLE
+File: 05_About.txt
+Version: 1.0
+Status: LOCKED
+===========================================================
+CHAPTER 05 — ABOUT
+Purpose
+
+The About section is not a biography.
+
+It is the moment where curiosity becomes trust.
+
+The Hero successfully captures attention.
+
+The About section must justify that attention.
+
+Visitors should leave this section understanding not only who the developer is, but also how they think.
+
+The objective is to communicate mindset before experience.
+
+Story Role
+
+Within the portfolio narrative, this section answers one question.
+
+Why should I trust this person?
+
+The answer should not rely on years of experience or impressive claims.
+
+Instead, trust should emerge from clarity, honesty, craftsmanship, and attention to detail.
+
+The visitor should feel they are meeting the creator behind the product.
+
+Emotional Goal
+
+The visitor should experience the following progression.
+
+Curiosity
+
+↓
+
+Understanding
+
+↓
+
+Connection
+
+↓
+
+Trust
+
+↓
+
+Continue Scrolling
+
+This section should feel calm.
+
+The pace intentionally slows after the cinematic Hero.
+
+The portfolio gives the visitor a moment to breathe before introducing technical capabilities.
+
+Transition From Hero
+
+The transition between Hero and About is one continuous scene.
+
+The Hero should not disappear.
+
+It should evolve.
+
+The frame-based character completes its cinematic movement and naturally settles into the About section.
+
+The visitor should never perceive a page break.
+
+Instead, they should feel that the camera has simply arrived at the next scene.
+
+This continuity is one of the portfolio's defining characteristics.
+
+Character Placement
+
+The character remains visible throughout the About section.
+
+However, the character no longer dominates the composition.
+
+Its role changes.
+
+In the Hero, the character introduces itself.
+
+In About, the character becomes a visual companion while the visitor reads.
+
+The character remains calm.
+
+No additional animations beyond subtle breathing and environmental movement.
+
+Layout Philosophy
+
+The About section follows a balanced two-column composition.
+
+Left
+
+↓
+
+Personal Story
+Section Heading
+Description
+Primary Information
+
+|
+
+Right
+
+↓
+
+Character
+At a Glance Card
+Statistics
+Quick Information
+
+The layout should feel stable.
+
+Nothing should overlap unnecessarily.
+
+The visitor's eye should move naturally from left to right.
+
+Content Philosophy
+
+The About section is not a résumé.
+
+Avoid chronological storytelling.
+
+Instead, communicate identity.
+
+The writing should answer questions like:
+
+What motivates this developer?
+How do they approach problems?
+What makes their work different?
+What kind of products do they enjoy building?
+Why do they care about user experience?
+
+The writing should sound human.
+
+Never exaggerated.
+
+Never corporate.
+
+Writing Tone
+
+The tone should be:
+
+Confident.
+
+Honest.
+
+Professional.
+
+Curious.
+
+Thoughtful.
+
+Avoid:
+
+Buzzwords.
+
+Corporate jargon.
+
+Self-praise.
+
+Marketing language.
+
+Generic AI-generated phrases.
+
+The visitor should feel that the text could only belong to this individual.
+
+Heading
+
+The section heading should be short.
+
+Simple.
+
+Confident.
+
+Examples of acceptable structure:
+
+About
+
+About Me
+
+Who I Am
+
+Avoid long marketing-style headings.
+
+Description
+
+The primary description should explain the developer's philosophy rather than listing achievements.
+
+Preferred themes include:
+
+Building products.
+
+Solving real problems.
+
+Attention to detail.
+
+Creating memorable experiences.
+
+Engineering with purpose.
+
+Design thinking.
+
+Artificial Intelligence.
+
+Continuous learning.
+
+At A Glance Card
+
+The At A Glance card summarizes key information.
+
+It should never replace the written story.
+
+Instead, it supports it.
+
+The card exists because recruiters often scan before reading.
+
+This component allows both behaviors.
+
+Card Philosophy
+
+The card should resemble a premium dashboard panel.
+
+Compact.
+
+Organized.
+
+Easy to scan.
+
+Every item receives equal spacing.
+
+No visual clutter.
+
+Internal Layout
+
+The At A Glance card occupies a fixed visual height.
+
+Approximately 255px.
+
+Inside this card are four vertically stacked information cards.
+
+Each mini-card contains:
+
+Icon
+
+↓
+
+Label
+
+↓
+
+Value
+
+All four mini-cards share identical height and spacing.
+
+No card should appear visually heavier than another.
+
+Information Categories
+
+Recommended information includes:
+
+Location
+
+Education
+
+Current Focus
+
+Availability
+
+These may evolve over time without changing the layout.
+
+Mini Card Design
+
+Every mini-card follows the global glass material.
+
+Padding remains consistent.
+
+Icons align perfectly.
+
+Text alignment never changes.
+
+Hover interaction remains subtle.
+
+Small brightness increase.
+
+Tiny shadow enhancement.
+
+No scaling.
+
+Statistics
+
+If numerical statistics are displayed, they should represent meaningful information.
+
+Examples:
+
+Projects Built
+
+Technologies
+
+Years Learning
+
+Certifications
+
+Avoid vanity metrics.
+
+Quality is more important than quantity.
+
+Visual Hierarchy
+
+Information order should always be:
+
+Heading
+
+↓
+
+Description
+
+↓
+
+At A Glance
+
+↓
+
+Statistics
+
+↓
+
+Secondary Details
+
+The user should understand the story before reading facts.
+
+Motion
+
+The About section intentionally uses restrained animation.
+
+Allowed:
+
+Soft fade-ins.
+
+Slide transitions.
+
+Glass reflections.
+
+Tiny floating movement.
+
+Character breathing.
+
+Background gradient drift.
+
+Avoid:
+
+Large scene transitions.
+
+Explosions.
+
+Particle systems.
+
+Fast animations.
+
+The Hero already provided the cinematic impact.
+
+The About section builds trust through stability.
+
+Background
+
+The global background continues seamlessly.
+
+No new colors.
+
+No different lighting.
+
+No visual reset.
+
+The visitor should feel they remain inside the same world.
+
+Glass Material
+
+All cards follow the Design System.
+
+Never introduce:
+
+Different blur values.
+
+Different corner radius.
+
+Different border opacity.
+
+Different shadows.
+
+Consistency creates premium quality.
+
+Responsive Behaviour
+
+Desktop:
+
+Two-column layout.
+
+Tablet:
+
+Columns become slightly narrower while preserving balance.
+
+Mobile:
+
+Character moves above the content.
+
+Cards become full width.
+
+Reading experience always takes priority.
+
+Accessibility
+
+All text must maintain strong contrast.
+
+Cards must remain readable even when blur is unavailable.
+
+Keyboard navigation must include every interactive element.
+
+Reduced motion removes only decorative animation.
+
+Hierarchy remains identical.
+
+Success Criteria
+
+The About section succeeds when visitors think:
+
+"This developer clearly cares about quality."
+
+before they have even reached the Skills section.
+
+Trust should be established through experience rather than claims.
+
+If visitors naturally continue scrolling because they want to see proof of these ideas, the About section has fulfilled its purpose.
+
+END OF FILE
+
+Next File
+
+06_Skills.txt

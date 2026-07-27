@@ -1,6 +1,5 @@
 import Header from './components/Header';
 import HeroAboutScroll from './components/HeroAboutScroll';
-import SkillsMarquee from './components/SkillsMarquee';
 import './App.css';
 
 export default function App() {
@@ -9,7 +8,6 @@ export default function App() {
       <Header />
       <main>
         <HeroAboutScroll />
-        <SkillsMarquee />
       </main>
     </>
   );

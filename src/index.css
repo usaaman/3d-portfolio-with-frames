@@ -1,4 +1,11 @@
+@import "tailwindcss";
+@import "./styles/tokens.css";
+
 :root {
+  /* ==========================================
+     LEGACY DESIGN TOKENS
+     Must remain unchanged to keep existing UI fully functional without visual changes.
+     ========================================== */
   --bg: #06050a;
   --bg-elevated: #0c0a16;
   --purple-900: #1e1147;
@@ -22,6 +29,79 @@
   --font-mono: 'JetBrains Mono', monospace;
 
   color-scheme: dark;
+}
+
+@theme {
+  /* Colors */
+  --color-ds-bg-primary: var(--ds-color-bg-primary);
+  --color-ds-bg-secondary: var(--ds-color-bg-secondary);
+  --color-ds-bg-gradient-start: var(--ds-color-bg-gradient-start);
+  --color-ds-bg-gradient-mid: var(--ds-color-bg-gradient-mid);
+  --color-ds-bg-gradient-end: var(--ds-color-bg-gradient-end);
+  
+  --color-ds-accent-primary: var(--ds-color-accent-primary);
+  --color-ds-accent-secondary: var(--ds-color-accent-secondary);
+  --color-ds-text-primary: var(--ds-color-text-primary);
+  --color-ds-text-secondary: var(--ds-color-text-secondary);
+  --color-ds-text-muted: var(--ds-color-text-muted);
+
+  /* Fonts & Weights */
+  --font-ds-display: var(--ds-font-display);
+  --font-ds-body: var(--ds-font-body);
+  --font-ds-mono: var(--ds-font-mono);
+
+  --font-weight-ds-regular: var(--ds-font-weight-regular);
+  --font-weight-ds-medium: var(--ds-font-weight-medium);
+  --font-weight-ds-bold: var(--ds-font-weight-bold);
+
+  /* Spacing Scale */
+  --spacing-ds-8: var(--ds-space-8);
+  --spacing-ds-16: var(--ds-space-16);
+  --spacing-ds-24: var(--ds-space-24);
+  --spacing-ds-32: var(--ds-space-32);
+  --spacing-ds-48: var(--ds-space-48);
+  --spacing-ds-64: var(--ds-space-64);
+  --spacing-ds-96: var(--ds-space-96);
+  --spacing-ds-128: var(--ds-space-128);
+
+  /* Typography Scale */
+  --font-size-ds-hero: var(--ds-font-size-hero);
+  --font-size-ds-section: var(--ds-font-size-section);
+  --font-size-ds-card: var(--ds-font-size-card);
+  --font-size-ds-subtitle: var(--ds-font-size-subtitle);
+  --font-size-ds-body: var(--ds-font-size-body);
+  --font-size-ds-small: var(--ds-font-size-small);
+  --font-size-ds-caption: var(--ds-font-size-caption);
+
+  /* Letter Spacing */
+  --letter-spacing-ds-tight: var(--ds-letter-spacing-tight);
+  --letter-spacing-ds-normal: var(--ds-letter-spacing-normal);
+  --letter-spacing-ds-wide: var(--ds-letter-spacing-wide);
+
+  /* Line Heights */
+  --line-height-ds-display: var(--ds-line-height-display);
+  --line-height-ds-heading: var(--ds-line-height-heading);
+  --line-height-ds-body: var(--ds-line-height-body);
+  --line-height-ds-tight: var(--ds-line-height-tight);
+
+  /* Border Radii */
+  --radius-ds-small: var(--ds-radius-small);
+  --radius-ds-button: var(--ds-radius-button);
+  --radius-ds-medium: var(--ds-radius-medium);
+  --radius-ds-card: var(--ds-radius-card);
+  --radius-ds-large: var(--ds-radius-large);
+  --radius-ds-panel: var(--ds-radius-panel);
+  --radius-ds-circular: var(--radius-ds-circular);
+
+  /* Elevation Blurs & Shadows */
+  --shadow-ds-small: var(--ds-shadow-small);
+  --shadow-ds-medium: var(--ds-shadow-medium);
+  --shadow-ds-large: var(--ds-shadow-large);
+
+  /* Transitions & Easings */
+  --ease-ds-out-natural: var(--ds-ease-out-natural);
+  --ease-ds-in-out-natural: var(--ds-ease-in-out-natural);
+  --ease-ds-soft-spring: var(--ds-ease-soft-spring);
 }
 
 * {
@@ -55,7 +135,7 @@ button {
   min-height: 100%;
 }
 
-/* shared glass surface utility */
+/* Legacy Glass Material Class (DO NOT change existing layout appearance) */
 .glass {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
@@ -72,6 +152,46 @@ button {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--cyan-300);
+}
+
+/* ==========================================
+   NEW DESIGN SYSTEM COMPONENT UTILITIES
+   ========================================== */
+
+/* Glass Material Utility (Design Docs Specification) */
+.ds-glass {
+  background: var(--ds-glass-bg);
+  border: 1px solid var(--ds-glass-border);
+  backdrop-filter: blur(var(--ds-glass-blur)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--ds-glass-blur)) saturate(120%);
+  box-shadow:
+    inset 0 1px 0 var(--ds-glass-highlight),
+    var(--ds-shadow-large);
+  border-radius: var(--ds-radius-card);
+}
+
+/* Container Layout System (1280px Grid, 80px Margins on Desktop) */
+.ds-container {
+  width: 100%;
+  max-width: var(--ds-container-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--ds-space-24);
+  padding-right: var(--ds-space-24);
+}
+
+@media (min-width: 768px) {
+  .ds-container {
+    padding-left: var(--ds-space-48);
+    padding-right: var(--ds-space-48);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ds-container {
+    padding-left: var(--ds-container-margin);
+    padding-right: var(--ds-container-margin);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

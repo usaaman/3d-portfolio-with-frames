@@ -1,0 +1,618 @@
+===========================================================
+PORTFOLIO EXPERIENCE BIBLE
+File: 14_Component_System.txt
+Version: 1.0
+Status: LOCKED
+===========================================================
+
+# CHAPTER 14 — COMPONENT SYSTEM
+
+---
+
+# Purpose
+
+A premium portfolio is not created by beautiful sections.
+
+It is created by consistent components.
+
+Every button.
+
+Every card.
+
+Every icon.
+
+Every input.
+
+Every glass panel.
+
+Every spacing value.
+
+Every animation.
+
+Must feel like they belong to the same product.
+
+The visitor should never feel that one component came from a different design.
+
+---
+
+# Core Philosophy
+
+Every component follows one principle:
+
+> **Design once. Reuse everywhere.**
+
+No section should invent its own buttons.
+
+No page should invent new card styles.
+
+Consistency creates professionalism.
+
+---
+
+# Component Categories
+
+The portfolio consists of six primary component families.
+
+```text
+Buttons
+
+↓
+
+Cards
+
+↓
+
+Glass Panels
+
+↓
+
+Inputs
+
+↓
+
+Badges
+
+↓
+
+Navigation
+```
+
+Every UI element belongs to one of these families.
+
+---
+
+# Design Language
+
+Every component should communicate:
+
+Premium.
+
+Minimal.
+
+Physical.
+
+Elegant.
+
+Timeless.
+
+Avoid trendy effects that quickly become outdated.
+
+---
+
+# Border Radius
+
+Border radius should remain consistent.
+
+Recommended hierarchy:
+
+```text
+Small Components
+
+12px
+
+------------
+
+Medium Components
+
+18px
+
+------------
+
+Large Panels
+
+24px
+
+------------
+
+Hero Glass
+
+28–32px
+```
+
+Never mix random radius values.
+
+Rounded corners should create rhythm.
+
+---
+
+# Glass Material
+
+Every glass component follows identical material rules.
+
+Properties:
+
+Soft blur.
+
+Low opacity.
+
+Thin white border.
+
+Subtle internal highlight.
+
+Soft external shadow.
+
+Very low noise texture (optional).
+
+No heavy glow.
+
+No RGB edges.
+
+The glass should resemble real architectural glass.
+
+---
+
+# Border System
+
+Borders remain subtle.
+
+Opacity should stay between:
+
+10%–18%.
+
+Borders exist to define shape.
+
+Not to draw attention.
+
+---
+
+# Shadows
+
+Shadows create depth.
+
+Not drama.
+
+Recommended:
+
+Large Blur.
+
+Low Opacity.
+
+Wide Spread.
+
+Soft Edge.
+
+Avoid:
+
+Hard shadows.
+
+Dark outlines.
+
+Floating card effects.
+
+---
+
+# Buttons
+
+Buttons communicate action.
+
+Nothing else.
+
+Every button belongs to one of three categories.
+
+Primary.
+
+Secondary.
+
+Ghost.
+
+---
+
+# Primary Button
+
+Purpose:
+
+Main action.
+
+Examples:
+
+Download Resume.
+
+Contact Me.
+
+Live Demo.
+
+Characteristics:
+
+Filled glass.
+
+Highest visual priority.
+
+Soft reflection.
+
+Comfortable padding.
+
+---
+
+# Secondary Button
+
+Purpose:
+
+Supporting actions.
+
+Examples:
+
+GitHub.
+
+Case Study.
+
+Documentation.
+
+Less visual weight than primary buttons.
+
+---
+
+# Ghost Button
+
+Purpose:
+
+Minimal actions.
+
+Examples:
+
+Learn More.
+
+Back.
+
+View Details.
+
+Almost transparent.
+
+Border only.
+
+---
+
+# Button Behaviour
+
+Hover:
+
+Tiny elevation.
+
+Reflection movement.
+
+Border brightness.
+
+Click:
+
+Slight downward movement.
+
+Shadow compression.
+
+Release:
+
+Smooth recovery.
+
+Buttons should feel tactile.
+
+---
+
+# Cards
+
+Cards display information.
+
+Not decoration.
+
+Every card shares:
+
+Same glass.
+
+Same radius.
+
+Same padding.
+
+Same shadow.
+
+No exceptions.
+
+---
+
+# Card Padding
+
+Internal spacing hierarchy:
+
+```text
+Small Card
+
+20px
+
+------------
+
+Medium Card
+
+24px
+
+------------
+
+Large Card
+
+32px
+```
+
+Content should never touch edges.
+
+---
+
+# Card Hover
+
+Allowed:
+
+Brightness.
+
+Reflection.
+
+Elevation.
+
+Tiny scale (maximum 1.02).
+
+Avoid:
+
+Rotation.
+
+Large scaling.
+
+Bounce.
+
+Cards should feel heavy.
+
+---
+
+# Inputs
+
+Inputs should resemble polished glass surfaces.
+
+Properties:
+
+Rounded corners.
+
+Soft blur.
+
+Thin border.
+
+Comfortable height.
+
+Readable typography.
+
+Focus state:
+
+Border brightens.
+
+Reflection shifts.
+
+Shadow increases slightly.
+
+---
+
+# Input Validation
+
+Error messages remain calm.
+
+No red flashing.
+
+No shaking animations.
+
+Use color thoughtfully.
+
+Accessibility first.
+
+---
+
+# Badges
+
+Badges communicate categories.
+
+Examples:
+
+React
+
+TypeScript
+
+AI
+
+Firebase
+
+Node.js
+
+Badges should remain compact.
+
+Never dominate the layout.
+
+---
+
+# Badge Style
+
+Glass chip.
+
+Rounded.
+
+Small.
+
+Readable.
+
+Consistent spacing.
+
+The visitor should scan technologies effortlessly.
+
+---
+
+# Icons
+
+Only official brand icons where appropriate.
+
+Custom icons should use one unified style.
+
+Preferred:
+
+Rounded.
+
+Simple.
+
+Professional.
+
+Avoid mixing outline and filled icon families.
+
+---
+
+# Navigation
+
+Navigation remains lightweight.
+
+It should always stay secondary to content.
+
+The visitor came to see work,
+
+not menus.
+
+---
+
+# Scroll Indicator
+
+The scroll indicator follows the same design language.
+
+Minimal.
+
+Glass.
+
+Animated subtly.
+
+Never flashy.
+
+---
+
+# Dividers
+
+Avoid visible lines whenever possible.
+
+Use spacing instead.
+
+If separators are necessary,
+
+use very low-opacity gradients.
+
+---
+
+# Tooltips
+
+Tooltips appear instantly.
+
+Simple.
+
+Readable.
+
+Glass background.
+
+No large animations.
+
+Purpose:
+
+Clarify.
+
+Not decorate.
+
+---
+
+# Loading States
+
+Loading should feel elegant.
+
+Preferred:
+
+Soft shimmer.
+
+Glass pulse.
+
+Skeleton placeholders.
+
+Avoid:
+
+Spinners.
+
+Progress bars.
+
+Flashing loaders.
+
+---
+
+# Empty States
+
+Whenever content is unavailable,
+
+the interface should remain intentional.
+
+Never display:
+
+"No Data."
+
+Instead,
+
+communicate clearly and politely.
+
+---
+
+# Responsive Behaviour
+
+Every component scales proportionally.
+
+Desktop.
+
+Tablet.
+
+Mobile.
+
+Nothing should require redesign.
+
+Only resizing and rearrangement.
+
+---
+
+# Accessibility
+
+Every interactive component supports:
+
+Keyboard navigation.
+
+Visible focus.
+
+Screen readers.
+
+Touch accessibility.
+
+Reduced motion.
+
+Premium experiences should be accessible experiences.
+
+---
+
+# Success Criteria
+
+The Component System succeeds when visitors never consciously notice it.
+
+Instead, they simply feel that:
+
+> "Everything belongs together."
+
+That feeling of consistency is one of the strongest indicators of world-class product design.
+
+END OF FILE
+
+Next File
+
+15_Implementation_Rules.txt

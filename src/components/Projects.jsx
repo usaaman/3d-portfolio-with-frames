@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { ExternalLink } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { ExternalLink, Image as ImageIcon } from 'lucide-react';
 import { PROJECTS_DATA } from './projectsData';
 import SectionHeading from './SectionHeading';
 import SectionLabel from './SectionLabel';
@@ -11,31 +11,33 @@ const GithubIcon = (props) => (
   </svg>
 );
 
-function ProjectCard({ project }) {
-  const [activeImage, setActiveImage] = useState(project.featuredImage);
+function ProjectCard({ project, cardRef }) {
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
 
-  const handleThumbnailClick = (imgUrl) => {
-    setActiveImage(imgUrl);
+  const activeImgUrl = project.galleryImages[activeImageIndex] || project.featuredImage;
+
+  const handleThumbnailClick = (index) => {
+    setActiveImageIndex(index);
   };
 
-  const handleKeyDown = (e, imgUrl) => {
+  const handleKeyDown = (e, index) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      setActiveImage(imgUrl);
+      setActiveImageIndex(index);
     }
   };
 
   return (
     <article 
       className="project-card" 
+      ref={cardRef}
       data-project-id={project.id}
       aria-labelledby={`project-title-${project.id}`}
-      /* PLACEHOLDERS FOR PHASE 02: 
-         - Card Stacking attribute (e.g. data-stack-index)
-         - Scroll Reveal class/attribute (e.g. reveal-on-scroll)
+      /* PLACEHOLDERS FOR PHASE 03:
+         - Mouse 3D Tilt properties
+         - Scroll Reveal selectors
       */
     >
-      {/* PLACEHOLDER FOR PHASE 02: 3D Tilt Wrapper Element */}
       <div className="project-card-inner">
         {/* Project Header Info */}
         <div className="project-info">
@@ -84,41 +86,56 @@ function ProjectCard({ project }) {
 
         {/* Project Gallery & Preview Area */}
         <div className="project-gallery-layout">
-          {/* Main Preview Area */}
+          {/* Main Preview Area (Supports empty image gracefully with premium placeholder) */}
           <div className="project-preview-wrapper">
-            <img 
-              src={activeImage} 
-              alt={`Preview of ${project.title}`} 
-              className="project-preview-img"
-              loading="lazy"
-            />
+            {activeImgUrl ? (
+              <img 
+                src={activeImgUrl} 
+                alt={`Preview of ${project.title}`} 
+                className="project-preview-img"
+                loading="lazy"
+              />
+            ) : (
+              <div className="project-preview-placeholder">
+                <ImageIcon className="project-placeholder-icon" size={32} />
+                <span className="project-placeholder-text">Preview will be available</span>
+                <span className="project-placeholder-index">Image {activeImageIndex + 1} of 4</span>
+              </div>
+            )}
           </div>
 
-          {/* Thumbnail sidebar */}
+          {/* Thumbnail sidebar column (Centered on the right side) */}
           <div 
             className="project-thumbnails-column" 
             role="group" 
             aria-label={`Image gallery for ${project.title}`}
           >
             {project.galleryImages.map((imgUrl, index) => {
-              const isActive = activeImage === imgUrl;
+              const isActive = activeImageIndex === index;
               return (
                 <div
                   key={index}
                   role="button"
                   tabIndex={0}
                   className={`project-thumbnail-item ${isActive ? 'active' : ''}`}
-                  onClick={() => handleThumbnailClick(imgUrl)}
-                  onKeyDown={(e) => handleKeyDown(e, imgUrl)}
+                  onClick={() => handleThumbnailClick(index)}
+                  onKeyDown={(e) => handleKeyDown(e, index)}
                   aria-label={`View gallery image ${index + 1} of ${project.title}`}
                   aria-pressed={isActive}
                 >
-                  <img 
-                    src={imgUrl} 
-                    alt={`Thumbnail ${index + 1}`} 
-                    className="project-thumbnail-img"
-                    loading="lazy"
-                  />
+                  {imgUrl ? (
+                    <img 
+                      src={imgUrl} 
+                      alt={`Thumbnail ${index + 1}`} 
+                      className="project-thumbnail-img"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="project-thumbnail-placeholder">
+                      <ImageIcon size={14} className="project-thumb-placeholder-icon" />
+                      <span>0{index + 1}</span>
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -130,28 +147,145 @@ function ProjectCard({ project }) {
 }
 
 export default function Projects() {
-  return (
-    <section className="projects-section" id="projects" aria-label="Portfolio Projects">
-      {/* PLACEHOLDER FOR PHASE 02: Dynamic Background Gradient Transitions Glow Layer */}
-      <div className="projects-bg-glow-layer" aria-hidden="true" />
-      
-      <div className="projects-container">
-        <div className="projects-section-header">
-          <SectionLabel>PORTFOLIO WORK</SectionLabel>
-          <SectionHeading align="center" className="projects-section-title">
-            Featured <span className="projects-title-accent">Projects</span>
-          </SectionHeading>
-          <p className="projects-section-sub">
-            A curated selection of applications bridging technical complexity, modern architecture, and refined design.
-          </p>
-        </div>
+  const scrollWrapperRef = useRef(null);
+  const cardRefs = useRef([]);
+  const [reducedMotion, setReducedMotion] = useState(false);
 
-        <div className="projects-grid">
-          {PROJECTS_DATA.map((project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
+  // 1. Listen for accessibility reduced-motion query
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setReducedMotion(media.matches);
+    const handler = (e) => setReducedMotion(e.matches);
+    media.addEventListener('change', handler);
+    return () => media.removeEventListener('change', handler);
+  }, []);
+
+  // 2. High-Performance Scroll Transition Easing using requestAnimationFrame (Part B)
+  useEffect(() => {
+    let active = true;
+    let rafId = null;
+
+    const handleScroll = () => {
+      if (!active) return;
+      if (reducedMotion) {
+        // Reset card stack styles for static layout fallback
+        PROJECTS_DATA.forEach((_, index) => {
+          const card = cardRefs.current[index];
+          if (card) {
+            card.style.transform = '';
+            card.style.opacity = '';
+            card.style.filter = '';
+            card.style.pointerEvents = '';
+          }
+        });
+        return;
+      }
+
+      const wrapper = scrollWrapperRef.current;
+      if (!wrapper) return;
+
+      const rect = wrapper.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const totalScrollable = rect.height - viewportHeight;
+
+      if (totalScrollable <= 0) return;
+
+      // Scroll progress P [0, 1] relative to wrapper
+      const scrolled = -rect.top;
+      const P = Math.max(0, Math.min(1, scrolled / totalScrollable));
+
+      // Calculate translation for each card based on relative index offset
+      const progressPerCard = 1 / (PROJECTS_DATA.length - 1); // 0.2 for 6 projects
+
+      PROJECTS_DATA.forEach((_, index) => {
+        const card = cardRefs.current[index];
+        if (!card) return;
+
+        const targetP = index * progressPerCard;
+        const x = (P - targetP) / progressPerCard;
+
+        let translateY = 0;
+        let scale = 1;
+        let opacity = 1;
+        let blur = 0;
+        let pointerEvents = 'none';
+
+        if (x > 0) {
+          // A) Previous project card - moves back, scales down, blurs, and fades out
+          const t = Math.min(1, x);
+          scale = 1 - 0.08 * t; // scales down to 0.92
+          opacity = 1 - 0.75 * t; // fades to 0.25
+          blur = 6 * t; // blurs up to 6px
+          translateY = -50 * t; // moves up slightly
+          pointerEvents = 'none';
+        } else if (x < 0) {
+          // B) Next project card - rises from bottom, peeks by ~15%
+          const t = Math.min(1, -x);
+          translateY = t * 65; // translates down by 65vh (peeking visual)
+          scale = 1 - 0.04 * t; // starts slightly smaller
+          opacity = 1 - 0.15 * t; // slightly faded when peeking
+          pointerEvents = 'none';
+        } else {
+          // C) Active project card - fully centered and interactive
+          pointerEvents = 'auto';
+        }
+
+        // Apply styles directly to DOM elements to bypass React rendering cycles
+        card.style.transform = `translate3d(0, ${x < 0 ? translateY + 'vh' : translateY + 'px'}, 0) scale(${scale})`;
+        card.style.opacity = opacity;
+        card.style.filter = blur > 0 ? `blur(${blur}px)` : 'none';
+        card.style.pointerEvents = pointerEvents;
+        card.style.zIndex = 10 + index; // next card overlays previous card during scroll up
+      });
+    };
+
+    const updateFrame = () => {
+      handleScroll();
+      if (active) {
+        rafId = requestAnimationFrame(updateFrame);
+      }
+    };
+
+    // Run frame updates
+    rafId = requestAnimationFrame(updateFrame);
+
+    window.addEventListener('resize', handleScroll);
+
+    return () => {
+      active = false;
+      cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', handleScroll);
+    };
+  }, [reducedMotion]);
+
+  return (
+    <div className="projects-scroll-wrapper" ref={scrollWrapperRef}>
+      <section className="projects-section" id="projects" aria-label="Portfolio Projects">
+        {/* PLACEHOLDER FOR PHASE 03: dynamic backdrop lighting transitions */}
+        <div className="projects-bg-glow-layer" aria-hidden="true" />
+        
+        <div className="projects-container">
+          <div className="projects-section-header">
+            <SectionLabel>PORTFOLIO WORK</SectionLabel>
+            <SectionHeading align="center" className="projects-section-title">
+              Featured <span className="projects-title-accent">Projects</span>
+            </SectionHeading>
+            <p className="projects-section-sub">
+              A curated selection of applications bridging technical complexity, modern architecture, and refined design.
+            </p>
+          </div>
+
+          <div className="projects-grid">
+            {PROJECTS_DATA.map((project, index) => (
+              <ProjectCard 
+                key={project.id} 
+                project={project} 
+                cardRef={(el) => (cardRefs.current[index] = el)}
+              />
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 }

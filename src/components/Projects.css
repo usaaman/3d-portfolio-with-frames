@@ -1,62 +1,70 @@
-.projects-section {
+/* Scroll wrapper providing the scroll track height */
+.projects-scroll-wrapper {
   position: relative;
   width: 100%;
-  padding: var(--ds-space-96) var(--ds-space-24);
+  height: 500vh; /* Scroll height for 6 storytelling stack project cards */
   background: var(--ds-color-bg-primary, #0E1525);
+}
+
+/* Sticky viewport container (pinned during scroll) */
+.projects-section {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   box-sizing: border-box;
   overflow: hidden;
 }
 
-@media (min-width: 768px) {
-  .projects-section {
-    padding: var(--ds-space-128) var(--ds-space-48);
-  }
-}
-
-@media (min-width: 1024px) {
-  .projects-section {
-    padding: var(--ds-space-128) var(--ds-container-margin);
-  }
-}
-
-/* PLACEHOLDER: Projects background gradient transitions layer styling */
+/* Background overlay shadow/lighting layers */
 .projects-bg-glow-layer {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(79, 140, 255, 0.03) 0%, transparent 60%);
+  background: radial-gradient(circle at 50% 50%, rgba(79, 140, 255, 0.02) 0%, transparent 60%);
   pointer-events: none;
   z-index: 1;
 }
 
 .projects-container {
   position: relative;
+  width: 100%;
   max-width: var(--ds-container-width);
   margin: 0 auto;
+  padding: 0 var(--ds-space-24);
   display: flex;
   flex-direction: column;
-  gap: var(--ds-space-48);
+  box-sizing: border-box;
   z-index: 2;
 }
 
 @media (min-width: 768px) {
   .projects-container {
-    gap: var(--ds-space-64);
+    padding: 0 var(--ds-space-48);
   }
 }
 
-/* 1. Header (Matches Hero/About portfolio styling) */
+@media (min-width: 1024px) {
+  .projects-container {
+    padding: 0 var(--ds-container-margin);
+  }
+}
+
+/* 1. Header (Matches portfolio styling) */
 .projects-section-header {
   text-align: center;
   max-width: 640px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: var(--ds-space-12);
+  gap: var(--ds-space-8);
 }
 
 .projects-section-title {
   font-family: var(--ds-font-display);
-  font-size: clamp(32px, 4.5vw, 48px) !important;
+  font-size: clamp(28px, 4vw, 42px) !important;
   line-height: var(--ds-line-height-heading);
   font-weight: var(--ds-font-weight-bold);
   color: var(--ds-color-text-primary);
@@ -77,22 +85,33 @@
   line-height: var(--ds-line-height-body);
 }
 
-/* 2. Grid Layout */
+/* 2. Absolute Stacking Grid Wrapper */
 .projects-grid {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ds-space-48); /* Stacked cards with generous vertical spacing */
+  position: relative;
   width: 100%;
+  height: 590px; /* Fixed stack container height on desktop to house absolute cards */
+  margin-top: var(--ds-space-24);
+  box-sizing: border-box;
 }
 
-@media (min-width: 1024px) {
+@media (max-width: 1024px) {
   .projects-grid {
-    gap: var(--ds-space-64);
+    height: 720px;
   }
 }
 
-/* 3. Project Card Design (Follows Glassmorphism specifications) */
+@media (max-width: 768px) {
+  .projects-grid {
+    height: 640px;
+  }
+}
+
+/* 3. Project Card Absolute Stack (Phase 02 Stacking layout) */
 .project-card {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   background: var(--ds-glass-bg);
   border: 1px solid var(--ds-glass-border);
   backdrop-filter: blur(var(--ds-glass-blur));
@@ -101,39 +120,48 @@
   padding: var(--ds-space-24);
   box-shadow: var(--ds-shadow-medium);
   box-sizing: border-box;
-  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--ds-space-32);
+  gap: var(--ds-space-20);
   transition: border-color var(--ds-duration-normal) var(--ds-ease-out-natural),
               box-shadow var(--ds-duration-normal) var(--ds-ease-out-natural);
-  will-change: transform, opacity;
+  will-change: transform, opacity, filter;
+  overflow: hidden;
 }
 
 @media (min-width: 768px) {
   .project-card {
-    padding: var(--ds-space-40);
+    padding: var(--ds-space-32);
+    gap: var(--ds-space-24);
   }
 }
 
-/* PLACEHOLDER: Visual highlight on hover / scroll reveal */
+.project-card-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-20);
+  width: 100%;
+  height: 100%;
+  justify-content: space-between;
+}
+
 .project-card:hover {
   border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: var(--ds-shadow-large), 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--ds-shadow-large), 0 10px 30px rgba(0, 0, 0, 0.25);
 }
 
 /* 4. Project Header & Info Details */
 .project-info {
   display: flex;
   flex-direction: column;
-  gap: var(--ds-space-20);
+  gap: var(--ds-space-12);
   width: 100%;
 }
 
 .project-header-top {
   display: flex;
   flex-direction: column;
-  gap: var(--ds-space-4);
+  gap: 2px;
 }
 
 .project-card-title {
@@ -146,7 +174,7 @@
 
 .project-card-subtitle {
   font-family: var(--ds-font-body);
-  font-size: var(--ds-font-size-small); /* 15px */
+  font-size: var(--ds-font-size-caption); /* 13px */
   font-weight: var(--ds-font-weight-medium);
   color: var(--ds-color-text-muted);
 }
@@ -171,28 +199,27 @@
   font-size: var(--ds-font-size-caption); /* 13px */
   font-weight: var(--ds-font-weight-medium);
   color: var(--ds-color-text-primary);
-  padding: 6px 14px;
+  padding: 4px 12px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--ds-radius-button); /* 16px */
 }
 
-/* GitHub & Live Demo buttons */
+/* Buttons */
 .project-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--ds-space-16);
-  margin-top: var(--ds-space-4);
+  gap: var(--ds-space-12);
 }
 
 .project-btn {
   display: inline-flex;
   align-items: center;
   gap: var(--ds-space-8);
-  padding: 10px 20px;
+  padding: 8px 18px;
   border-radius: var(--ds-radius-button); /* 16px */
   font-family: var(--ds-font-body);
-  font-size: var(--ds-font-size-small); /* 15px */
+  font-size: var(--ds-font-size-caption); /* 13px */
   font-weight: var(--ds-font-weight-medium);
   text-decoration: none;
   transition: background var(--ds-duration-button) var(--ds-ease-out-natural),
@@ -200,7 +227,6 @@
               color var(--ds-duration-button) var(--ds-ease-out-natural);
 }
 
-/* Premium Primary design style (Live Demo) */
 .project-btn-primary {
   background: var(--ds-color-accent-primary);
   color: #FFFFFF;
@@ -211,7 +237,6 @@
   background: var(--ds-color-accent-secondary);
 }
 
-/* Secondary design style (GitHub) */
 .project-btn-secondary {
   background: rgba(255, 255, 255, 0.05);
   color: var(--ds-color-text-primary);
@@ -226,20 +251,22 @@
 /* 5. Gallery Layout (Desktop) */
 .project-gallery-layout {
   display: grid;
-  grid-template-columns: 1fr 140px; /* Preview area left takes most space, sidebar right is 140px */
+  grid-template-columns: 1fr 110px; /* Preview left occupies most width, right sidebar thumbnails is 110px */
   gap: var(--ds-space-24);
-  align-items: center; /* Thumbnails center vertically */
+  align-items: center; /* Thumbnail column stays vertically centered */
   width: 100%;
+  flex-grow: 1;
 }
 
-/* Main Preview Area */
+/* Main Preview Wrapper & Image sizes */
 .project-preview-wrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 10;
-  border-radius: var(--ds-radius-card); /* 24px */
+  height: 100%;
+  aspect-ratio: 16 / 7; /* Optimized landscape aspect ratio on desktop to fit viewport heights */
+  border-radius: var(--ds-radius-button); /* 16px */
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -250,11 +277,45 @@
   display: block;
 }
 
-/* Thumbnails Column */
+/* Main Preview Placeholder (Graceful empty state support) */
+.project-preview-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: var(--ds-radius-button);
+  gap: var(--ds-space-8);
+  color: var(--ds-color-text-secondary);
+  box-sizing: border-box;
+}
+
+.project-placeholder-icon {
+  color: var(--ds-color-accent-secondary);
+  opacity: 0.6;
+}
+
+.project-placeholder-text {
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-font-size-caption); /* 13px */
+  font-weight: var(--ds-font-weight-medium);
+  color: var(--ds-color-text-primary);
+}
+
+.project-placeholder-index {
+  font-family: var(--ds-font-mono);
+  font-size: 11px;
+  color: var(--ds-color-text-muted);
+}
+
+/* Thumbnails Column (Vertically Centered on Right Side) */
 .project-thumbnails-column {
   display: flex;
   flex-direction: column;
-  gap: var(--ds-space-12);
+  gap: var(--ds-space-8);
   width: 100%;
   justify-content: center;
 }
@@ -282,40 +343,61 @@
   display: block;
 }
 
+/* Thumbnail Placeholder */
+.project-thumbnail-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: var(--ds-radius-button);
+  color: var(--ds-color-text-muted);
+  gap: 4px;
+  font-family: var(--ds-font-mono);
+  font-size: 11px;
+  box-sizing: border-box;
+}
+
+.project-thumb-placeholder-icon {
+  opacity: 0.5;
+}
+
 /* Hover and active states */
 .project-thumbnail-item:hover {
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: scale(1.02);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: scale(1.03);
 }
 
 .project-thumbnail-item.active {
   border-color: var(--ds-color-accent-primary);
 }
 
-/* Keyboard Accessibility Focus styling */
 .project-thumbnail-item:focus-visible {
   border-color: var(--ds-color-accent-secondary);
-  box-shadow: 0 0 0 3px rgba(101, 214, 255, 0.4);
-  transform: scale(1.02);
+  box-shadow: 0 0 0 2px rgba(101, 214, 255, 0.4);
+  transform: scale(1.03);
 }
 
-/* 6. Tablet Responsive Behavior (Preview above, thumbnails in 1 row below) */
+/* 6. Tablet Responsive Behavior (Preview above, thumbnails below in 1 row) */
 @media (max-width: 1024px) {
   .project-gallery-layout {
     grid-template-columns: 1fr;
-    gap: var(--ds-space-20);
+    gap: var(--ds-space-16);
   }
 
   .project-thumbnails-column {
     flex-direction: row;
     justify-content: center;
     width: 100%;
-    gap: var(--ds-space-16);
+    gap: var(--ds-space-12);
   }
 
   .project-thumbnail-item {
-    width: 110px;
-    height: 70px;
+    width: 100px;
+    height: 60px;
     aspect-ratio: auto;
     flex-shrink: 0;
   }
@@ -327,7 +409,7 @@
     justify-content: flex-start;
     overflow-x: auto;
     white-space: nowrap;
-    padding-bottom: var(--ds-space-8);
+    padding-bottom: 6px;
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
     -webkit-overflow-scrolling: touch;
@@ -352,8 +434,40 @@
   }
 
   .project-thumbnail-item {
-    width: 80px;
-    height: 52px;
+    width: 76px;
+    height: 48px;
     flex-shrink: 0;
+  }
+}
+
+/* 8. Accessibility: prefers-reduced-motion media query fallback */
+@media (prefers-reduced-motion: reduce) {
+  .projects-scroll-wrapper {
+    height: auto !important;
+  }
+  
+  .projects-section {
+    position: relative !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding: var(--ds-space-96) var(--ds-space-24);
+  }
+  
+  .projects-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    gap: var(--ds-space-48) !important;
+    margin-top: var(--ds-space-32);
+  }
+  
+  .project-card {
+    position: relative !important;
+    height: auto !important;
+    transform: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    pointer-events: auto !important;
+    z-index: auto !important;
   }
 }

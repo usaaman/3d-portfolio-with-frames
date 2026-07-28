@@ -282,16 +282,33 @@
   z-index: 10;
 }
 
+@media (max-width: 1440px) {
+  .about-content {
+    padding-top: 96px;
+  }
+}
+
+@media (max-width: 900px) {
+  .about-content {
+    padding-top: 80px;
+  }
+}
+
 .skills-stage-content {
   position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 68px 5vw;
-  background: linear-gradient(135deg, #E6EFF9, #CFDFF2, #AEC8E6);
+  padding: 100px 5vw 40px;
+  background: #0E1525;
+  background-image:
+    radial-gradient(circle at 85% 20%, rgba(79, 140, 255, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 15% 80%, rgba(101, 214, 255, 0.06) 0%, transparent 45%),
+    linear-gradient(135deg, #0E1525 0%, #161F32 50%, #2A2E37 100%);
   z-index: 20;
   will-change: transform;
+  overflow: hidden;
 }
 
 .about-wrap {
@@ -349,7 +366,7 @@
   margin-top: 14px;
   font-size: 14.5px;
   line-height: 1.7;
-  color: var(--text-secondary);
+  color: var(--ds-color-text-primary, var(--text-primary));
 }
 
 .about-text .highlight {
@@ -388,6 +405,12 @@
   justify-content: flex-start; /* Aligns card near the top */
 }
 
+@media (min-width: 901px) {
+  .about-right {
+    height: 100%;
+  }
+}
+
 /* Parent Glass Card */
 .glance-container {
   display: flex;
@@ -398,6 +421,13 @@
   height: 255px; /* Parent card height ≈255px */
   box-sizing: border-box;
   width: 100%; /* Stretch to fill right column naturally */
+}
+
+@media (min-width: 901px) {
+  .glance-container {
+    height: auto;
+    flex-grow: 1;
+  }
 }
 
 .glance-title {
@@ -507,20 +537,23 @@
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: var(--ds-space-16); /* Equal spacing between cards */
+  max-width: 780px; /* Reduced width for desktop */
+  margin: 0 auto; /* Center alignment */
+  width: 100%;
 }
 
 .explore-card {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--ds-space-16);
-  padding: var(--ds-space-20); /* Consistent padding */
-  border-radius: 16px; /* 14-18px corner radius */
+  gap: var(--ds-space-10);
+  padding: var(--ds-space-16); /* Increased padding for better text clearance */
+  border-radius: 12px; /* Smaller radius */
   border: 1px solid var(--glass-border);
   background: rgba(255, 255, 255, 0.02); /* Soft glass background */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
-  min-height: 180px; /* Equal vertical rhythm */
+  min-height: 90px; /* Reduced visual height */
   box-sizing: border-box;
 }
 
@@ -534,9 +567,9 @@
 .explore-icon-wrapper {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px; /* Soft small radius */
+  width: 30px; /* Compact icon wrapper */
+  height: 30px;
+  border-radius: 8px; /* Soft small radius */
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(124, 58, 237, 0.1); /* Brand color highlight tint */
   color: var(--cyan-300); /* Accent cyan */

@@ -74,3 +74,58 @@ export const SKILLS = [
 export const SKILL_ROWS = Array.from({ length: 5 }, (_, i) =>
   SKILLS.slice(i * 10, i * 10 + 10)
 );
+
+// Map technologies to their respective design spec categories
+export const SKILLS_BY_CATEGORY = {
+  'Programming Languages': SKILLS.filter(s =>
+    ['JavaScript', 'TypeScript', 'Python', 'PHP', 'C++'].includes(s.name)
+  ),
+  'Frontend': SKILLS.filter(s =>
+    ['HTML', 'CSS', 'React.js', 'Next.js', 'Tailwind CSS', 'Vite', 'Responsive Design', 'Framer Motion', 'GSAP', 'Three.js'].includes(s.name)
+  ),
+  'Backend': SKILLS.filter(s =>
+    ['Node.js', 'Express.js', 'REST APIs', 'JSON'].includes(s.name)
+  ),
+  'Databases': SKILLS.filter(s =>
+    ['Firestore', 'MySQL'].includes(s.name)
+  ),
+  'Cloud': SKILLS.filter(s =>
+    ['Firebase', 'Cloudinary'].includes(s.name)
+  ),
+  'AI & Intelligent Systems': SKILLS.filter(s =>
+    ['OpenAI', 'Anthropic', 'Claude', 'AI Integration', 'Prompt Engineering', 'Generative AI', 'Chatbots'].includes(s.name)
+  ),
+  'Design & Creative': SKILLS.filter(s =>
+    ['UI Design', 'Figma', 'Blender', 'Unity', 'Canva', 'Adobe Photoshop', 'Graphic Design', 'Video Editing', 'CapCut', '3D Modeling'].includes(s.name)
+  ),
+  'Version Control': SKILLS.filter(s =>
+    ['Git', 'GitHub'].includes(s.name)
+  ),
+  'Tools & Engineering': SKILLS.filter(s =>
+    ['Enterprise Architect', 'UML', 'Requirements Engineering', 'Google Analytics', 'Cisco Packet Tracer', 'Networking', 'Software Engineering', 'Problem Solving'].includes(s.name)
+  )
+};
+
+// Regroup skills into the 6 redesign categories
+export const SKILLS_BY_CATEGORY_REDESIGN = {
+  'Frontend': SKILLS.filter(s =>
+    ['HTML', 'CSS', 'React.js', 'Next.js', 'Tailwind CSS', 'Vite', 'Responsive Design', 'UI Design', 'Framer Motion', 'GSAP', 'Three.js'].includes(s.name)
+  ),
+  'Backend': SKILLS.filter(s =>
+    ['Node.js', 'Express.js', 'REST APIs', 'JSON', 'PHP', 'C++'].includes(s.name)
+  ),
+  'AI & LLM': SKILLS.filter(s =>
+    ['OpenAI', 'Anthropic', 'Claude', 'AI Integration', 'Prompt Engineering', 'Generative AI', 'Chatbots'].includes(s.name)
+  ),
+  'Database': SKILLS.filter(s =>
+    ['Firestore', 'MySQL'].includes(s.name)
+  ),
+  'DevOps & Cloud': SKILLS.filter(s =>
+    ['Firebase', 'Cloudinary', 'Git', 'GitHub'].includes(s.name)
+  ),
+  'Tools & Design': SKILLS.filter(s =>
+    ['JavaScript', 'TypeScript', 'Python', 'Figma', 'Blender', 'Unity', 'Canva', 'Adobe Photoshop', 'Graphic Design', 'Video Editing', 'CapCut', '3D Modeling', 'Enterprise Architect', 'UML', 'Requirements Engineering', 'Google Analytics', 'Cisco Packet Tracer', 'Networking', 'Software Engineering', 'Problem Solving'].includes(s.name)
+  )
+};
+
+

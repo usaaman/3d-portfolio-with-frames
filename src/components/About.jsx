@@ -2,6 +2,34 @@ import React from 'react';
 import { Grid2x2, Quote } from 'lucide-react';
 
 const AboutInner = React.memo(function AboutInner({ glanceItems, exploreItems }) {
+  const renderedGlanceItems = React.useMemo(() => {
+    return glanceItems.map(({ icon: Icon, label, value, subValue }) => (
+      <div className="glance-mini-card" key={label}>
+        <span className="glance-mini-icon" aria-hidden="true">
+          <Icon size={16} strokeWidth={2} />
+        </span>
+        <div className="glance-mini-info">
+          <span className="glance-mini-label">{label}</span>
+          <span className="glance-mini-val">{value}</span>
+          {subValue && <span className="glance-mini-val-sub">{subValue}</span>}
+        </div>
+      </div>
+    ));
+  }, [glanceItems]);
+
+  const renderedExploreItems = React.useMemo(() => {
+    return exploreItems.map(({ icon: Icon, title }) => (
+      <div className="explore-card" key={title}>
+        <div className="explore-icon-wrapper" aria-hidden="true">
+          <Icon size={16} strokeWidth={2.2} />
+        </div>
+        <div className="explore-content">
+          <h3>{title}</h3>
+        </div>
+      </div>
+    ));
+  }, [exploreItems]);
+
   return (
     <div className="about-wrap">
       <div className="glass about-main">
@@ -17,7 +45,7 @@ const AboutInner = React.memo(function AboutInner({ glanceItems, exploreItems })
           <p className="about-text">
             I'm Muhammad Usman, a Software Engineering student at Capital University
             of Science &amp; Technology, Islamabad, currently in my{' '}
-            <span className="highlight">5th semester</span>.
+            <span className="highlight">6th semester</span>.
           </p>
           <p className="about-text">
             My journey started with a passion for video editing and visual
@@ -40,18 +68,7 @@ const AboutInner = React.memo(function AboutInner({ glanceItems, exploreItems })
             <span className="glance-title">At a Glance</span>
             <div className="glance-divider" aria-hidden="true" />
             <div className="glance-list">
-              {glanceItems.map(({ icon: Icon, label, value, subValue }) => (
-                <div className="glance-mini-card" key={label}>
-                  <span className="glance-mini-icon" aria-hidden="true">
-                    <Icon size={16} strokeWidth={2} />
-                  </span>
-                  <div className="glance-mini-info">
-                    <span className="glance-mini-label">{label}</span>
-                    <span className="glance-mini-val">{value}</span>
-                    {subValue && <span className="glance-mini-val-sub">{subValue}</span>}
-                  </div>
-                </div>
-              ))}
+              {renderedGlanceItems}
             </div>
           </div>
         </div>
@@ -59,17 +76,7 @@ const AboutInner = React.memo(function AboutInner({ glanceItems, exploreItems })
 
       <div className="glass explore-strip">
         <div className="explore-grid">
-          {exploreItems.map(({ icon: Icon, title, desc }) => (
-            <div className="explore-card" key={title}>
-              <div className="explore-icon-wrapper" aria-hidden="true">
-                <Icon size={16} strokeWidth={2.2} />
-              </div>
-              <div className="explore-content">
-                <h3>{title}</h3>
-                <p>{desc}</p>
-              </div>
-            </div>
-          ))}
+          {renderedExploreItems}
         </div>
       </div>
     </div>

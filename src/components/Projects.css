@@ -1,25 +1,24 @@
-/* Scroll wrapper providing the scroll track height */
-.projects-scroll-wrapper {
+.projects-section {
   position: relative;
   width: 100%;
-  height: 500vh; /* Scroll height for 6 storytelling stack project cards */
+  padding: var(--ds-space-96) var(--ds-space-24);
   background: var(--ds-color-bg-primary, #0E1525);
-}
-
-/* Sticky viewport container (pinned during scroll) */
-.projects-section {
-  position: sticky;
-  top: 0;
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   box-sizing: border-box;
-  overflow: hidden;
 }
 
-/* Background overlay shadow/lighting layers */
+@media (min-width: 768px) {
+  .projects-section {
+    padding: var(--ds-space-128) var(--ds-space-48);
+  }
+}
+
+@media (min-width: 1024px) {
+  .projects-section {
+    padding: var(--ds-space-128) var(--ds-container-margin);
+  }
+}
+
+/* PLACEHOLDER FOR PHASE 02: Dynamic backdrop lighting transitions layer */
 .projects-bg-glow-layer {
   position: absolute;
   inset: 0;
@@ -30,25 +29,17 @@
 
 .projects-container {
   position: relative;
-  width: 100%;
   max-width: var(--ds-container-width);
   margin: 0 auto;
-  padding: 0 var(--ds-space-24);
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
+  gap: var(--ds-space-48);
   z-index: 2;
 }
 
 @media (min-width: 768px) {
   .projects-container {
-    padding: 0 var(--ds-space-48);
-  }
-}
-
-@media (min-width: 1024px) {
-  .projects-container {
-    padding: 0 var(--ds-container-margin);
+    gap: var(--ds-space-64);
   }
 }
 
@@ -64,7 +55,7 @@
 
 .projects-section-title {
   font-family: var(--ds-font-display);
-  font-size: clamp(28px, 4vw, 42px) !important;
+  font-size: clamp(32px, 4.5vw, 48px) !important;
   line-height: var(--ds-line-height-heading);
   font-weight: var(--ds-font-weight-bold);
   color: var(--ds-color-text-primary);
@@ -85,33 +76,23 @@
   line-height: var(--ds-line-height-body);
 }
 
-/* 2. Absolute Stacking Grid Wrapper */
+/* 2. Grid/Layout (Phase 01: static vertical flow) */
 .projects-grid {
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-48); /* Stacked cards with generous vertical spacing */
   width: 100%;
-  height: 590px; /* Fixed stack container height on desktop to house absolute cards */
-  margin-top: var(--ds-space-24);
-  box-sizing: border-box;
 }
 
-@media (max-width: 1024px) {
+@media (min-width: 1024px) {
   .projects-grid {
-    height: 720px;
+    gap: var(--ds-space-64);
   }
 }
 
-@media (max-width: 768px) {
-  .projects-grid {
-    height: 640px;
-  }
-}
-
-/* 3. Project Card Absolute Stack (Phase 02 Stacking layout) */
+/* 3. Project Card Design (Follows Glassmorphism specifications) */
 .project-card {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  position: relative;
   background: var(--ds-glass-bg);
   border: 1px solid var(--ds-glass-border);
   backdrop-filter: blur(var(--ds-glass-blur));
@@ -120,48 +101,48 @@
   padding: var(--ds-space-24);
   box-shadow: var(--ds-shadow-medium);
   box-sizing: border-box;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--ds-space-20);
+  gap: var(--ds-space-32);
   transition: border-color var(--ds-duration-normal) var(--ds-ease-out-natural),
               box-shadow var(--ds-duration-normal) var(--ds-ease-out-natural);
-  will-change: transform, opacity, filter;
-  overflow: hidden;
+  /* PLACEHOLDERS FOR PHASE 02:
+     - Card Stacking offset variables
+     - Scroll Reveal transforms
+  */
 }
 
 @media (min-width: 768px) {
   .project-card {
-    padding: var(--ds-space-32);
-    gap: var(--ds-space-24);
+    padding: var(--ds-space-40);
   }
+}
+
+.project-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: var(--ds-shadow-large), 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .project-card-inner {
   display: flex;
   flex-direction: column;
-  gap: var(--ds-space-20);
+  gap: var(--ds-space-32);
   width: 100%;
-  height: 100%;
-  justify-content: space-between;
-}
-
-.project-card:hover {
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: var(--ds-shadow-large), 0 10px 30px rgba(0, 0, 0, 0.25);
 }
 
 /* 4. Project Header & Info Details */
 .project-info {
   display: flex;
   flex-direction: column;
-  gap: var(--ds-space-12);
+  gap: var(--ds-space-20);
   width: 100%;
 }
 
 .project-header-top {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--ds-space-4);
 }
 
 .project-card-title {
@@ -174,7 +155,7 @@
 
 .project-card-subtitle {
   font-family: var(--ds-font-body);
-  font-size: var(--ds-font-size-caption); /* 13px */
+  font-size: var(--ds-font-size-small); /* 15px */
   font-weight: var(--ds-font-weight-medium);
   color: var(--ds-color-text-muted);
 }
@@ -187,7 +168,7 @@
   margin: 0;
 }
 
-/* Tech pills */
+/* Tech stack pills */
 .project-tech-list {
   display: flex;
   flex-wrap: wrap;
@@ -199,27 +180,28 @@
   font-size: var(--ds-font-size-caption); /* 13px */
   font-weight: var(--ds-font-weight-medium);
   color: var(--ds-color-text-primary);
-  padding: 4px 12px;
+  padding: 6px 14px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--ds-radius-button); /* 16px */
 }
 
-/* Buttons */
+/* GitHub & Live Demo buttons */
 .project-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--ds-space-12);
+  gap: var(--ds-space-16);
+  margin-top: var(--ds-space-4);
 }
 
 .project-btn {
   display: inline-flex;
   align-items: center;
   gap: var(--ds-space-8);
-  padding: 8px 18px;
+  padding: 10px 20px;
   border-radius: var(--ds-radius-button); /* 16px */
   font-family: var(--ds-font-body);
-  font-size: var(--ds-font-size-caption); /* 13px */
+  font-size: var(--ds-font-size-small); /* 15px */
   font-weight: var(--ds-font-weight-medium);
   text-decoration: none;
   transition: background var(--ds-duration-button) var(--ds-ease-out-natural),
@@ -251,22 +233,20 @@
 /* 5. Gallery Layout (Desktop) */
 .project-gallery-layout {
   display: grid;
-  grid-template-columns: 1fr 110px; /* Preview left occupies most width, right sidebar thumbnails is 110px */
+  grid-template-columns: 1fr 140px; /* Preview left occupies most space, right sidebar thumbnails column is 140px */
   gap: var(--ds-space-24);
   align-items: center; /* Thumbnail column stays vertically centered */
   width: 100%;
-  flex-grow: 1;
 }
 
-/* Main Preview Wrapper & Image sizes */
+/* Main Preview Area */
 .project-preview-wrapper {
   position: relative;
   width: 100%;
-  height: 100%;
-  aspect-ratio: 16 / 7; /* Optimized landscape aspect ratio on desktop to fit viewport heights */
-  border-radius: var(--ds-radius-button); /* 16px */
+  aspect-ratio: 16 / 10;
+  border-radius: var(--ds-radius-card); /* 24px */
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -277,7 +257,7 @@
   display: block;
 }
 
-/* Main Preview Placeholder (Graceful empty state support) */
+/* Main Preview Placeholder (Premium glass styling fallback) */
 .project-preview-placeholder {
   display: flex;
   flex-direction: column;
@@ -287,8 +267,8 @@
   height: 100%;
   background: rgba(255, 255, 255, 0.02);
   border: 1px dashed rgba(255, 255, 255, 0.08);
-  border-radius: var(--ds-radius-button);
-  gap: var(--ds-space-8);
+  border-radius: var(--ds-radius-card);
+  gap: var(--ds-space-12);
   color: var(--ds-color-text-secondary);
   box-sizing: border-box;
 }
@@ -300,14 +280,14 @@
 
 .project-placeholder-text {
   font-family: var(--ds-font-body);
-  font-size: var(--ds-font-size-caption); /* 13px */
+  font-size: var(--ds-font-size-small); /* 15px */
   font-weight: var(--ds-font-weight-medium);
   color: var(--ds-color-text-primary);
 }
 
 .project-placeholder-index {
   font-family: var(--ds-font-mono);
-  font-size: 11px;
+  font-size: var(--ds-font-size-caption); /* 13px */
   color: var(--ds-color-text-muted);
 }
 
@@ -315,7 +295,7 @@
 .project-thumbnails-column {
   display: flex;
   flex-direction: column;
-  gap: var(--ds-space-8);
+  gap: var(--ds-space-12);
   width: 100%;
   justify-content: center;
 }
@@ -381,23 +361,23 @@
   transform: scale(1.03);
 }
 
-/* 6. Tablet Responsive Behavior (Preview above, thumbnails below in 1 row) */
+/* 6. Tablet Responsive Behavior (Preview above, thumbnails in 1 row below) */
 @media (max-width: 1024px) {
   .project-gallery-layout {
     grid-template-columns: 1fr;
-    gap: var(--ds-space-16);
+    gap: var(--ds-space-20);
   }
 
   .project-thumbnails-column {
     flex-direction: row;
     justify-content: center;
     width: 100%;
-    gap: var(--ds-space-12);
+    gap: var(--ds-space-16);
   }
 
   .project-thumbnail-item {
-    width: 100px;
-    height: 60px;
+    width: 110px;
+    height: 70px;
     aspect-ratio: auto;
     flex-shrink: 0;
   }
@@ -409,7 +389,7 @@
     justify-content: flex-start;
     overflow-x: auto;
     white-space: nowrap;
-    padding-bottom: 6px;
+    padding-bottom: var(--ds-space-8);
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
     -webkit-overflow-scrolling: touch;
@@ -434,40 +414,18 @@
   }
 
   .project-thumbnail-item {
-    width: 76px;
-    height: 48px;
+    width: 80px;
+    height: 52px;
     flex-shrink: 0;
   }
 }
 
-/* 8. Accessibility: prefers-reduced-motion media query fallback */
+/* Accessibility: default rules for reduced-motion */
 @media (prefers-reduced-motion: reduce) {
-  .projects-scroll-wrapper {
-    height: auto !important;
-  }
-  
-  .projects-section {
-    position: relative !important;
-    height: auto !important;
-    overflow: visible !important;
-    padding: var(--ds-space-96) var(--ds-space-24);
-  }
-  
-  .projects-grid {
-    display: flex !important;
-    flex-direction: column !important;
-    height: auto !important;
-    gap: var(--ds-space-48) !important;
-    margin-top: var(--ds-space-32);
-  }
-  
   .project-card {
-    position: relative !important;
-    height: auto !important;
-    transform: none !important;
-    opacity: 1 !important;
-    filter: none !important;
-    pointer-events: auto !important;
-    z-index: auto !important;
+    transition: none !important;
+  }
+  .project-thumbnail-item {
+    transition: none !important;
   }
 }

@@ -1,0 +1,359 @@
+.projects-section {
+  position: relative;
+  width: 100%;
+  padding: var(--ds-space-96) var(--ds-space-24);
+  background: var(--ds-color-bg-primary, #0E1525);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .projects-section {
+    padding: var(--ds-space-128) var(--ds-space-48);
+  }
+}
+
+@media (min-width: 1024px) {
+  .projects-section {
+    padding: var(--ds-space-128) var(--ds-container-margin);
+  }
+}
+
+/* PLACEHOLDER: Projects background gradient transitions layer styling */
+.projects-bg-glow-layer {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(79, 140, 255, 0.03) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.projects-container {
+  position: relative;
+  max-width: var(--ds-container-width);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-48);
+  z-index: 2;
+}
+
+@media (min-width: 768px) {
+  .projects-container {
+    gap: var(--ds-space-64);
+  }
+}
+
+/* 1. Header (Matches Hero/About portfolio styling) */
+.projects-section-header {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-12);
+}
+
+.projects-section-title {
+  font-family: var(--ds-font-display);
+  font-size: clamp(32px, 4.5vw, 48px) !important;
+  line-height: var(--ds-line-height-heading);
+  font-weight: var(--ds-font-weight-bold);
+  color: var(--ds-color-text-primary);
+  letter-spacing: var(--ds-letter-spacing-tight);
+}
+
+.projects-title-accent {
+  background: linear-gradient(100deg, var(--ds-color-accent-secondary), var(--ds-color-accent-primary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.projects-section-sub {
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-font-size-small); /* 15px */
+  color: var(--ds-color-text-secondary);
+  line-height: var(--ds-line-height-body);
+}
+
+/* 2. Grid Layout */
+.projects-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-48); /* Stacked cards with generous vertical spacing */
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .projects-grid {
+    gap: var(--ds-space-64);
+  }
+}
+
+/* 3. Project Card Design (Follows Glassmorphism specifications) */
+.project-card {
+  background: var(--ds-glass-bg);
+  border: 1px solid var(--ds-glass-border);
+  backdrop-filter: blur(var(--ds-glass-blur));
+  -webkit-backdrop-filter: blur(var(--ds-glass-blur));
+  border-radius: var(--ds-radius-card); /* 24px */
+  padding: var(--ds-space-24);
+  box-shadow: var(--ds-shadow-medium);
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-32);
+  transition: border-color var(--ds-duration-normal) var(--ds-ease-out-natural),
+              box-shadow var(--ds-duration-normal) var(--ds-ease-out-natural);
+  will-change: transform, opacity;
+}
+
+@media (min-width: 768px) {
+  .project-card {
+    padding: var(--ds-space-40);
+  }
+}
+
+/* PLACEHOLDER: Visual highlight on hover / scroll reveal */
+.project-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: var(--ds-shadow-large), 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* 4. Project Header & Info Details */
+.project-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-20);
+  width: 100%;
+}
+
+.project-header-top {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-4);
+}
+
+.project-card-title {
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-font-size-subtitle); /* 24px */
+  font-weight: var(--ds-font-weight-bold);
+  color: var(--ds-color-text-primary);
+  margin: 0;
+}
+
+.project-card-subtitle {
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-font-size-small); /* 15px */
+  font-weight: var(--ds-font-weight-medium);
+  color: var(--ds-color-text-muted);
+}
+
+.project-card-description {
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-font-size-small); /* 15px */
+  color: var(--ds-color-text-secondary);
+  line-height: var(--ds-line-height-body);
+  margin: 0;
+}
+
+/* Tech pills */
+.project-tech-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-8);
+}
+
+.project-tech-pill {
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-font-size-caption); /* 13px */
+  font-weight: var(--ds-font-weight-medium);
+  color: var(--ds-color-text-primary);
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--ds-radius-button); /* 16px */
+}
+
+/* GitHub & Live Demo buttons */
+.project-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-16);
+  margin-top: var(--ds-space-4);
+}
+
+.project-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-space-8);
+  padding: 10px 20px;
+  border-radius: var(--ds-radius-button); /* 16px */
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-font-size-small); /* 15px */
+  font-weight: var(--ds-font-weight-medium);
+  text-decoration: none;
+  transition: background var(--ds-duration-button) var(--ds-ease-out-natural),
+              border-color var(--ds-duration-button) var(--ds-ease-out-natural),
+              color var(--ds-duration-button) var(--ds-ease-out-natural);
+}
+
+/* Premium Primary design style (Live Demo) */
+.project-btn-primary {
+  background: var(--ds-color-accent-primary);
+  color: #FFFFFF;
+  border: 1px solid transparent;
+}
+
+.project-btn-primary:hover {
+  background: var(--ds-color-accent-secondary);
+}
+
+/* Secondary design style (GitHub) */
+.project-btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--ds-color-text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.project-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+/* 5. Gallery Layout (Desktop) */
+.project-gallery-layout {
+  display: grid;
+  grid-template-columns: 1fr 140px; /* Preview area left takes most space, sidebar right is 140px */
+  gap: var(--ds-space-24);
+  align-items: center; /* Thumbnails center vertically */
+  width: 100%;
+}
+
+/* Main Preview Area */
+.project-preview-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--ds-radius-card); /* 24px */
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.project-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Thumbnails Column */
+.project-thumbnails-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-12);
+  width: 100%;
+  justify-content: center;
+}
+
+.project-thumbnail-item {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--ds-radius-button); /* 16px */
+  overflow: hidden;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.2);
+  border: 2px solid transparent;
+  box-shadow: var(--ds-shadow-small);
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color var(--ds-duration-fast) var(--ds-ease-out-natural),
+              transform var(--ds-duration-fast) var(--ds-ease-out-natural);
+}
+
+.project-thumbnail-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Hover and active states */
+.project-thumbnail-item:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.02);
+}
+
+.project-thumbnail-item.active {
+  border-color: var(--ds-color-accent-primary);
+}
+
+/* Keyboard Accessibility Focus styling */
+.project-thumbnail-item:focus-visible {
+  border-color: var(--ds-color-accent-secondary);
+  box-shadow: 0 0 0 3px rgba(101, 214, 255, 0.4);
+  transform: scale(1.02);
+}
+
+/* 6. Tablet Responsive Behavior (Preview above, thumbnails in 1 row below) */
+@media (max-width: 1024px) {
+  .project-gallery-layout {
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-20);
+  }
+
+  .project-thumbnails-column {
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+    gap: var(--ds-space-16);
+  }
+
+  .project-thumbnail-item {
+    width: 110px;
+    height: 70px;
+    aspect-ratio: auto;
+    flex-shrink: 0;
+  }
+}
+
+/* 7. Mobile Responsive Behavior (Preview full width, thumbnails horizontally scrollable) */
+@media (max-width: 768px) {
+  .project-thumbnails-column {
+    justify-content: flex-start;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: var(--ds-space-8);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    /* Horizontal scroll fade effect */
+    mask-image: linear-gradient(90deg, black 0%, black 85%, transparent 100%);
+    -webkit-mask-image: linear-gradient(90deg, black 0%, black 85%, transparent 100%);
+  }
+
+  /* Webkit custom scrollbars styling for mobile horizontal track */
+  .project-thumbnails-column::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .project-thumbnails-column::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .project-thumbnails-column::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+  }
+
+  .project-thumbnail-item {
+    width: 80px;
+    height: 52px;
+    flex-shrink: 0;
+  }
+}

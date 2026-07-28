@@ -1,0 +1,157 @@
+import { useState } from 'react';
+import { ExternalLink } from 'lucide-react';
+import { PROJECTS_DATA } from './projectsData';
+import SectionHeading from './SectionHeading';
+import SectionLabel from './SectionLabel';
+import './Projects.css';
+
+const GithubIcon = (props) => (
+  <svg aria-hidden="true" viewBox="0 0 24 24" width={props.size} height={props.size} fill="currentColor" {...props}>
+    <path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49 0-.24-.01-1.04-.01-1.89-2.78.61-3.37-1.21-3.37-1.21-.46-1.19-1.11-1.51-1.11-1.51-.91-.63.07-.62.07-.62 1 .07 1.53 1.05 1.53 1.05.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.31.1-2.72 0 0 .84-.27 2.75 1.05a9.3 9.3 0 0 1 2.5-.35c.85 0 1.7.12 2.5.35 1.91-1.32 2.75-1.05 2.75-1.05.55 1.41.2 2.46.1 2.72.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.79-4.57 5.05.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.6.69.49A10.26 10.26 0 0 0 22 12.25C22 6.58 17.52 2 12 2z" />
+  </svg>
+);
+
+function ProjectCard({ project }) {
+  const [activeImage, setActiveImage] = useState(project.featuredImage);
+
+  const handleThumbnailClick = (imgUrl) => {
+    setActiveImage(imgUrl);
+  };
+
+  const handleKeyDown = (e, imgUrl) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setActiveImage(imgUrl);
+    }
+  };
+
+  return (
+    <article 
+      className="project-card" 
+      data-project-id={project.id}
+      aria-labelledby={`project-title-${project.id}`}
+      /* PLACEHOLDERS FOR PHASE 02: 
+         - Card Stacking attribute (e.g. data-stack-index)
+         - Scroll Reveal class/attribute (e.g. reveal-on-scroll)
+      */
+    >
+      {/* PLACEHOLDER FOR PHASE 02: 3D Tilt Wrapper Element */}
+      <div className="project-card-inner">
+        {/* Project Header Info */}
+        <div className="project-info">
+          <div className="project-header-top">
+            <h3 id={`project-title-${project.id}`} className="project-card-title">
+              {project.title}
+            </h3>
+            <span className="project-card-subtitle">{project.subtitle}</span>
+          </div>
+
+          <p className="project-card-description">{project.description}</p>
+
+          {/* Tech stack pills */}
+          <div className="project-tech-list" aria-label="Technologies used">
+            {project.technologies.map((tech) => (
+              <span className="project-tech-pill" key={tech}>
+                {tech}
+              </span>
+            ))}
+          </div>
+
+          {/* GitHub / Live Demo buttons */}
+          <div className="project-actions">
+            <a 
+              href={project.github} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="project-btn project-btn-secondary"
+              aria-label={`View GitHub repository for ${project.title}`}
+            >
+              <GithubIcon size={16} />
+              <span>GitHub</span>
+            </a>
+            <a 
+              href={project.liveDemo} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="project-btn project-btn-primary"
+              aria-label={`View live demo for ${project.title}`}
+            >
+              <ExternalLink size={16} />
+              <span>Live Demo</span>
+            </a>
+          </div>
+        </div>
+
+        {/* Project Gallery & Preview Area */}
+        <div className="project-gallery-layout">
+          {/* Main Preview Area */}
+          <div className="project-preview-wrapper">
+            <img 
+              src={activeImage} 
+              alt={`Preview of ${project.title}`} 
+              className="project-preview-img"
+              loading="lazy"
+            />
+          </div>
+
+          {/* Thumbnail sidebar */}
+          <div 
+            className="project-thumbnails-column" 
+            role="group" 
+            aria-label={`Image gallery for ${project.title}`}
+          >
+            {project.galleryImages.map((imgUrl, index) => {
+              const isActive = activeImage === imgUrl;
+              return (
+                <div
+                  key={index}
+                  role="button"
+                  tabIndex={0}
+                  className={`project-thumbnail-item ${isActive ? 'active' : ''}`}
+                  onClick={() => handleThumbnailClick(imgUrl)}
+                  onKeyDown={(e) => handleKeyDown(e, imgUrl)}
+                  aria-label={`View gallery image ${index + 1} of ${project.title}`}
+                  aria-pressed={isActive}
+                >
+                  <img 
+                    src={imgUrl} 
+                    alt={`Thumbnail ${index + 1}`} 
+                    className="project-thumbnail-img"
+                    loading="lazy"
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+export default function Projects() {
+  return (
+    <section className="projects-section" id="projects" aria-label="Portfolio Projects">
+      {/* PLACEHOLDER FOR PHASE 02: Dynamic Background Gradient Transitions Glow Layer */}
+      <div className="projects-bg-glow-layer" aria-hidden="true" />
+      
+      <div className="projects-container">
+        <div className="projects-section-header">
+          <SectionLabel>PORTFOLIO WORK</SectionLabel>
+          <SectionHeading align="center" className="projects-section-title">
+            Featured <span className="projects-title-accent">Projects</span>
+          </SectionHeading>
+          <p className="projects-section-sub">
+            A curated selection of applications bridging technical complexity, modern architecture, and refined design.
+          </p>
+        </div>
+
+        <div className="projects-grid">
+          {PROJECTS_DATA.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

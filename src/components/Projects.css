@@ -1,49 +1,69 @@
+/* Projects Local Design Tokens (Exact values adopted from template) */
 .projects-section {
+  --proj-bg-0: #060B14;
+  --proj-glass: rgba(255, 255, 255, 0.045);
+  --proj-glass-strong: rgba(255, 255, 255, 0.08);
+  --proj-border: rgba(255, 255, 255, 0.09);
+  --proj-border-strong: rgba(255, 255, 255, 0.16);
+  --proj-teal: #4CE0C4;
+  --proj-blue: #3E8EF7;
+  --proj-text-primary: #EAF2F7;
+  --proj-text-secondary: #93A7BC;
+  --proj-text-muted: #5D6E82;
+
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.projects-scroll-wrapper {
   position: relative;
   width: 100%;
-  padding: var(--ds-space-96) var(--ds-space-24);
-  background: var(--ds-color-bg-primary, #0E1525);
-  box-sizing: border-box;
+  background: #060B14;
 }
 
-@media (min-width: 768px) {
-  .projects-section {
-    padding: var(--ds-space-128) var(--ds-space-48);
-  }
-}
-
-@media (min-width: 1024px) {
-  .projects-section {
-    padding: var(--ds-space-128) var(--ds-container-margin);
-  }
-}
-
-/* PLACEHOLDER FOR PHASE 02: Dynamic backdrop lighting transitions layer */
+/* Background overlay shadow/lighting layers */
 .projects-bg-glow-layer {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(79, 140, 255, 0.02) 0%, transparent 60%);
+  background:
+    radial-gradient(ellipse 900px 600px at 15% -10%, rgba(76, 224, 196, 0.08), transparent 60%),
+    radial-gradient(ellipse 800px 700px at 100% 10%, rgba(62, 142, 247, 0.10), transparent 55%);
   pointer-events: none;
   z-index: 1;
 }
 
 .projects-container {
   position: relative;
+  width: 100%;
   max-width: var(--ds-container-width);
   margin: 0 auto;
+  padding: 0 var(--ds-space-24);
   display: flex;
   flex-direction: column;
-  gap: var(--ds-space-48);
+  box-sizing: border-box;
   z-index: 2;
 }
 
 @media (min-width: 768px) {
   .projects-container {
-    gap: var(--ds-space-64);
+    padding: 0 var(--ds-space-48);
   }
 }
 
-/* 1. Header (Matches portfolio styling) */
+@media (min-width: 1024px) {
+  .projects-container {
+    padding: 0 var(--ds-container-margin);
+  }
+}
+
+/* 1. Section Header (Matches portfolio design system layout spacing) */
 .projects-section-header {
   text-align: center;
   max-width: 640px;
@@ -54,200 +74,213 @@
 }
 
 .projects-section-title {
-  font-family: var(--ds-font-display);
+  font-family: 'Space Grotesk', sans-serif;
   font-size: clamp(32px, 4.5vw, 48px) !important;
   line-height: var(--ds-line-height-heading);
-  font-weight: var(--ds-font-weight-bold);
-  color: var(--ds-color-text-primary);
-  letter-spacing: var(--ds-letter-spacing-tight);
+  font-weight: 700;
+  color: var(--proj-text-primary);
+  letter-spacing: -0.01em;
 }
 
 .projects-title-accent {
-  background: linear-gradient(100deg, var(--ds-color-accent-secondary), var(--ds-color-accent-primary));
+  background: linear-gradient(100deg, var(--proj-teal), var(--proj-blue));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 .projects-section-sub {
-  font-family: var(--ds-font-body);
-  font-size: var(--ds-font-size-small); /* 15px */
-  color: var(--ds-color-text-secondary);
+  font-family: 'Inter', sans-serif;
+  font-size: var(--ds-font-size-small);
+  /* 15px */
+  color: var(--proj-text-secondary);
   line-height: var(--ds-line-height-body);
 }
 
-/* 2. Grid/Layout (Phase 01: static vertical flow) */
 .projects-grid {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ds-space-48); /* Stacked cards with generous vertical spacing */
-  width: 100%;
+  position: relative;
+  width: 856px; /* Optimized desktop width fit */
+  height: 720px; /* Standard height for screens >= 820px */
+  margin: var(--ds-space-24) auto 0; /* Center horizontally */
+  box-sizing: border-box;
+  overflow: hidden; /* clips any card while it's still parked/mid-transition so it can never peek below the active card */
 }
 
-@media (min-width: 1024px) {
+/* Viewport height-based media queries to scale card bounds and prevent bottom cropping */
+@media (min-width: 1024px) and (max-height: 820px) {
   .projects-grid {
-    gap: var(--ds-space-64);
+    height: 580px;
+    width: 690px;
   }
 }
 
-/* 3. Project Card Design (Follows Glassmorphism specifications) */
+@media (min-width: 1024px) and (max-height: 720px) {
+  .projects-grid {
+    height: 510px;
+    width: 610px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .projects-grid {
+    width: 100%;
+    max-width: 640px;
+    /* Centered column */
+    height: 740px;
+    /* Stacked preview + thumbnails requires extra height space */
+    margin: var(--ds-space-24) auto 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .projects-grid {
+    width: 100%;
+    max-width: 480px;
+    height: 660px;
+    /* Mobile viewport adapt */
+    margin: var(--ds-space-16) auto 0;
+  }
+}
+
+/* 3. Animation Stack Wrapper (Absolute inside grid, defaults to hidden and parked off-screen) */
+.project-card-wrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  will-change: transform, opacity, filter;
+  box-sizing: border-box;
+  opacity: 0; /* default hidden */
+  pointer-events: none;
+  transform: translate3d(0, 130%, 0) scale(0.96); /* default parked below stage */
+}
+
+.project-card-wrapper:first-child {
+  opacity: 1; /* first card visible on mount */
+  pointer-events: auto;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+/* 4. Project Card Design (Exact design copy) */
 .project-card {
   position: relative;
-  background: var(--ds-glass-bg);
-  border: 1px solid var(--ds-glass-border);
-  backdrop-filter: blur(var(--ds-glass-blur));
-  -webkit-backdrop-filter: blur(var(--ds-glass-blur));
-  border-radius: var(--ds-radius-card); /* 24px */
-  padding: var(--ds-space-24);
-  box-shadow: var(--ds-shadow-medium);
-  box-sizing: border-box;
   width: 100%;
+  height: 100%;
+  background: var(--proj-glass);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--proj-border);
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.15),
+    0 20px 40px rgba(0, 0, 0, 0.25),
+    0 30px 80px rgba(0, 0, 0, 0.35);
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: var(--ds-space-32);
   transition: border-color var(--ds-duration-normal) var(--ds-ease-out-natural),
-              box-shadow var(--ds-duration-normal) var(--ds-ease-out-natural);
-  /* PLACEHOLDERS FOR PHASE 02:
-     - Card Stacking offset variables
-     - Scroll Reveal transforms
-  */
-}
-
-@media (min-width: 768px) {
-  .project-card {
-    padding: var(--ds-space-40);
-  }
+    background-color var(--ds-duration-normal) var(--ds-ease-out-natural),
+    box-shadow var(--ds-duration-normal) var(--ds-ease-out-natural);
+  overflow: hidden;
 }
 
 .project-card:hover {
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: var(--ds-shadow-large), 0 10px 30px rgba(0, 0, 0, 0.2);
+  border-color: var(--proj-border-strong);
 }
 
-.project-card-inner {
+/* 5. Eyebrow */
+.eyebrow {
   display: flex;
-  flex-direction: column;
-  gap: var(--ds-space-32);
-  width: 100%;
-}
-
-/* 4. Project Header & Info Details */
-.project-info {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ds-space-20);
-  width: 100%;
-}
-
-.project-header-top {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ds-space-4);
-}
-
-.project-card-title {
-  font-family: var(--ds-font-display);
-  font-size: var(--ds-font-size-subtitle); /* 24px */
-  font-weight: var(--ds-font-weight-bold);
-  color: var(--ds-color-text-primary);
-  margin: 0;
-}
-
-.project-card-subtitle {
-  font-family: var(--ds-font-body);
-  font-size: var(--ds-font-size-small); /* 15px */
-  font-weight: var(--ds-font-weight-medium);
-  color: var(--ds-color-text-muted);
-}
-
-.project-card-description {
-  font-family: var(--ds-font-body);
-  font-size: var(--ds-font-size-small); /* 15px */
-  color: var(--ds-color-text-secondary);
-  line-height: var(--ds-line-height-body);
-  margin: 0;
-}
-
-/* Tech stack pills */
-.project-tech-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--ds-space-8);
-}
-
-.project-tech-pill {
-  font-family: var(--ds-font-body);
-  font-size: var(--ds-font-size-caption); /* 13px */
-  font-weight: var(--ds-font-weight-medium);
-  color: var(--ds-color-text-primary);
-  padding: 6px 14px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--ds-radius-button); /* 16px */
-}
-
-/* GitHub & Live Demo buttons */
-.project-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--ds-space-16);
-  margin-top: var(--ds-space-4);
-}
-
-.project-btn {
-  display: inline-flex;
   align-items: center;
-  gap: var(--ds-space-8);
-  padding: 10px 20px;
-  border-radius: var(--ds-radius-button); /* 16px */
-  font-family: var(--ds-font-body);
-  font-size: var(--ds-font-size-small); /* 15px */
-  font-weight: var(--ds-font-weight-medium);
-  text-decoration: none;
-  transition: background var(--ds-duration-button) var(--ds-ease-out-natural),
-              border-color var(--ds-duration-button) var(--ds-ease-out-natural),
-              color var(--ds-duration-button) var(--ds-ease-out-natural);
+  gap: 10px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--proj-text-muted);
+  text-transform: uppercase;
+  margin-bottom: 20px;
 }
 
-.project-btn-primary {
-  background: var(--ds-color-accent-primary);
-  color: #FFFFFF;
-  border: 1px solid transparent;
+.eyebrow .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--proj-teal);
+  box-shadow: 0 0 8px var(--proj-teal);
 }
 
-.project-btn-primary:hover {
-  background: var(--ds-color-accent-secondary);
-}
-
-.project-btn-secondary {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--ds-color-text-primary);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.project-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.22);
-}
-
-/* 5. Gallery Layout (Desktop) */
-.project-gallery-layout {
+/* 6. Gallery Layout (Grid structure inside card) */
+.gallery {
   display: grid;
-  grid-template-columns: 1fr 140px; /* Preview left occupies most space, right sidebar thumbnails column is 140px */
-  gap: var(--ds-space-24);
-  align-items: center; /* Thumbnail column stays vertically centered */
+  grid-template-columns: 2.05fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
   width: 100%;
+  box-sizing: border-box;
+}
+
+.frame {
+  position: relative;
+  background: var(--proj-glass-strong);
+  border: 1px solid var(--proj-border);
+  border-radius: 14px;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 /* Main Preview Area */
-.project-preview-wrapper {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  border-radius: var(--ds-radius-card); /* 24px */
-  overflow: hidden;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+.main-preview {
+  height: 380px;
+  /* Standard height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: height var(--ds-duration-normal) var(--ds-ease-out-natural);
+}
+
+@media (min-width: 1024px) and (max-height: 820px) {
+  .main-preview {
+    height: 280px;
+    /* Reduced height for 13-inch monitors */
+  }
+}
+
+@media (min-width: 1024px) and (max-height: 720px) {
+  .main-preview {
+    height: 220px;
+    /* Reduced height further for short viewports */
+  }
+}
+
+.frame-label {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--proj-text-muted);
+  letter-spacing: 0.05em;
+  z-index: 10;
+}
+
+.counter {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--proj-text-secondary);
+  z-index: 10;
+}
+
+.frame-status {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--proj-text-muted);
+  text-transform: uppercase;
+  z-index: 5;
 }
 
 .project-preview-img {
@@ -257,63 +290,62 @@
   display: block;
 }
 
-/* Main Preview Placeholder (Premium glass styling fallback) */
-.project-preview-placeholder {
+/* Thumbnails stack column */
+.thumb-stack {
   display: flex;
   flex-direction: column;
+  gap: 12px;
+}
+
+.thumb {
+  height: 118px;
+  /* Standard height */
+  cursor: pointer;
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px dashed rgba(255, 255, 255, 0.08);
-  border-radius: var(--ds-radius-card);
-  gap: var(--ds-space-12);
-  color: var(--ds-color-text-secondary);
-  box-sizing: border-box;
+  transition: border-color .25s ease, transform .25s ease, height var(--ds-duration-normal) var(--ds-ease-out-natural);
 }
 
-.project-placeholder-icon {
-  color: var(--ds-color-accent-secondary);
-  opacity: 0.6;
+@media (min-width: 1024px) and (max-height: 820px) {
+  .thumb {
+    height: 85px;
+    /* Proportional scaling */
+  }
 }
 
-.project-placeholder-text {
-  font-family: var(--ds-font-body);
-  font-size: var(--ds-font-size-small); /* 15px */
-  font-weight: var(--ds-font-weight-medium);
-  color: var(--ds-color-text-primary);
+@media (min-width: 1024px) and (max-height: 720px) {
+  .thumb {
+    height: 65px;
+    /* Proportional scaling */
+  }
 }
 
-.project-placeholder-index {
-  font-family: var(--ds-font-mono);
-  font-size: var(--ds-font-size-caption); /* 13px */
-  color: var(--ds-color-text-muted);
+.thumb:hover {
+  border-color: var(--proj-border-strong);
+  transform: translateY(-2px);
 }
 
-/* Thumbnails Column (Vertically Centered on Right Side) */
-.project-thumbnails-column {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ds-space-12);
-  width: 100%;
-  justify-content: center;
+.thumb.active {
+  border-color: var(--proj-teal);
+  box-shadow: 0 0 0 1px var(--proj-teal), 0 0 20px rgba(76, 224, 196, 0.16);
 }
 
-.project-thumbnail-item {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  border-radius: var(--ds-radius-button); /* 16px */
-  overflow: hidden;
-  cursor: pointer;
-  background: rgba(0, 0, 0, 0.2);
-  border: 2px solid transparent;
-  box-shadow: var(--ds-shadow-small);
-  box-sizing: border-box;
-  outline: none;
-  transition: border-color var(--ds-duration-fast) var(--ds-ease-out-natural),
-              transform var(--ds-duration-fast) var(--ds-ease-out-natural);
+.thumb-num {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--proj-text-muted);
+}
+
+.thumb.active .thumb-num {
+  color: var(--proj-teal);
+}
+
+.thumb .frame-status {
+  font-size: 10px;
 }
 
 .project-thumbnail-img {
@@ -323,109 +355,223 @@
   display: block;
 }
 
-/* Thumbnail Placeholder */
-.project-thumbnail-placeholder {
+/* 7. Title & Metadata Row (Scoped under .project-card) */
+.project-card .title-row {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
   width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px dashed rgba(255, 255, 255, 0.08);
-  border-radius: var(--ds-radius-button);
-  color: var(--ds-color-text-muted);
-  gap: 4px;
-  font-family: var(--ds-font-mono);
-  font-size: 11px;
   box-sizing: border-box;
 }
 
-.project-thumb-placeholder-icon {
-  opacity: 0.5;
+.project-card h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 32px;
+  letter-spacing: -0.01em;
+  color: var(--proj-text-primary);
+  margin: 0;
+  line-height: var(--ds-line-height-heading);
 }
 
-/* Hover and active states */
-.project-thumbnail-item:hover {
-  border-color: rgba(255, 255, 255, 0.25);
-  transform: scale(1.03);
+@media (min-width: 1024px) and (max-height: 720px) {
+  .project-card h1 {
+    font-size: 26px;
+    /* shrink slightly on ultra short */
+  }
 }
 
-.project-thumbnail-item.active {
-  border-color: var(--ds-color-accent-primary);
+.project-card .subtitle {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--proj-teal);
+  margin-top: 6px;
+  letter-spacing: 0.02em;
 }
 
-.project-thumbnail-item:focus-visible {
-  border-color: var(--ds-color-accent-secondary);
-  box-shadow: 0 0 0 2px rgba(101, 214, 255, 0.4);
-  transform: scale(1.03);
+/* Actions Buttons */
+.project-card .actions {
+  display: flex;
+  gap: 10px;
 }
 
-/* 6. Tablet Responsive Behavior (Preview above, thumbnails in 1 row below) */
+.project-card .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 11px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--proj-text-primary);
+  background: var(--proj-glass-strong);
+  border: 1px solid var(--proj-border);
+  cursor: pointer;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color .2s ease, background .2s ease, transform .2s ease;
+}
+
+.project-card .btn:hover {
+  border-color: var(--proj-border-strong);
+}
+
+.project-card .btn:focus-visible {
+  outline: 2px solid var(--proj-teal);
+  outline-offset: 2px;
+}
+
+.project-card .btn.primary {
+  background: linear-gradient(135deg, rgba(76, 224, 196, 0.18), rgba(62, 142, 247, 0.14));
+  border-color: rgba(76, 224, 196, 0.35);
+  color: #D3FBF1;
+}
+
+.project-card .btn.primary:hover {
+  border-color: var(--proj-teal);
+}
+
+/* Description text (Brighter silver color for high readability) */
+.project-card .description {
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(234, 242, 247, 0.85);
+  /* high readability silver */
+  margin: 14px 0 20px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 1024px) and (max-height: 820px) {
+  .project-card .description {
+    font-size: 13.5px;
+    line-height: 1.5;
+    margin: 8px 0 14px;
+  }
+}
+
+/* Tech stack chips */
+.project-card .stack-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--proj-text-muted);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.project-card .stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  width: 100%;
+}
+
+.project-card .chip {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  padding: 7px 13px;
+  border-radius: 8px;
+  background: var(--proj-glass-strong);
+  border: 1px solid var(--proj-border);
+  color: var(--proj-text-secondary);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  transition: border-color var(--ds-duration-fast) var(--ds-ease-out-natural),
+    color var(--ds-duration-fast) var(--ds-ease-out-natural);
+}
+
+.project-card .chip:hover {
+  border-color: var(--proj-border-strong);
+  color: var(--proj-text-primary);
+}
+
+/* 8. Tablet & Mobile Responsive Behavior (Preview above, thumbnails below in 1 row) */
 @media (max-width: 1024px) {
-  .project-gallery-layout {
+  .gallery {
     grid-template-columns: 1fr;
-    gap: var(--ds-space-20);
+    gap: 12px;
   }
 
-  .project-thumbnails-column {
+  .main-preview {
+    height: 300px;
+  }
+
+  .thumb-stack {
     flex-direction: row;
-    justify-content: center;
-    width: 100%;
-    gap: var(--ds-space-16);
-  }
-
-  .project-thumbnail-item {
-    width: 110px;
-    height: 70px;
-    aspect-ratio: auto;
-    flex-shrink: 0;
-  }
-}
-
-/* 7. Mobile Responsive Behavior (Preview full width, thumbnails horizontally scrollable) */
-@media (max-width: 768px) {
-  .project-thumbnails-column {
-    justify-content: flex-start;
     overflow-x: auto;
-    white-space: nowrap;
-    padding-bottom: var(--ds-space-8);
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
-    -webkit-overflow-scrolling: touch;
     width: 100%;
-    /* Horizontal scroll fade effect */
-    mask-image: linear-gradient(90deg, black 0%, black 85%, transparent 100%);
-    -webkit-mask-image: linear-gradient(90deg, black 0%, black 85%, transparent 100%);
+    scrollbar-width: thin;
+    scrollbar-color: var(--proj-border) transparent;
+    padding-bottom: 4px;
   }
 
-  /* Webkit custom scrollbars styling for mobile horizontal track */
-  .project-thumbnails-column::-webkit-scrollbar {
-    height: 4px;
-  }
-
-  .project-thumbnails-column::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .project-thumbnails-column::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
-  }
-
-  .project-thumbnail-item {
-    width: 80px;
-    height: 52px;
+  .thumb {
+    min-width: 140px;
+    height: 90px;
     flex-shrink: 0;
+  }
+
+  .project-card .title-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
 }
 
-/* Accessibility: default rules for reduced-motion */
-@media (prefers-reduced-motion: reduce) {
-  .project-card {
-    transition: none !important;
+@media (max-width: 768px) {
+  .main-preview {
+    height: 240px;
   }
-  .project-thumbnail-item {
-    transition: none !important;
+
+  .thumb {
+    min-width: 120px;
+    height: 80px;
+  }
+
+  h1 {
+    font-size: 26px;
+  }
+}
+
+/* 9. Accessibility: prefers-reduced-motion media query fallback */
+@media (prefers-reduced-motion: reduce) {
+  .projects-scroll-wrapper {
+    height: auto !important;
+  }
+
+  .projects-section {
+    position: relative !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding: var(--ds-space-96) var(--ds-space-24);
+  }
+
+  .projects-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    gap: var(--ds-space-48) !important;
+    margin-top: var(--ds-space-32);
+    width: 100% !important;
+    max-width: 640px;
+  }
+
+  .project-card-wrapper {
+    position: relative !important;
+    height: auto !important;
+    transform: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    pointer-events: auto !important;
+    z-index: auto !important;
   }
 }

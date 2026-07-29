@@ -1,6 +1,7 @@
 import Header from './components/Header';
 import HeroAboutScroll from './components/HeroAboutScroll';
 import Projects from './components/Projects';
+import Services from './components/Services';
 import './App.css';
 
 export default function App() {
@@ -10,6 +11,7 @@ export default function App() {
       <main>
         <HeroAboutScroll />
         <Projects />
+        <Services />
       </main>
     </>
   );

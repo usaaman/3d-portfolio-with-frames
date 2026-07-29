@@ -1,4 +1,6 @@
 .skills-section {
+  position: relative;
+  z-index: 2;
   width: 100%;
   max-width: var(--ds-container-width);
   margin-left: auto;

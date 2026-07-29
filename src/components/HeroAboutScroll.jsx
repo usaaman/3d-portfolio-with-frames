@@ -8,6 +8,7 @@ import About from './About';
 import { GLANCE_ITEMS, EXPLORE_ITEMS } from './aboutData';
 import './HeroAboutScroll.css';
 import SkillsMarquee from './SkillsMarquee';
+import KineticGrid from './KineticGrid';
 import GlowLayer from './GlowLayer';
 import ReflectionOverlay from './ReflectionOverlay';
 import DepthTypography from './DepthTypography';
@@ -417,7 +418,7 @@ export default function HeroAboutScroll() {
         <canvas ref={canvasRef} className="scene-canvas" aria-hidden="true" />
         <DepthTypography text="USMAN" className="depth-bg-text" aria-hidden="true" />
         <div className="scene-vignette" aria-hidden="true" />
- 
+
         {/* HERO CONTENT */}
         <div
           role="region"
@@ -482,15 +483,15 @@ export default function HeroAboutScroll() {
           </div>
         </div>
 
-          {/* ABOUT CONTENT */}
-          <About
-            style={{
-              transform: `translate3d(0, ${aboutState.scrollY}%, 0)`,
-              pointerEvents: (Math.abs(aboutState.scrollY) < 10) ? 'auto' : 'none',
-            }}
-            glanceItems={GLANCE_ITEMS}
-            exploreItems={EXPLORE_ITEMS}
-          />
+        {/* ABOUT CONTENT */}
+        <About
+          style={{
+            transform: `translate3d(0, ${aboutState.scrollY}%, 0)`,
+            pointerEvents: (Math.abs(aboutState.scrollY) < 10) ? 'auto' : 'none',
+          }}
+          glanceItems={GLANCE_ITEMS}
+          exploreItems={EXPLORE_ITEMS}
+        />
 
         {/* SKILLS CONTENT */}
         <section
@@ -501,6 +502,15 @@ export default function HeroAboutScroll() {
             pointerEvents: (Math.abs(skillsState.scrollY) < 10) ? 'auto' : 'none',
           }}
         >
+          <KineticGrid
+            isStatic={reducedMotion}
+            dotColor="rgba(255, 255, 255, 0.12)"
+            lineColor="rgba(79, 140, 255, 0.08)"
+            trailColor="rgba(101, 214, 255, 0.25)"
+            spacing={40}
+            radius={200}
+            style={{ zIndex: 1 }}
+          />
           <SkillsMarquee />
         </section>
 

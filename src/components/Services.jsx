@@ -1,55 +1,47 @@
-import React, { useState } from 'react';
-import { Globe, LayoutDashboard, BrainCircuit, Flame, Monitor, Video, Grid2x2 } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import {
+  Globe,
+  Monitor,
+  Video,
+  Grid2x2,
+  Cpu,
+  Layers,
+  Award,
+  Sparkles,
+} from 'lucide-react';
 import SectionHeading from './SectionHeading';
+import { trackServiceClick } from '../utils/analytics';
 import './Services.css';
 
-const SERVICES_DATA = [
-  {
-    title: 'Full-Stack Web Apps',
-    category: 'CORE DEVELOPMENT',
-    accent: 'accent-blue',
-    description: 'Custom web applications built with modern frontend architecture and practical backend workflows.',
-    icon: Globe,
-  },
-  {
-    title: 'Admin Dashboards',
-    category: 'ENTERPRISE SYSTEMS',
-    accent: 'accent-indigo',
-    description: 'Data-driven dashboards, CRUD systems, and CMS-style interfaces designed for real business usage.',
-    icon: LayoutDashboard,
-  },
-  {
-    title: 'AI Agent Integration',
-    category: 'INTELLIGENT SOLUTIONS',
-    accent: 'accent-cyan',
-    description: 'AI-powered chat systems, workflow automation, and assistant features embedded into web products.',
-    icon: BrainCircuit,
-  },
-  {
-    title: 'Firebase Solutions',
-    category: 'CLOUD SERVICES',
-    accent: 'accent-emerald',
-    description: 'Authentication, Firestore structures, hosting, and scalable cloud features for fast-moving projects.',
-    icon: Flame,
-  },
-  {
-    title: 'Landing Pages & Frontends',
-    category: 'MARKETING & DESIGN',
-    accent: 'accent-amber',
-    description: 'High-converting, animation-rich portfolio, product, and startup interfaces with premium polish.',
-    icon: Monitor,
-  },
-  {
-    title: 'Creative Edge',
-    category: 'CREATIVE SUPPORT',
-    accent: 'accent-purple',
-    description: 'CapCut-powered video editing, social visuals, thumbnails, and motion-led creative support.',
-    icon: Video,
-  },
-];
+const ICON_MAP = {
+  Cpu: Cpu,
+  Layers: Layers,
+  Sparkles: Sparkles,
+  Award: Award,
+  Video: Video,
+  Monitor: Monitor,
+};
 
-export default function Services() {
+
+
+const ACCENTS = ['accent-blue', 'accent-indigo', 'accent-cyan', 'accent-emerald', 'accent-amber', 'accent-purple'];
+
+export default function Services({ services }) {
   const [hoveredIndex, setHoveredIndex] = useState(null);
+
+  const activeServices = useMemo(() => {
+    if (services && services.length > 0) {
+      return services
+        .filter((s) => s.visible !== false)
+        .map((s, idx) => ({
+          ...s,
+          category: s.featured ? 'FEATURED SERVICE' : 'CAPABILITY',
+          accent: ACCENTS[idx % ACCENTS.length],
+          iconName: s.icon,
+        }));
+    }
+    return [];
+  }, [services]);
 
   return (
     <section id="services" className="services-section" aria-labelledby="services-heading">
@@ -84,16 +76,16 @@ export default function Services() {
           {/* Orbit Line Ring */}
           <div className="orbit-ring-circle" aria-hidden="true" />
 
-          {/* 6 Floating Service Orbit Cards */}
-          {SERVICES_DATA.map((service, idx) => {
-            const IconComponent = service.icon;
+          {/* Floating Service Orbit Cards */}
+          {activeServices.map((service, idx) => {
+            const IconComponent = ICON_MAP[service.iconName] || Globe;
             const isHovered = hoveredIndex === idx;
             const isAnyHovered = hoveredIndex !== null;
 
             return (
               <div
-                key={service.title}
-                className={`orbit-node-wrapper orbit-node-${idx} ${isHovered ? 'is-focused' : ''} ${
+                key={service.title + idx}
+                className={`orbit-node-wrapper orbit-node-${idx % 6} ${isHovered ? 'is-focused' : ''} ${
                   isAnyHovered && !isHovered ? 'is-dimmed' : ''
                 }`}
                 onMouseEnter={() => setHoveredIndex(idx)}
@@ -104,6 +96,7 @@ export default function Services() {
                   className={`ds-glass service-orbit-card ${service.accent}`}
                   tabIndex="0"
                   aria-label={`${service.title} Capability: ${service.description}`}
+                  onClick={() => trackServiceClick(service.title)}
                 >
                   <div className="card-glass-reflection" />
                   <div className="orbit-card-inner">

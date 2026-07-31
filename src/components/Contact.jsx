@@ -1,8 +1,11 @@
 import React, { useState, useRef } from 'react';
+import { db } from '../admin/services/firebase';
+import { doc, setDoc } from 'firebase/firestore';
+import { trackContactSubmit, logNotification } from '../utils/analytics';
 import './Contact.css';
 import Globe from './Globe';
 
-export default function Contact() {
+export default function Contact({ socials }) {
   const hudRotRef = useRef(null);
   
   const [formData, setFormData] = useState({
@@ -25,8 +28,29 @@ export default function Contact() {
     setStatusMsg('');
 
     try {
-      // Simulate form submission API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      trackContactSubmit();
+      const msgId = `msg-${Date.now()}`;
+      const payload = {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        subject: formData.subject.trim(),
+        message: formData.message.trim(),
+        timestamp: new Date().toLocaleDateString() + ' at ' + new Date().toLocaleTimeString(),
+        read: false,
+        starred: false,
+        archived: false,
+        replied: false,
+      };
+
+      if (db) {
+        await setDoc(doc(db, 'contactMessages', msgId), payload);
+        
+        await logNotification(
+          'New Contact Message',
+          `Message from "${payload.name}" regarding "${payload.subject}".`,
+          'contact'
+        );
+      }
       
       setStatus('success');
       setStatusMsg("Thank you! Your message has been sent. I'll get back to you shortly.");
@@ -37,6 +61,7 @@ export default function Contact() {
         message: '',
       });
     } catch (err) {
+      console.error('Failed submitting contact message:', err);
       setStatus('error');
       setStatusMsg('Something went wrong. Please try again or contact me directly via email.');
     }
@@ -50,12 +75,21 @@ export default function Contact() {
       </div>
       
       <h2 id="contact-heading" className="contact-heading">
-        Let's build something <span className="accent">great together</span>
+        {socials?.heading ? (
+          socials.heading.toLowerCase().includes('great together') ? (
+            <>Let's build something <span className="accent">great together</span></>
+          ) : socials.heading.toLowerCase().includes('together') ? (
+            <>{socials.heading.replace(/together/i, '')} <span className="accent">together</span></>
+          ) : (
+            socials.heading
+          )
+        ) : (
+          <>Let's build something <span className="accent">great together</span></>
+        )}
       </h2>
       
       <p className="contact-sub">
-        Great products start with great conversations. Tell me a bit about what you're working on —
-        I read every message myself.
+        {socials?.description || "Great products start with great conversations. Tell me a bit about what you're working on — I read every message myself."}
       </p>
 
       <div className="contact-layout">
@@ -142,7 +176,7 @@ export default function Contact() {
 
           <div className="contact-methods">
             {/* Email */}
-            <a className="method-card contact-glass" href="mailto:musmannazir97@gmail.com">
+            <a className="method-card contact-glass" href={`mailto:${socials?.socials?.email || "musmannazir97@gmail.com"}`}>
               <div className="method-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="2" y="4" width="20" height="16" rx="2"></rect>
@@ -151,14 +185,14 @@ export default function Contact() {
               </div>
               <div className="method-text">
                 <div className="method-label">Email</div>
-                <div className="method-value">musmannazir97@gmail.com</div>
+                <div className="method-value">{socials?.socials?.email || "musmannazir97@gmail.com"}</div>
               </div>
             </a>
 
             {/* GitHub */}
             <a
               className="method-card contact-glass"
-              href="https://github.com/usaaman/"
+              href={socials?.socials?.github || "https://github.com/usaaman/"}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -169,14 +203,18 @@ export default function Contact() {
               </div>
               <div className="method-text">
                 <div className="method-label">GitHub</div>
-                <div className="method-value">@usaaman</div>
+                <div className="method-value">
+                  {socials?.socials?.github 
+                    ? '@' + socials.socials.github.replace(/\/$/, '').split('/').pop() 
+                    : "@usaaman"}
+                </div>
               </div>
             </a>
 
             {/* LinkedIn */}
             <a
               className="method-card contact-glass"
-              href="https://www.linkedin.com/in/muhammad-usman-a76984378/"
+              href={socials?.socials?.linkedin || "https://www.linkedin.com/in/muhammad-usman-a76984378/"}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -189,14 +227,18 @@ export default function Contact() {
               </div>
               <div className="method-text">
                 <div className="method-label">LinkedIn</div>
-                <div className="method-value">/in/muhammad-usman-a76984378</div>
+                <div className="method-value">
+                  {socials?.socials?.linkedin 
+                    ? '/in/' + socials.socials.linkedin.replace(/\/$/, '').split('/').pop() 
+                    : "/in/muhammad-usman"}
+                </div>
               </div>
             </a>
 
             {/* WhatsApp */}
             <a
               className="method-card contact-glass"
-              href="https://wa.me/923045160142"
+              href={socials?.socials?.whatsapp || "https://wa.me/923045160142"}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -207,7 +249,11 @@ export default function Contact() {
               </div>
               <div className="method-text">
                 <div className="method-label">WhatsApp</div>
-                <div className="method-value">+92 304 5160142</div>
+                <div className="method-value">
+                  {socials?.socials?.whatsapp
+                    ? socials.socials.whatsapp.replace('https://wa.me/', '+').replace('wa.me/', '+')
+                    : "+92 304 5160142"}
+                </div>
               </div>
             </a>
           </div>

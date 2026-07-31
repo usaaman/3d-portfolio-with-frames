@@ -89,7 +89,7 @@
   justify-content: center;
   align-items: center;
   cursor: default;
-  transition: transform 0.8s var(--ds-ease-out-natural);
+  transition: transform var(--ds-duration-slow) var(--ds-ease-out-natural);
 }
 
 .sphere-inner {
@@ -110,17 +110,17 @@
     inset 0 -4px 8px rgba(0, 0, 0, 0.5),
     0 15px 45px rgba(0, 0, 0, 0.5);
   z-index: 2;
-  transition: border-color 0.6s var(--ds-ease-out-natural), box-shadow 0.6s var(--ds-ease-out-natural);
+  transition: border-color var(--ds-duration-slow) var(--ds-ease-out-natural), box-shadow var(--ds-duration-slow) var(--ds-ease-out-natural);
 }
 
 .sphere-logo {
   font-family: var(--ds-font-display);
   font-size: var(--ds-font-size-subtitle);
-  font-weight: var(--ds-font-weight-semibold);
+  font-weight: var(--ds-font-weight-medium);
   color: var(--ds-color-text-primary);
-  letter-spacing: var(--ds-letter-spacing-widest);
+  letter-spacing: var(--ds-letter-spacing-wide);
   z-index: 3;
-  transition: color 0.6s var(--ds-ease-out-natural), text-shadow 0.6s var(--ds-ease-out-natural);
+  transition: color var(--ds-duration-slow) var(--ds-ease-out-natural), text-shadow var(--ds-duration-slow) var(--ds-ease-out-natural);
 }
 
 /* Linear reflection sheen crossing the sphere */
@@ -150,7 +150,7 @@
   border: 1px solid rgba(79, 140, 255, 0);
   z-index: 1;
   pointer-events: none;
-  transition: border-color 0.6s var(--ds-ease-out-natural), box-shadow 0.6s var(--ds-ease-out-natural);
+  transition: border-color var(--ds-duration-slow) var(--ds-ease-out-natural), box-shadow var(--ds-duration-slow) var(--ds-ease-out-natural);
 }
 
 .sphere-shadow {
@@ -214,7 +214,7 @@
   width: 320px;
   height: auto;
   z-index: 5;
-  transition: opacity 0.6s var(--ds-ease-out-natural), filter 0.6s var(--ds-ease-out-natural);
+  transition: opacity var(--ds-duration-slow) var(--ds-ease-out-natural), filter var(--ds-duration-slow) var(--ds-ease-out-natural);
 }
 
 .service-orbit-card {
@@ -223,14 +223,12 @@
   overflow: hidden;
   padding: var(--ds-space-24) var(--ds-space-32);
   background: rgba(10, 15, 26, 0.4);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1.5px solid rgba(255, 255, 255, 0.07);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+  /* border-radius, borders, blurs, and shadows are inherited from .ds-glass */
   transition: 
-    border-color 0.5s var(--ds-ease-out-natural),
-    box-shadow 0.5s var(--ds-ease-out-natural),
-    background-color 0.5s var(--ds-ease-out-natural);
+    border-color var(--ds-duration-medium) var(--ds-ease-out-natural),
+    box-shadow var(--ds-duration-medium) var(--ds-ease-out-natural),
+    background-color var(--ds-duration-medium) var(--ds-ease-out-natural),
+    transform var(--ds-duration-medium) var(--ds-ease-out-natural);
   cursor: default;
 }
 
@@ -324,7 +322,7 @@
 
 .orbit-node-wrapper:hover .service-orbit-card {
   border-color: var(--card-accent-text);
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5), 0 0 20px var(--card-accent-glow);
+  box-shadow: var(--ds-shadow-large), 0 0 20px var(--card-accent-glow);
   background-color: rgba(16, 22, 38, 0.6);
   transform: scale(1.03) translateY(-3px);
 }

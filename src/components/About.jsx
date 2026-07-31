@@ -1,34 +1,70 @@
 import React from 'react';
-import { Grid2x2, Quote } from 'lucide-react';
+import {
+  Grid2x2,
+  Quote,
+  MapPin,
+  GraduationCap,
+  BrainCircuit,
+  Briefcase,
+  BookOpen,
+  Calendar,
+  Sparkles,
+} from 'lucide-react';
 
-const AboutInner = React.memo(function AboutInner({ glanceItems, exploreItems }) {
+function getIconByLabel(label = '') {
+  const norm = label.toLowerCase();
+  if (norm.includes('location') || norm.includes('place')) return MapPin;
+  if (norm.includes('stud') || norm.includes('educ') || norm.includes('school')) return GraduationCap;
+  if (norm.includes('focus') || norm.includes('special') || norm.includes('semester')) return BrainCircuit;
+  if (norm.includes('avail') || norm.includes('job') || norm.includes('work')) return Briefcase;
+  return Sparkles;
+}
+
+const AboutInner = React.memo(function AboutInner({ aboutData }) {
+  const data = aboutData || {};
+
   const renderedGlanceItems = React.useMemo(() => {
-    return glanceItems.map(({ icon: Icon, label, value, subValue }) => (
-      <div className="glance-mini-card" key={label}>
-        <span className="glance-mini-icon" aria-hidden="true">
-          <Icon size={16} strokeWidth={2} />
-        </span>
-        <div className="glance-mini-info">
-          <span className="glance-mini-label">{label}</span>
-          <span className="glance-mini-val">{value}</span>
-          {subValue && <span className="glance-mini-val-sub">{subValue}</span>}
+    const list = data.glanceItems || [];
+
+    return list.map((item, idx) => {
+      const Icon = getIconByLabel(item.label);
+      return (
+        <div className="glance-mini-card" key={idx}>
+          <span className="glance-mini-icon" aria-hidden="true">
+            <Icon size={16} strokeWidth={2} />
+          </span>
+          <div className="glance-mini-info">
+            <span className="glance-mini-label">{item.label}</span>
+            <span className="glance-mini-val">{item.value}</span>
+            {item.subValue && <span className="glance-mini-val-sub">{item.subValue}</span>}
+          </div>
         </div>
-      </div>
-    ));
-  }, [glanceItems]);
+      );
+    });
+  }, [data.glanceItems]);
 
   const renderedExploreItems = React.useMemo(() => {
-    return exploreItems.map(({ icon: Icon, title }) => (
-      <div className="explore-card" key={title}>
-        <div className="explore-icon-wrapper" aria-hidden="true">
-          <Icon size={16} strokeWidth={2.2} />
+    const list = data.timelineItems || [];
+
+    return list.map((item) => {
+      const Icon = item.type === 'education' ? BookOpen : Briefcase;
+      return (
+        <div className="explore-card" key={item.id}>
+          <div className="explore-icon-wrapper" aria-hidden="true">
+            <Icon size={16} strokeWidth={2.2} />
+          </div>
+          <div className="explore-content">
+            <div className="explore-date" style={{ fontSize: '10px', color: 'var(--ds-color-accent-secondary)', marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Calendar size={10} />
+              {item.date}
+            </div>
+            <h3 style={{ fontSize: '13px', margin: 0 }}>{item.title}</h3>
+            {item.institution && <span style={{ fontSize: '11px', color: 'var(--ds-color-text-muted)' }}>{item.institution}</span>}
+          </div>
         </div>
-        <div className="explore-content">
-          <h3>{title}</h3>
-        </div>
-      </div>
-    ));
-  }, [exploreItems]);
+      );
+    });
+  }, [data.timelineItems]);
 
   return (
     <div className="about-wrap">
@@ -39,26 +75,19 @@ const AboutInner = React.memo(function AboutInner({ glanceItems, exploreItems })
             ABOUT ME
           </span>
           <h2 className="about-title">
-            Curious mind,<br />
-            <span className="about-title-accent">creative hands</span>
+            {data.title || "Curious mind,"}
+            {(!data.title) && <><br /><span className="about-title-accent">creative hands</span></>}
           </h2>
           <p className="about-text">
-            I'm Muhammad Usman, a Software Engineering student at Capital University
-            of Science &amp; Technology, Islamabad, currently in my{' '}
-            <span className="highlight">6th semester</span>.
+            {data.paragraph1 || "I'm Muhammad Usman, a Software Engineering student at Capital University of Science & Technology, Islamabad, currently in my 6th semester."}
           </p>
           <p className="about-text">
-            My journey started with a passion for video editing and visual
-            storytelling, which naturally evolved into web development and AI
-            integration. Today, I build full-stack applications with React and
-            Firebase, experiment with AI-powered chat systems, and still keep my
-            creative side alive through video editing and graphic design.
+            {data.paragraph2 || "My journey started with a passion for video editing and visual storytelling, which naturally evolved into web development and AI integration. Today, I build full-stack applications with React and Firebase, experiment with AI-powered chat systems, and still keep my creative side alive through video editing and graphic design."}
           </p>
           <div className="quote-box">
             <Quote size={16} strokeWidth={2} className="quote-icon" aria-hidden="true" />
             <p>
-              I love solving real-world problems — whether that's through clean
-              code or a well-cut video.
+              {data.quoteText || "I love solving real-world problems — whether that's through clean code or a well-cut video."}
             </p>
           </div>
         </div>
@@ -83,15 +112,18 @@ const AboutInner = React.memo(function AboutInner({ glanceItems, exploreItems })
   );
 });
 
-export default function About({ style, glanceItems, exploreItems }) {
+const About = React.forwardRef(function About({ style, aboutData }, ref) {
   return (
     <section
+      ref={ref}
       className="stage-content about-content"
       id="about"
       aria-label="About Me"
       style={style}
     >
-      <AboutInner glanceItems={glanceItems} exploreItems={exploreItems} />
+      <AboutInner aboutData={aboutData} />
     </section>
   );
-}
+});
+
+export default About;

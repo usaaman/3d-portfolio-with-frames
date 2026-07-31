@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function useScrollTimeline(wrapperRef, numSlots) {
-  const [timeline, setTimeline] = useState({
+  const [currentProject, setCurrentProject] = useState(0);
+
+  const timelineRefs = useRef({
     currentProject: 0,
     nextProject: 1,
     localProgress: 0,
@@ -25,20 +27,27 @@ export default function useScrollTimeline(wrapperRef, numSlots) {
 
       // Calculate local progresses
       const scaledProgress = globalProgress * numSlots;
-      let currentProject = Math.floor(scaledProgress);
-      if (currentProject >= numSlots) currentProject = numSlots - 1;
-      if (currentProject < 0) currentProject = 0;
+      let currentProj = Math.floor(scaledProgress);
+      if (currentProj >= numSlots) currentProj = numSlots - 1;
+      if (currentProj < 0) currentProj = 0;
 
-      let localProgress = scaledProgress - currentProject;
+      let localProgress = scaledProgress - currentProj;
       localProgress = Math.min(1.0, Math.max(0.0, localProgress));
 
-      const nextProject = currentProject < numSlots - 1 ? currentProject + 1 : null;
+      const nextProj = currentProj < numSlots - 1 ? currentProj + 1 : null;
 
-      setTimeline({
-        currentProject,
-        nextProject,
-        localProgress,
-        globalProgress,
+      // Update ref values directly (synchronous, no re-render)
+      timelineRefs.current.currentProject = currentProj;
+      timelineRefs.current.nextProject = nextProj;
+      timelineRefs.current.localProgress = localProgress;
+      timelineRefs.current.globalProgress = globalProgress;
+
+      // Only trigger React state update if the project index changed
+      setCurrentProject((prev) => {
+        if (prev !== currentProj) {
+          return currentProj;
+        }
+        return prev;
       });
     };
 
@@ -50,5 +59,5 @@ export default function useScrollTimeline(wrapperRef, numSlots) {
     };
   }, [wrapperRef, numSlots]);
 
-  return timeline;
+  return { currentProject, timelineRefs };
 }

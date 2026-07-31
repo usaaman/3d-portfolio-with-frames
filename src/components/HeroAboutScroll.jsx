@@ -5,13 +5,13 @@ import {
   Mail,
 } from 'lucide-react';
 import About from './About';
-import { GLANCE_ITEMS, EXPLORE_ITEMS } from './aboutData';
 import './HeroAboutScroll.css';
 import SkillsMarquee from './SkillsMarquee';
 import KineticGrid from './KineticGrid';
 import GlowLayer from './GlowLayer';
 import ReflectionOverlay from './ReflectionOverlay';
 import DepthTypography from './DepthTypography';
+import { trackResumeDownload } from '../utils/analytics';
 
 // lucide-react dropped brand/logo icons — small inline SVGs instead
 const GithubIcon = (props) => (
@@ -125,13 +125,20 @@ function getCharacterComposition(cw, ch, iw, ih, dpr) {
   return { dx, dy, dw, dh };
 }
 
-export default function HeroAboutScroll() {
+export default function HeroAboutScroll({ hero, about, resume, skills }) {
   const wrapperRef = useRef(null);
   const canvasRef = useRef(null);
   const imagesRef = useRef([]);
   const currentFrameRef = useRef(1);
   const rafRef = useRef(null);
   const heroCardRef = useRef(null);
+
+  // High-performance DOM refs for direct style animation on scroll
+  const heroContentRef = useRef(null);
+  const heroGlowRef = useRef(null);
+  const aboutRef = useRef(null);
+  const skillsRef = useRef(null);
+  const scrollCueRef = useRef(null);
 
   const [loaded, setLoaded] = useState(0);
   const [ready, setReady] = useState(false);
@@ -145,39 +152,73 @@ export default function HeroAboutScroll() {
     return () => mediaQuery.removeEventListener('change', handler);
   }, []);
 
-  const [heroState, setHeroState] = useState({
-    scrollY: 100, // off-screen bottom initially
-    scale: 0.1,
-    translateX: '50vw',
-    translateY: '25vh',
-    rotateX: 0,
-    rotateY: 0,
-    showCue: false,
-  });
-  const [aboutState, setAboutState] = useState({
-    scrollY: 100, // off-screen bottom initially
-  });
-  const [skillsState, setSkillsState] = useState({
-    scrollY: 100, // off-screen bottom initially
-  });
-
-  // preload all frames
+  // Progressive staggered preloader to prevent network congestion and main thread block
   useEffect(() => {
     let cancelled = false;
-    let count = 0;
     const imgs = new Array(FRAME_COUNT + 1);
-
-    for (let i = 1; i <= FRAME_COUNT; i++) {
-      const img = new Image();
-      img.src = FRAME_PATH(i);
-      img.onload = img.onerror = () => {
-        count += 1;
-        if (!cancelled) setLoaded(count);
-        if (count === FRAME_COUNT && !cancelled) setReady(true);
-      };
-      imgs[i] = img;
-    }
     imagesRef.current = imgs;
+
+    // Load initial essential batch (Intro frames 1-50 + static active frame) first
+    const initialBatch = [];
+    for (let i = 1; i <= 50; i++) {
+      initialBatch.push(i);
+    }
+    if (!initialBatch.includes(STATIC_REDUCED_MOTION_FRAME)) {
+      initialBatch.push(STATIC_REDUCED_MOTION_FRAME);
+    }
+
+    let loadedCount = 0;
+
+    const loadFrame = (index) => {
+      return new Promise((resolve) => {
+        if (imgs[index]) {
+          resolve();
+          return;
+        }
+        const img = new Image();
+        img.src = FRAME_PATH(index);
+        img.onload = img.onerror = () => {
+          imgs[index] = img;
+          if (!cancelled) {
+            loadedCount += 1;
+            setLoaded(loadedCount);
+          }
+          resolve();
+        };
+      });
+    };
+
+    const loadInitial = async () => {
+      await Promise.all(initialBatch.map(id => loadFrame(id)));
+      if (!cancelled) {
+        setReady(true);
+        // Stagger the remaining frames in the background
+        loadRemaining(51);
+      }
+    };
+
+    const loadRemaining = async (startIndex) => {
+      if (cancelled || startIndex > FRAME_COUNT) return;
+      const batchSize = 15;
+      const batch = [];
+      for (let i = startIndex; i < startIndex + batchSize && i <= FRAME_COUNT; i++) {
+        if (!initialBatch.includes(i)) {
+          batch.push(i);
+        }
+      }
+
+      await Promise.all(batch.map(id => loadFrame(id)));
+      
+      if (!cancelled) {
+        if (window.requestIdleCallback) {
+          window.requestIdleCallback(() => loadRemaining(startIndex + batchSize));
+        } else {
+          setTimeout(() => loadRemaining(startIndex + batchSize), 50);
+        }
+      }
+    };
+
+    loadInitial();
 
     return () => {
       cancelled = true;
@@ -192,16 +233,16 @@ export default function HeroAboutScroll() {
     const ctx = canvas.getContext('2d');
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
+    
+    // Shift color adjustments to native drawing context filter (hardware accelerated)
+    ctx.filter = 'contrast(1.05) saturate(1.12) brightness(1.02)';
 
     const cw = canvas.width;
     const ch = canvas.height;
     const iw = img.naturalWidth;
     const ih = img.naturalHeight;
 
-    // Cover-fit, but anchored to the RIGHT edge instead of centered.
-    // The character always sits on the right side of every source frame,
-    // so any horizontal crop must eat from the left — the right edge
-    const dpr = window.devicePixelRatio || 1;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
     const { dx, dy, dw, dh } = getCharacterComposition(cw, ch, iw, ih, dpr);
 
@@ -215,21 +256,29 @@ export default function HeroAboutScroll() {
         currentFrameRef.current = STATIC_REDUCED_MOTION_FRAME;
         drawFrame(STATIC_REDUCED_MOTION_FRAME);
       }
-      setHeroState({
-        scrollY: 0,
-        scale: 1.0,
-        translateX: '0vw',
-        translateY: '0vh',
-        rotateX: 0.0,
-        rotateY: 0.0,
-        showCue: false,
-      });
-      setAboutState({
-        scrollY: 0,
-      });
-      setSkillsState({
-        scrollY: 0,
-      });
+      
+      // Update DOM styles directly
+      if (heroContentRef.current) {
+        heroContentRef.current.style.transform = 'translate3d(0, 0%, 0)';
+        heroContentRef.current.style.pointerEvents = 'auto';
+      }
+      if (heroGlowRef.current) {
+        heroGlowRef.current.style.transform = 'translate3d(0vw, 0vh, 0) scale(1.0)';
+      }
+      if (heroCardRef.current) {
+        heroCardRef.current.style.transform = 'perspective(1100px) rotateX(0deg) rotateY(0deg) translate3d(0vw, 0vh, 0) scale(1.0)';
+      }
+      if (aboutRef.current) {
+        aboutRef.current.style.transform = 'translate3d(0, 0%, 0)';
+        aboutRef.current.style.pointerEvents = 'auto';
+      }
+      if (skillsRef.current) {
+        skillsRef.current.style.transform = 'translate3d(0, 0%, 0)';
+        skillsRef.current.style.pointerEvents = 'auto';
+      }
+      if (scrollCueRef.current) {
+        scrollCueRef.current.style.opacity = '0';
+      }
       return;
     }
 
@@ -309,23 +358,29 @@ export default function HeroAboutScroll() {
       skillsY = 100;
     }
 
-    setHeroState({
-      scrollY: heroY,
-      scale: cardScale,
-      translateX: cardTranslateX,
-      translateY: cardTranslateY,
-      rotateX: cardRotateX,
-      rotateY: cardRotateY,
-      showCue: frame >= SCROLL_CUE_START_FRAME && frame < SCROLL_CUE_END_FRAME,
-    });
-
-    setAboutState({
-      scrollY: aboutY,
-    });
-
-    setSkillsState({
-      scrollY: skillsY,
-    });
+    // High performance direct DOM updates (0% React rendering updates during scrolls)
+    if (heroContentRef.current) {
+      heroContentRef.current.style.transform = `translate3d(0, ${heroY}%, 0)`;
+      heroContentRef.current.style.pointerEvents = (Math.abs(heroY) < 10) ? 'auto' : 'none';
+    }
+    if (heroGlowRef.current) {
+      heroGlowRef.current.style.transform = `translate3d(${cardTranslateX}, ${cardTranslateY}, 0) scale(${cardScale})`;
+    }
+    if (heroCardRef.current) {
+      heroCardRef.current.style.transform = `perspective(1100px) rotateX(var(--tilt-x, 0deg)) rotateX(${cardRotateX}deg) rotateY(var(--tilt-y, 0deg)) rotateY(${cardRotateY}deg) translate3d(${cardTranslateX}, ${cardTranslateY}, 0) scale(${cardScale})`;
+    }
+    if (aboutRef.current) {
+      aboutRef.current.style.transform = `translate3d(0, ${aboutY}%, 0)`;
+      aboutRef.current.style.pointerEvents = (Math.abs(aboutY) < 10) ? 'auto' : 'none';
+    }
+    if (skillsRef.current) {
+      skillsRef.current.style.transform = `translate3d(0, ${skillsY}%, 0)`;
+      skillsRef.current.style.pointerEvents = (Math.abs(skillsY) < 10) ? 'auto' : 'none';
+    }
+    if (scrollCueRef.current) {
+      const showCue = frame >= SCROLL_CUE_START_FRAME && frame < SCROLL_CUE_END_FRAME;
+      scrollCueRef.current.style.opacity = showCue ? '1' : '0';
+    }
   }, [drawFrame, reducedMotion]);
 
   useEffect(() => {
@@ -416,7 +471,7 @@ export default function HeroAboutScroll() {
 
       <div className="sticky-stage">
         <canvas ref={canvasRef} className="scene-canvas" aria-hidden="true" />
-        <DepthTypography text="USMAN" className="depth-bg-text" aria-hidden="true" />
+        <DepthTypography text={hero?.backgroundText || "USMAN"} className="depth-bg-text" aria-hidden="true" />
         <div className="scene-vignette" aria-hidden="true" />
 
         {/* HERO CONTENT */}
@@ -424,16 +479,18 @@ export default function HeroAboutScroll() {
           role="region"
           aria-label="Hero Introduction"
           className="stage-content hero-content"
+          ref={heroContentRef}
           style={{
-            transform: `translate3d(0, ${heroState.scrollY}%, 0)`,
-            pointerEvents: (Math.abs(heroState.scrollY) < 10) ? 'auto' : 'none',
+            transform: 'translate3d(0, 100%, 0)',
+            pointerEvents: 'none',
           }}
         >
           {/* Reusable GlowLayer positioned behind the Hero card */}
           <div
             className="hero-glow-container"
+            ref={heroGlowRef}
             style={{
-              transform: `translate3d(${heroState.translateX}, ${heroState.translateY}, 0) scale(${heroState.scale})`,
+              transform: 'translate3d(50vw, 25vh, 0) scale(0.1)',
               position: 'absolute',
               pointerEvents: 'none',
               zIndex: 1,
@@ -447,59 +504,69 @@ export default function HeroAboutScroll() {
             className="glass hero-card"
             ref={heroCardRef}
             style={{
-              transform: `perspective(1100px) rotateX(var(--tilt-x, 0deg)) rotateX(${heroState.rotateX}deg) rotateY(var(--tilt-y, 0deg)) rotateY(${heroState.rotateY}deg) translate3d(${heroState.translateX}, ${heroState.translateY}, 0) scale(${heroState.scale})`,
+              transform: 'perspective(1100px) rotateX(var(--tilt-x, 0deg)) rotateX(0deg) rotateY(var(--tilt-y, 0deg)) rotateY(0deg) translate3d(50vw, 25vh, 0) scale(0.1)',
             }}
             onMouseMove={handleHeroMove}
             onMouseLeave={handleHeroLeave}
           >
             <ReflectionOverlay delay={1.5} aria-hidden="true" />
             <div className="hero-glow" aria-hidden="true" />
-            <p className="hero-greet">Hi, I'm</p>
-            <h1 className="hero-name">Muhammad Usman</h1>
+             <p className="hero-greet">{hero?.greetText || "Hi, I'm"}</p>
+            <h1 className="hero-name">{hero?.name || "Muhammad Usman"}</h1>
             <p className="hero-role">
-              Full-Stack Developer | AI Integration Specialist | Video Editor
+              {hero?.role || "Full-Stack Developer | AI Integration Specialist | Video Editor"}
             </p>
             <div className="hero-divider" aria-hidden="true" />
             <p className="hero-desc">
-              I build intelligent web applications and craft engaging visual stories —
-              turning ideas into functional, beautiful digital products.
+              {hero?.description || "I build intelligent web applications and craft engaging visual stories — turning ideas into functional, beautiful digital products."}
             </p>
             <div className="hero-actions">
-              <a href="#projects" className="btn-primary" aria-label="View Muhammad Usman's portfolio work">
+              <a href={hero?.cta1Link || "#projects"} className="btn-primary" aria-label="View Muhammad Usman's portfolio work">
                 <Briefcase size={16} strokeWidth={2} aria-hidden="true" />
-                View My Work
+                {hero?.cta1Text || "View My Work"}
               </a>
-              <a href="/resume.pdf" download className="btn-ghost" aria-label="Download Muhammad Usman's PDF resume">
-                <Download size={16} strokeWidth={2} aria-hidden="true" />
-                Download Resume
-              </a>
+              {resume?.status !== 'Inactive' && (
+                <a
+                  href={resume?.resumeFileUrl || "/resume.pdf"}
+                  onClick={trackResumeDownload}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
+                  className="btn-ghost"
+                  aria-label="Download Muhammad Usman's PDF resume"
+                >
+                  <Download size={16} strokeWidth={2} aria-hidden="true" />
+                  {hero?.cta2Text || "Download Resume"}
+                </a>
+              )}
             </div>
             <div className="hero-socials">
-              <a href="#" aria-label="GitHub Profile" className="social-btn"><GithubIcon size={17} /></a>
-              <a href="#" aria-label="LinkedIn Profile" className="social-btn"><LinkedinIcon size={17} /></a>
-              <a href="#" aria-label="Twitter Profile" className="social-btn"><TwitterIcon size={17} /></a>
-              <a href="#" aria-label="Send Email" className="social-btn"><Mail size={17} strokeWidth={1.8} aria-hidden="true" /></a>
+              <a href={hero?.githubUrl || "https://github.com/usaaman/"} target="_blank" rel="noopener noreferrer" aria-label="GitHub Profile" className="social-btn"><GithubIcon size={17} /></a>
+              <a href={hero?.linkedinUrl || "https://www.linkedin.com/in/muhammad-usman-a76984378/"} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Profile" className="social-btn"><LinkedinIcon size={17} /></a>
+              <a href={hero?.twitterUrl || "#"} target="_blank" rel="noopener noreferrer" aria-label="Twitter Profile" className="social-btn"><TwitterIcon size={17} /></a>
+              <a href={`mailto:${hero?.emailAddress || "musmannazir97@gmail.com"}`} aria-label="Send Email" className="social-btn"><Mail size={17} strokeWidth={1.8} aria-hidden="true" /></a>
             </div>
           </div>
         </div>
 
         {/* ABOUT CONTENT */}
         <About
+          ref={aboutRef}
           style={{
-            transform: `translate3d(0, ${aboutState.scrollY}%, 0)`,
-            pointerEvents: (Math.abs(aboutState.scrollY) < 10) ? 'auto' : 'none',
+            transform: 'translate3d(0, 100%, 0)',
+            pointerEvents: 'none',
           }}
-          glanceItems={GLANCE_ITEMS}
-          exploreItems={EXPLORE_ITEMS}
+          aboutData={about}
         />
 
         {/* SKILLS CONTENT */}
         <section
           className="stage-content skills-stage-content"
           aria-label="Skills Overview"
+          ref={skillsRef}
           style={{
-            transform: `translate3d(0, ${skillsState.scrollY}%, 0)`,
-            pointerEvents: (Math.abs(skillsState.scrollY) < 10) ? 'auto' : 'none',
+            transform: 'translate3d(0, 100%, 0)',
+            pointerEvents: 'none',
           }}
         >
           <KineticGrid
@@ -511,10 +578,10 @@ export default function HeroAboutScroll() {
             radius={200}
             style={{ zIndex: 1 }}
           />
-          <SkillsMarquee />
+          <SkillsMarquee skills={skills} />
         </section>
 
-        <div className="scroll-cue" style={{ opacity: (!reducedMotion && heroState.showCue) ? 1 : 0, pointerEvents: 'none' }} aria-hidden="true">
+        <div className="scroll-cue" ref={scrollCueRef} style={{ opacity: 0, pointerEvents: 'none' }} aria-hidden="true">
           <span>scroll</span>
           <div className="scroll-cue-line" />
         </div>

@@ -1,0 +1,331 @@
+/* ============================================================================
+   ADMIN CMS SHARED COMPONENTS STYLES
+   ============================================================================ */
+
+/* Reusable Glass Card Wrapper */
+.admin-card {
+  background: var(--ds-glass-bg);
+  border: 1px solid var(--ds-glass-border);
+  backdrop-filter: blur(var(--ds-glass-blur));
+  -webkit-backdrop-filter: blur(var(--ds-glass-blur));
+  border-radius: var(--ds-radius-card);
+  box-shadow: var(--ds-shadow-large);
+  padding: var(--ds-space-32);
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--ds-glass-highlight), transparent);
+}
+
+/* Button Base Styles */
+.admin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ds-space-8);
+  font-family: var(--ds-font-body);
+  font-weight: var(--ds-font-weight-medium);
+  border-radius: var(--ds-radius-button);
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--ds-duration-fast) var(--ds-ease-out-natural);
+  outline: none;
+}
+
+/* Button Sizes */
+.admin-btn-sm {
+  padding: 6px 12px;
+  font-size: var(--ds-font-size-caption);
+}
+
+.admin-btn-md {
+  padding: 10px 18px;
+  font-size: var(--ds-font-size-small);
+}
+
+.admin-btn-lg {
+  padding: 14px 24px;
+  font-size: var(--ds-font-size-body);
+}
+
+/* Button Variants */
+.admin-btn-primary {
+  color: var(--ds-color-bg-primary);
+  background: linear-gradient(135deg, var(--ds-color-accent-secondary), var(--ds-color-accent-primary));
+  border-color: rgba(101, 214, 255, 0.4);
+}
+
+.admin-btn-primary:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(79, 140, 255, 0.2);
+}
+
+.admin-btn-ghost {
+  color: var(--ds-color-text-primary);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--ds-glass-border);
+}
+
+.admin-btn-ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.admin-btn-danger {
+  color: #ffffff;
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.admin-btn-danger:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.35);
+  border-color: #ef4444;
+}
+
+.admin-btn:disabled {
+  opacity: var(--ds-opacity-disabled);
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.admin-btn:focus-visible {
+  outline: 2px solid var(--ds-color-accent-primary);
+  outline-offset: 2px;
+}
+
+/* Spinner for Loading buttons */
+.admin-spinner {
+  width: 16px;
+  height: 16px;
+  animation: admin-spin 0.8s linear infinite;
+  stroke: currentColor;
+}
+
+@keyframes admin-spin {
+  100% { transform: rotate(360deg); }
+}
+
+/* Form Fields */
+.admin-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-8);
+  width: 100%;
+}
+
+.admin-label {
+  font-family: var(--ds-font-mono);
+  font-size: var(--ds-font-size-caption);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ds-color-text-muted);
+}
+
+.admin-input,
+.admin-textarea,
+.admin-select {
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-font-size-small);
+  color: var(--ds-color-text-primary);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--ds-glass-border);
+  border-radius: var(--ds-radius-button);
+  padding: 10px 14px;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color var(--ds-duration-fast) var(--ds-ease-out-natural),
+              background var(--ds-duration-fast) var(--ds-ease-out-natural);
+}
+
+.admin-input:focus,
+.admin-textarea:focus,
+.admin-select:focus {
+  border-color: rgba(255, 255, 255, var(--ds-border-opacity-strong));
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.admin-input:focus-visible,
+.admin-textarea:focus-visible,
+.admin-select:focus-visible {
+  outline: 2px solid var(--ds-color-accent-primary);
+  outline-offset: 1px;
+}
+
+.admin-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.admin-select {
+  cursor: pointer;
+}
+
+.admin-select option {
+  background: var(--ds-color-bg-secondary);
+  color: var(--ds-color-text-primary);
+}
+
+/* Form Helper & Error Texts */
+.admin-field-helper {
+  font-size: 12px;
+  color: var(--ds-color-text-muted);
+}
+
+.admin-field-error {
+  font-size: 12px;
+  color: #ef4444;
+}
+
+/* Badges */
+.admin-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: var(--ds-radius-small);
+  font-size: 11px;
+  font-weight: var(--ds-font-weight-medium);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+
+.admin-badge-default {
+  color: var(--ds-color-text-secondary);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--ds-glass-border);
+}
+
+.admin-badge-primary {
+  color: var(--ds-color-accent-secondary);
+  background: rgba(101, 214, 255, 0.1);
+  border-color: rgba(101, 214, 255, 0.25);
+}
+
+.admin-badge-success {
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.1);
+  border-color: rgba(52, 211, 153, 0.25);
+}
+
+.admin-badge-warning {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.1);
+  border-color: rgba(251, 191, 36, 0.25);
+}
+
+/* Modal Overlay Styling */
+.admin-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ds-z-modal);
+  background: rgba(14, 21, 37, 0.65);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ds-space-24);
+}
+
+.admin-modal {
+  width: 100%;
+  max-width: 540px;
+  position: relative;
+}
+
+.admin-modal-close {
+  position: absolute;
+  top: var(--ds-space-24);
+  right: var(--ds-space-24);
+  background: none;
+  border: none;
+  color: var(--ds-color-text-muted);
+  cursor: pointer;
+  transition: color var(--ds-duration-fast) var(--ds-ease-out-natural);
+}
+
+.admin-modal-close:hover {
+  color: var(--ds-color-text-primary);
+}
+
+.admin-modal-header {
+  margin-bottom: var(--ds-space-24);
+}
+
+.admin-modal-title {
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-font-size-subtitle);
+  font-weight: var(--ds-font-weight-medium);
+  color: var(--ds-color-text-primary);
+}
+
+.admin-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--ds-space-12);
+  margin-top: var(--ds-space-32);
+}
+
+/* Responsive Table Styling */
+.admin-table-container {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--ds-radius-small);
+  border: 1px solid var(--ds-glass-border);
+  background: rgba(14, 21, 37, 0.2);
+  margin: var(--ds-space-16) 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ds-glass-border) transparent;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-font-size-small);
+  min-width: 600px;
+}
+
+.admin-table th {
+  font-family: var(--ds-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ds-color-text-muted);
+  background: rgba(255, 255, 255, 0.02);
+  padding: var(--ds-space-16) var(--ds-space-20);
+  border-bottom: 1px solid var(--ds-glass-border);
+  font-weight: var(--ds-font-weight-medium);
+}
+
+.admin-table td {
+  padding: var(--ds-space-16) var(--ds-space-20);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: var(--ds-color-text-secondary);
+  vertical-align: middle;
+}
+
+.admin-table tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table tbody tr {
+  transition: background var(--ds-duration-fast) var(--ds-ease-out-natural);
+}
+
+.admin-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+

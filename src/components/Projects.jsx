@@ -1,135 +1,36 @@
-import { useEffect, useRef, useState } from 'react';
-import { PROJECTS_DATA } from './projectsData';
-import SectionHeading from './SectionHeading';
-import SectionLabel from './SectionLabel';
+import { useEffect, useRef, useState, useMemo } from 'react';
+import { X, Expand } from 'lucide-react';
+import { trackProjectClick } from '../utils/analytics';
 import './Projects.css';
 
-function ProjectCard({ project, cardRef }) {
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
+const GithubSvg = () => (
+  <svg viewBox="0 0 16 16" fill="currentColor" style={{ width: '15px', height: '15px' }}>
+    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/>
+  </svg>
+);
 
-  const activeImgUrl = project.galleryImages[activeImageIndex] || project.featuredImage;
+const ExternalLinkSvg = () => (
+  <svg viewBox="0 0 16 16" fill="currentColor" style={{ width: '15px', height: '15px' }}>
+    <path d="M6.22 8.72a.75.75 0 0 0 1.06 1.06l5.22-5.22v1.69a.75.75 0 0 0 1.5 0v-3.5a.75.75 0 0 0-.75-.75h-3.5a.75.75 0 0 0 0 1.5h1.69L6.22 8.72ZM3.5 4A1.5 1.5 0 0 0 2 5.5v7A1.5 1.5 0 0 0 3.5 14h7a1.5 1.5 0 0 0 1.5-1.5V9a.75.75 0 0 0-1.5 0v3.5h-7v-7H7A.75.75 0 0 0 7 4H3.5Z"/>
+  </svg>
+);
 
-  const handleThumbnailClick = (index) => {
-    setActiveImageIndex(index);
-  };
-
-  const handleKeyDown = (e, index) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      setActiveImageIndex(index);
-    }
-  };
-
-  return (
-    <article
-      className="project-card"
-      ref={cardRef}
-      data-project-id={project.id}
-      aria-labelledby={`project-title-${project.id}`}
-    >
-      {/* Eyebrow Label inside Card */}
-      <div className="eyebrow">
-        <span className="dot"></span>
-        Featured projects / {project.title}
-      </div>
-
-      {/* Gallery Structure */}
-      <div className="gallery">
-        {/* Main Preview Container */}
-        <div className="frame main-preview">
-          <span className="frame-label">Preview 0{activeImageIndex + 1}</span>
-          <span className="counter">0{activeImageIndex + 1} / 04</span>
-          {activeImgUrl ? (
-            <img
-              src={activeImgUrl}
-              alt={`Preview 0${activeImageIndex + 1}`}
-              className="project-preview-img"
-              loading="lazy"
-            />
-          ) : (
-            <span className="frame-status">Preview coming soon</span>
-          )}
-        </div>
-
-        {/* Vertical Thumbnails Stack Column — always the 3 images NOT shown in main preview */}
-        <div className="thumb-stack">
-          {project.galleryImages
-            .map((imgUrl, index) => ({ imgUrl, index }))
-            .filter(({ index }) => index !== activeImageIndex)
-            .map(({ imgUrl, index }) => (
-              <div
-                key={index}
-                role="button"
-                tabIndex={0}
-                className="frame thumb"
-                onClick={() => handleThumbnailClick(index)}
-                onKeyDown={(e) => handleKeyDown(e, index)}
-                aria-label={`View gallery image ${index + 1} of ${project.title}`}
-              >
-                <span className="thumb-num">0{index + 1}</span>
-                {imgUrl ? (
-                  <img
-                    src={imgUrl}
-                    alt={`Thumbnail 0${index + 1}`}
-                    className="project-thumbnail-img"
-                    loading="lazy"
-                  />
-                ) : (
-                  <span className="frame-status">Coming soon</span>
-                )}
-              </div>
-            ))}
-        </div>
-      </div>
-
-      {/* Title & Metadata Row */}
-      <div className="title-row">
-        <div>
-          <h1 id={`project-title-${project.id}`}>{project.title}</h1>
-          <div className="subtitle">{project.subtitle}</div>
-        </div>
-        <div className="actions">
-          <a
-            className="btn"
-            href={project.github}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            GitHub
-          </a>
-          <a
-            className="btn primary"
-            href={project.liveDemo}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Live demo
-          </a>
-        </div>
-      </div>
-
-      {/* Description Paragraph */}
-      <p className="description">
-        {project.description}
-      </p>
-
-      {/* Tech Stack Chip Grid */}
-      <div className="stack-label">Tech stack</div>
-      <div className="stack">
-        {project.technologies.map((tech) => (
-          <span key={tech} className="chip">{tech}</span>
-        ))}
-      </div>
-    </article>
-  );
-}
-
-export default function Projects() {
+export default function Projects({ projects }) {
   const scrollWrapperRef = useRef(null);
   const cardRefs = useRef([]);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [currentStageIndex, setCurrentStageIndex] = useState(0);
+  const [activeImgIndices, setActiveImgIndices] = useState({});
+  const [modalProject, setModalProject] = useState(null);
 
-  // 1. Accessibility listener for prefers-reduced-motion
+  const activeProjects = useMemo(() => {
+    if (projects && projects.length > 0) {
+      return projects.filter((p) => p.status === 'Published');
+    }
+    return [];
+  }, [projects]);
+
+  // Accessibility listener for prefers-reduced-motion
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
     setReducedMotion(media.matches);
@@ -138,110 +39,105 @@ export default function Projects() {
     return () => media.removeEventListener('change', handler);
   }, []);
 
-  // 2. High-Performance requestAnimationFrame Scroll engine loop (No React re-renders)
+  // Stacking Scroll Animation Engine
   useEffect(() => {
-    let active = true;
-    let rafId = null;
+    if (reducedMotion || activeProjects.length === 0) {
+      activeProjects.forEach((_, index) => {
+        const card = cardRefs.current[index];
+        if (card) {
+          card.style.transform = '';
+          card.style.opacity = '';
+          card.style.filter = '';
+          card.style.zIndex = '';
+          card.style.pointerEvents = '';
+          card.style.visibility = '';
+        }
+      });
+      return;
+    }
+
+    const wrapper = scrollWrapperRef.current;
+    if (!wrapper) return;
 
     const handleScroll = () => {
-      if (!active) return;
-      if (reducedMotion) {
-        // Reset card wrapper styling to default standard relative flow
-        PROJECTS_DATA.forEach((_, index) => {
-          const card = cardRefs.current[index];
-          if (card) {
-            card.style.transform = '';
-            card.style.opacity = '';
-            card.style.visibility = '';
-            card.style.filter = '';
-            card.style.pointerEvents = '';
-            card.style.zIndex = '';
-          }
-        });
-        return;
-      }
-
-      const wrapper = scrollWrapperRef.current;
-      if (!wrapper) return;
-
       const rect = wrapper.getBoundingClientRect();
       const viewportHeight = window.innerHeight;
       const totalScrollable = rect.height - viewportHeight;
 
       if (totalScrollable <= 0) return;
 
-      // Scroll progress P [0, 1] relative to wrapper
       const scrolled = -rect.top;
-      const P = Math.max(0, Math.min(1, scrolled / totalScrollable));
+      let rawProgress = scrolled / totalScrollable;
+      rawProgress = Math.max(0, Math.min(1, rawProgress));
 
-      // Dynamic derivation based on project count (Future CMS Compatibility)
-      const N = PROJECTS_DATA.length;
-      const progressPerCard = N > 1 ? 1 / (N - 1) : 1;
+      const N = activeProjects.length;
+      const sectionProgress = rawProgress * (N - 1);
+      const currentIndex = Math.floor(sectionProgress);
+      const localProgress = sectionProgress - currentIndex;
 
-      // Determine active index based on closest progress
-      const activeIndex = Math.max(0, Math.min(N - 1, Math.round(P / progressPerCard)));
-
-      // Next project card slides up from below in sync with the old card fading/blurring
-      // away — both happen simultaneously across the whole transition, no delay/wait.
-      // An ease-in curve keeps the very start of the motion slow and gentle so the
-      // scroll flow never feels like it snaps or jumps.
-      const translateYOffset = 180; // 180vh fully-parked starting offset
-
-      PROJECTS_DATA.forEach((_, index) => {
+      activeProjects.forEach((_, index) => {
         const card = cardRefs.current[index];
         if (!card) return;
 
-        const targetP = index * progressPerCard;
-        const x = (P - targetP) / progressPerCard;
-
-        let translateY = 0;
         let scale = 1;
+        let translateY = 0;
         let opacity = 1;
         let blur = 0;
-
-        if (x > 0) {
-          // A) Previous project card - behind current, scale 0.96, opacity 0.15, blur max 8px
-          const t = Math.min(1, x);
-          scale = 1 - 0.04 * t;
-          opacity = 1 - 0.85 * t;
-          blur = 8 * t;
-          translateY = -40 * t;
-        } else if (x < 0) {
-          // B) Next project card - slides up the ENTIRE time the previous card is
-          // fading/blurring (no delay, fully simultaneous). An ease-in curve
-          // (g*g) makes the motion very slow right at the start and gradually
-          // speed up, so it never feels like a sudden jump.
-          const t = Math.min(1, -x); // 1 = just started (far away), 0 = arriving/active
-          const g = 1 - t; // 0 = just started, 1 = fully arrived
-          const eased = g * g; // ease-in curve: slow start, faster finish
-          translateY = translateYOffset * (1 - eased);
-          opacity = eased;
-          scale = 1 - 0.04 * (1 - eased);
-        }
-        // x === 0 -> C) Active project card - centered, fully sharp (defaults above apply)
-
-        // A card is clickable exactly when, and only when, it is visibly on screen.
-        const isVisible = opacity > 0.05;
-
-        // Stacking z-index order based on active index state (Active: 30, Previous: 20, Next: 10)
         let zIndex = 10;
-        if (index === activeIndex) {
-          zIndex = 30;
-        } else if (index < activeIndex) {
-          zIndex = 20;
-        } else {
+        let pointerEvents = 'auto';
+        let isVh = false;
+
+        if (index < currentIndex) {
+          // Scrolled past
+          scale = 0.92;
+          translateY = -60;
+          opacity = 0;
+          blur = 15;
+          zIndex = 0;
+          pointerEvents = 'none';
+        } else if (index === currentIndex) {
+          // Active outgoing card
+          scale = 1 - 0.08 * localProgress;
+          translateY = -60 * localProgress;
+          opacity = 1 - localProgress;
+          blur = 15 * localProgress;
           zIndex = 10;
+          pointerEvents = localProgress > 0.85 ? 'none' : 'auto';
+        } else if (index === currentIndex + 1) {
+          // Incoming card sliding up over top
+          scale = 1;
+          translateY = 100 * (1 - localProgress);
+          opacity = 1;
+          blur = 0;
+          zIndex = 20;
+          pointerEvents = 'auto';
+          isVh = true;
+        } else {
+          // In queue below
+          scale = 1;
+          translateY = 100;
+          opacity = 0;
+          blur = 0;
+          zIndex = 0;
+          pointerEvents = 'none';
+          isVh = true;
         }
 
-        card.style.transform = `translate3d(0, ${x < 0 ? translateY + 'vh' : translateY + 'px'}, 0) scale(${scale})`;
-        card.style.opacity = opacity;
-        card.style.visibility = isVisible ? 'visible' : 'hidden';
-        card.style.filter = blur > 0 ? `blur(${blur}px)` : 'none';
-        card.style.pointerEvents = isVisible ? 'auto' : 'none';
-        card.style.zIndex = zIndex;
+        card.style.transform = isVh 
+          ? `translate3d(0, ${translateY}vh, 0) scale(${scale})` 
+          : `translate3d(0, ${translateY}px, 0) scale(${scale})`;
+        card.style.opacity = `${opacity}`;
+        card.style.filter = blur > 0 ? `blur(${blur}px)` : '';
+        card.style.zIndex = `${zIndex}`;
+        card.style.pointerEvents = pointerEvents;
+        card.style.visibility = opacity <= 0.01 ? 'hidden' : 'visible';
       });
+
+      setCurrentStageIndex(currentIndex);
     };
 
+    let active = true;
+    let rafId = null;
     const updateLoop = () => {
       handleScroll();
       if (active) {
@@ -249,9 +145,7 @@ export default function Projects() {
       }
     };
 
-    // Run animation frames
     rafId = requestAnimationFrame(updateLoop);
-
     window.addEventListener('resize', handleScroll);
 
     return () => {
@@ -259,47 +153,276 @@ export default function Projects() {
       cancelAnimationFrame(rafId);
       window.removeEventListener('resize', handleScroll);
     };
-  }, [reducedMotion]);
+  }, [reducedMotion, activeProjects]);
 
-  // Dynamically calculate scroll wrapper height based on projects array length
-  const totalScrollHeightVh = PROJECTS_DATA.length * 100;
+  const scrollToCard = (index) => {
+    const wrapper = scrollWrapperRef.current;
+    if (!wrapper) return;
+    const totalScrollableHeight = wrapper.offsetHeight - window.innerHeight;
+    const step = totalScrollableHeight / (activeProjects.length - 1);
+    const targetY = wrapper.offsetTop + (index * step);
+
+    window.scrollTo({
+      top: targetY,
+      behavior: 'smooth'
+    });
+  };
+
+  const totalScrollHeightVh = activeProjects.length * 100;
+
+  if (activeProjects.length === 0) {
+    return null;
+  }
 
   return (
     <div
-      className="projects-scroll-wrapper"
       ref={scrollWrapperRef}
+      className="projects-scroll-wrapper relative w-full"
       style={{ height: `${totalScrollHeightVh}vh` }}
     >
-      <section className="projects-section" id="projects" aria-label="Portfolio Projects">
-        {/* Backdrop lighting transitions */}
-        <div className="projects-bg-glow-layer" aria-hidden="true" />
+      {/* Sticky Stage Viewport Container */}
+      <div className="sticky top-0 w-full h-screen overflow-hidden flex flex-col items-center justify-center bg-black">
+        {/* Ambient Backlight */}
+        <div className="stage-glow-new" aria-hidden="true"></div>
 
-        <div className="projects-container">
-          <div className="projects-section-header">
-            <SectionLabel>PORTFOLIO WORK</SectionLabel>
-            <SectionHeading align="center" className="projects-section-title">
-              Featured <span className="projects-title-accent">Projects</span>
-            </SectionHeading>
-            <p className="projects-section-sub">
-              A curated selection of applications bridging technical complexity, modern architecture, and refined design.
-            </p>
-          </div>
+        {/* Header Title Layer (Top Left) */}
+        <div className="absolute top-6 left-6 md:left-8 z-40 hidden md:block">
+          <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block">Stage Catalog</span>
+          <h1 className="text-sm font-semibold text-white tracking-tight">Keynote Showcase</h1>
+        </div>
 
-          <div className="projects-grid">
-            {PROJECTS_DATA.map((project, index) => (
-              <div
-                key={project.id}
-                className="project-card-wrapper"
-                ref={(el) => (cardRefs.current[index] = el)}
-              >
-                <ProjectCard
-                  project={project}
-                />
-              </div>
+        {/* Stage Position Indicator (Left Edge) */}
+        <div className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-40 hidden sm:flex flex-col items-center gap-4 text-xs font-mono">
+          <span className="text-zinc-500 text-[10px] uppercase tracking-widest rotate-[-90deg] mb-6">Stage Index</span>
+          <div className="flex flex-col gap-3">
+            {activeProjects.map((_, i) => (
+              <button
+                key={i}
+                className={`w-2.5 h-2.5 rounded-full border border-white/30 transition-all duration-300 hover:scale-125 cursor-pointer ${
+                  i === currentStageIndex ? 'bg-blue-400 border-blue-400 w-3 h-3' : 'bg-transparent'
+                }`}
+                onClick={() => scrollToCard(i)}
+                title={`Jump to Project ${i + 1}`}
+              />
             ))}
           </div>
         </div>
-      </section>
+
+        {/* Slide Counter Badge (Top Right) */}
+        <div className="absolute top-6 right-6 md:right-8 z-40 flex items-center gap-3 bg-black/60 border border-white/10 backdrop-blur-md px-4 py-1.5 rounded-full text-xs text-zinc-300 font-mono shadow-lg">
+          <span className="text-blue-400 font-bold tracking-wider">PROJECT</span>
+          <span className="text-white font-bold text-sm">
+            {String(currentStageIndex + 1).padStart(2, '0')}
+          </span>
+          <span className="text-zinc-600">/</span>
+          <span className="text-zinc-500">
+            {String(activeProjects.length).padStart(2, '0')}
+          </span>
+        </div>
+
+        {/* Cards Wrapper Container */}
+        <div className="relative w-full h-full flex items-center justify-center">
+          {activeProjects.map((project, idx) => {
+            const gallery = project.gallery || [];
+            const cover = project.coverImage || '';
+            
+            // Build unique images list
+            const imagesList = [];
+            if (cover) imagesList.push(cover);
+            gallery.forEach(img => {
+              if (img && !imagesList.includes(img)) imagesList.push(img);
+            });
+            if (imagesList.length === 0) {
+              imagesList.push('/frames/frame-138.webp');
+            }
+            
+            const activeImgIdx = activeImgIndices[idx] || 0;
+            const currentImg = imagesList[activeImgIdx % imagesList.length];
+
+            const techList = Array.isArray(project.technologies)
+              ? project.technologies
+              : typeof project.techStack === 'string'
+              ? project.techStack.split(',').map((t) => t.trim()).filter(Boolean)
+              : [];
+
+            const githubUrl = project.githubUrl || project.github || '';
+            const liveUrl = project.liveUrl || project.liveDemo || '';
+            const projectYear = project.year || (project.createdAt ? new Date(project.createdAt).getFullYear() : '2026');
+            const isFeatured = project.featured || false;
+
+            return (
+              <div
+                key={project.id}
+                className="stage-card-new project-card-container absolute"
+                ref={(el) => (cardRefs.current[idx] = el)}
+                style={{
+                  width: '90vw',
+                  maxWidth: '820px' // Mockup updated to 820px
+                }}
+              >
+                {/* 1. Card Header */}
+                <div className="card-header-el">
+                  <div className="header-text-el">
+                    <h2>
+                      {project.title}{' '}
+                      {isFeatured && (
+                        <span className="badge-featured-el">FEATURED</span>
+                      )}
+                    </h2>
+                    <p>{project.subtitle || 'Custom Build'}</p>
+                  </div>
+                  <span className="header-year-el">{projectYear}</span>
+                </div>
+
+                {/* 2. Card Media: main image + thumbnail rail (Mockup Grid) */}
+                <div 
+                  className="card-media-el"
+                  style={imagesList.length <= 1 ? { gridTemplateColumns: '1fr' } : {}}
+                >
+                  <div className="media-main-el">
+                    <img
+                      src={currentImg}
+                      alt={project.title}
+                      onError={(e) => { e.target.src = '/frames/frame-138.webp'; }}
+                    />
+                    <div className="media-hover-overlay">
+                      <span className="text-xs font-mono text-white/90 bg-black/70 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/10 flex items-center gap-1.5">
+                        <Expand className="w-3.5 h-3.5 text-blue-400" />
+                        Interactive Preview Active
+                      </span>
+                    </div>
+                  </div>
+
+                  {imagesList.length > 1 && (
+                    <div className="media-thumbs-el">
+                      {imagesList.slice(0, 3).map((imgUrl, thumbIdx) => {
+                        const isActive = (activeImgIdx % imagesList.length) === thumbIdx;
+                        const isFirst = thumbIdx === 0;
+                        const thumbClass = isFirst ? "thumb-screenshot-el" : "thumb-cert-el";
+                        return (
+                          <img
+                            key={imgUrl + thumbIdx}
+                            className={`${thumbClass} ${isActive ? 'active' : ''}`}
+                            src={imgUrl}
+                            alt={`Thumb ${thumbIdx + 1}`}
+                            onClick={() => {
+                              setActiveImgIndices(prev => ({
+                                ...prev,
+                                [idx]: thumbIdx
+                              }));
+                            }}
+                            onError={(e) => { e.target.src = '/frames/frame-138.webp'; }}
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* 3. Card Body */}
+                <div className="card-body-el">
+                  <p className="card-caption-el">
+                    {project.longDesc || project.description || project.shortDesc}
+                  </p>
+
+                  <div className="tag-row-el">
+                    {techList.slice(0, 5).map((tech) => (
+                      <span key={tech} className="tag-el">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 4. Card Footer */}
+                <div className="card-footer-el">
+                  {githubUrl && (
+                    <a
+                      href={githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => trackProjectClick(project.title)}
+                      className="btn-el btn-secondary-el"
+                    >
+                      <GithubSvg />
+                      Repository
+                    </a>
+                  )}
+                  {liveUrl && (
+                    <button
+                      onClick={() => {
+                        trackProjectClick(project.title);
+                        setModalProject({
+                          title: project.title,
+                          image: currentImg,
+                          liveUrl: liveUrl
+                        });
+                      }}
+                      className="btn-el btn-primary-el"
+                    >
+                      <ExternalLinkSvg />
+                      Live Preview
+                    </button>
+                  )}
+                </div>
+
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Fullscreen Interactive Sandbox Preview Modal */}
+      {modalProject && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl transition-all duration-300"
+          onClick={() => setModalProject(null)}
+        >
+          <div
+            className="apple-glass rounded-2xl w-full max-w-4xl p-6 relative border border-white/20 shadow-2xl transform scale-100 transition-all duration-300"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setModalProject(null)}
+              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors cursor-pointer"
+            >
+              <X size={18} />
+            </button>
+            <h3 className="text-2xl font-bold text-white mb-2">{modalProject.title}</h3>
+            <p className="text-xs text-zinc-400 mb-4 font-mono">Interactive Sandbox Simulation Mode</p>
+
+            <div className="relative aspect-16-9 rounded-xl overflow-hidden bg-black border border-white/10 mb-4">
+              <img src={modalProject.image} alt={modalProject.title} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
+                <div className="text-xs text-zinc-300 font-mono space-y-1">
+                  <p><span className="w-2 h-2 rounded-full bg-emerald-400 inline-block mr-2 animate-pulse"></span>Status: Live Production Environment Connected</p>
+                  <p><span className="w-2 h-2 rounded-full bg-blue-400 inline-block mr-2"></span>Latency: 14ms | WebSockets Active</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center pt-2">
+              <span className="text-xs text-zinc-400">Click anywhere outside or hit close to return to keynote stage.</span>
+              <div className="flex gap-3">
+                <a
+                  href={modalProject.liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-5 py-2 rounded-xl bg-blue-600 text-white font-semibold text-xs hover:bg-blue-500 transition-colors flex items-center gap-1.5"
+                >
+                  Open Live Link <ExternalLinkSvg />
+                </a>
+                <button
+                  onClick={() => setModalProject(null)}
+                  className="px-5 py-2 rounded-xl bg-white text-black font-semibold text-xs hover:bg-zinc-200 transition-colors cursor-pointer"
+                >
+                  Close Preview
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

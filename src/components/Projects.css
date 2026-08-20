@@ -25,7 +25,8 @@
 /* Outer Card override with design spec values */
 .project-card-container {
   width: 100%;
-  max-width: 820px; /* Mockup updated to 820px */
+  max-width: 820px;
+  /* Mockup updated to 820px */
   background: #0f1115;
   border: 1px solid #262a33;
   border-radius: 14px;

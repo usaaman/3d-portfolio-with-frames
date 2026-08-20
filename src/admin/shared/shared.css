@@ -120,47 +120,47 @@
 .admin-field {
   display: flex;
   flex-direction: column;
-  gap: var(--ds-space-8);
+  gap: 6px;
   width: 100%;
 }
 
 .admin-label {
   font-family: var(--ds-font-mono);
-  font-size: var(--ds-font-size-caption);
-  letter-spacing: 0.08em;
+  font-size: 11px;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--ds-color-text-muted);
+  font-weight: 600;
+  color: #cbd5e1;
 }
 
 .admin-input,
 .admin-textarea,
 .admin-select {
   font-family: var(--ds-font-body);
-  font-size: var(--ds-font-size-small);
+  font-size: 13px;
   color: var(--ds-color-text-primary);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--ds-glass-border);
-  border-radius: var(--ds-radius-button);
-  padding: 10px 14px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 11px 15px;
   outline: none;
   width: 100%;
   box-sizing: border-box;
-  transition: border-color var(--ds-duration-fast) var(--ds-ease-out-natural),
-              background var(--ds-duration-fast) var(--ds-ease-out-natural);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .admin-input:focus,
 .admin-textarea:focus,
 .admin-select:focus {
-  border-color: rgba(255, 255, 255, var(--ds-border-opacity-strong));
-  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(56, 189, 248, 0.6);
+  background: rgba(15, 23, 42, 0.85);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
 }
 
 .admin-input:focus-visible,
 .admin-textarea:focus-visible,
 .admin-select:focus-visible {
-  outline: 2px solid var(--ds-color-accent-primary);
-  outline-offset: 1px;
+  outline: none;
 }
 
 .admin-textarea {

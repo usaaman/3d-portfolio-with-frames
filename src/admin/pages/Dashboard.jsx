@@ -24,7 +24,6 @@ export default function Dashboard() {
 
   const [stats, setStats] = useState({
     projectsCount: 0,
-    skillsCount: 0,
     servicesCount: 0,
     unreadMessages: 0,
     totalMessages: 0,
@@ -53,9 +52,7 @@ export default function Dashboard() {
         const projSnap = await getDocs(collection(db, 'projects'));
         const projectsCount = projSnap.size;
 
-        // Fetch skills count
-        const skillsSnap = await getDoc(doc(db, 'skills', 'skills-doc'));
-        const skillsCount = skillsSnap.exists() ? (skillsSnap.data().entries || []).length : 0;
+
 
         // Fetch services count
         const svcsSnap = await getDocs(collection(db, 'services'));
@@ -75,7 +72,6 @@ export default function Dashboard() {
 
         setStats({
           projectsCount,
-          skillsCount,
           servicesCount,
           unreadMessages,
           totalMessages,
@@ -109,15 +105,7 @@ export default function Dashboard() {
           comparisonLabel="published listings"
           onClick={() => navigate('/admin/projects')}
         />
-        <StatCard
-          icon={Award}
-          title="Active Skills"
-          value={stats.loading ? "..." : String(stats.skillsCount)}
-          comparisonBadgeText="Profile"
-          comparisonType="success"
-          comparisonLabel="listed skills"
-          onClick={() => navigate('/admin/skills')}
-        />
+
         <StatCard
           icon={Grid}
           title="Services"
@@ -154,9 +142,7 @@ export default function Dashboard() {
             <Button onClick={() => navigate('/admin/projects')}>
               <Plus size={16} /> Add Project
             </Button>
-            <Button onClick={() => navigate('/admin/skills')}>
-              <Plus size={16} /> Add Skill
-            </Button>
+
             <Button variant="ghost" onClick={() => navigate('/admin/media')}>
               <Image size={16} /> Media Library
             </Button>

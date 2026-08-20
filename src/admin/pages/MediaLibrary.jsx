@@ -245,7 +245,7 @@ export default function MediaLibrary() {
                       <FileText size={32} />
                     </div>
                   ) : (
-                    <img src={item.path} alt={item.name} onError={(e) => { e.target.src = '/frames/frame-138.webp'; }} />
+                    <img src={item.path} alt={item.name} onError={(e) => { e.target.src = '/favicon.svg'; }} />
                   )}
                   <div className="asset-card-overlay">
                     <button
@@ -303,7 +303,7 @@ export default function MediaLibrary() {
                         {item.type === 'pdf' ? (
                           <FileText size={18} />
                         ) : (
-                          <img src={item.path} alt="" onError={(e) => { e.target.src = '/frames/frame-138.webp'; }} />
+                          <img src={item.path} alt="" onError={(e) => { e.target.src = '/favicon.svg'; }} />
                         )}
                       </div>
                     </td>
@@ -384,7 +384,7 @@ export default function MediaLibrary() {
                 </div>
               ) : (
                 <div className="lightbox-img-preview">
-                  <img src={activeAsset.path} alt="" onError={(e) => { e.target.src = '/frames/frame-138.webp'; }} />
+                  <img src={activeAsset.path} alt="" onError={(e) => { e.target.src = '/favicon.svg'; }} />
                 </div>
               )}
             </div>

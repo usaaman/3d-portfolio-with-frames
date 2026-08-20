@@ -38,7 +38,7 @@
   --color-ds-bg-gradient-start: var(--ds-color-bg-gradient-start);
   --color-ds-bg-gradient-mid: var(--ds-color-bg-gradient-mid);
   --color-ds-bg-gradient-end: var(--ds-color-bg-gradient-end);
-  
+
   --color-ds-accent-primary: var(--ds-color-accent-primary);
   --color-ds-accent-secondary: var(--ds-color-accent-secondary);
   --color-ds-text-primary: var(--ds-color-text-primary);
@@ -195,7 +195,10 @@ button {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;

@@ -9,8 +9,7 @@ export async function uploadFileToCloudinary(file) {
     
     // Return a mock path or asset frame path
     const mockPaths = [
-      '/frames/frame-138.webp',
-      '/frames/frame-081.webp'
+      '/favicon.svg'
     ];
     return mockPaths[Math.floor(Math.random() * mockPaths.length)];
   }

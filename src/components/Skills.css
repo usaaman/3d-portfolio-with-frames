@@ -1,0 +1,109 @@
+/* Ambient Glowing Background Blobs for Glass Transparency */
+.skills-ambient-glow-1 {
+  position: absolute;
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle, rgba(0, 245, 255, 0.24) 0%, rgba(99, 102, 241, 0.14) 50%, rgba(11, 15, 25, 0) 70%);
+  top: -100px;
+  left: -100px;
+  border-radius: 50%;
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.skills-ambient-glow-2 {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.22) 0%, rgba(56, 189, 248, 0.12) 50%, rgba(11, 15, 25, 0) 70%);
+  bottom: -120px;
+  right: -120px;
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.skills-ambient-glow-3 {
+  position: absolute;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(0, 245, 255, 0.18) 0%, rgba(147, 51, 234, 0.1) 50%, rgba(11, 15, 25, 0) 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.skills-glass-card {
+  background: rgba(15, 23, 42, 0.42);
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 
+    0 30px 70px -15px rgba(0, 0, 0, 0.5),
+    inset 0 1px 2px 0 rgba(255, 255, 255, 0.25),
+    0 0 50px 0 rgba(0, 245, 255, 0.08);
+}
+
+/* Skill Pill Text Styling */
+.skills-pill-text {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 700;
+  user-select: none;
+  pointer-events: none;
+  text-rendering: geometricPrecision;
+}
+
+/* Font Awesome inside SVG textPath support */
+.skills-fa-solid {
+  font-family: "Font Awesome 6 Free", sans-serif;
+  font-weight: 900;
+}
+.skills-fa-brand {
+  font-family: "Font Awesome 6 Brands", sans-serif;
+  font-weight: 400;
+}
+
+@keyframes skills-spin-cw {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes skills-spin-ccw {
+  0% { transform: rotate(360deg); }
+  100% { transform: rotate(-360deg); }
+}
+
+/* Rotation origin pinned precisely to SVG center (500, 500) */
+.skills-orbit-ring {
+  transform-origin: 500px 500px;
+  transform-box: view-box;
+}
+
+.skills-orbit-ring.paused {
+  animation-play-state: paused !important;
+}
+
+/* Skill Pill Base Styling */
+.skills-pill-group {
+  pointer-events: auto;
+}
+
+.skills-neumorphic-center {
+  cursor: pointer;
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.22s ease;
+}
+
+.skills-neumorphic-center:hover {
+  transform: translate(500px, 500px) scale(1.06) !important;
+  filter: drop-shadow(0 0 18px rgba(0, 245, 255, 0.45));
+}
+
+.skills-neumorphic-center:active {
+  transform: translate(500px, 500px) scale(0.95) !important;
+}

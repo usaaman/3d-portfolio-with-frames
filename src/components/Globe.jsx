@@ -351,8 +351,14 @@ export default function Globe({ hudRotRef }) {
     // ---- animation loop -------------------------------------------------------
     const clock = new THREE.Clock();
     let animationFrameId = null;
+    let inView = false;
+    let isAnimating = false;
 
     const animate = () => {
+      if (!inView) {
+        isAnimating = false;
+        return;
+      }
       animationFrameId = requestAnimationFrame(animate);
       const dt = Math.min(clock.getDelta(), 0.05);
       const time = clock.elapsedTime;
@@ -410,11 +416,22 @@ export default function Globe({ hudRotRef }) {
 
       renderer.render(scene, camera);
     };
-    
-    animate();
+
+    // Only animate and render when the globe container is intersecting the viewport
+    const intersectionObserver = new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      if (inView && !isAnimating) {
+        isAnimating = true;
+        clock.getDelta(); // reset clock delta to prevent jump
+        animate();
+      }
+    }, { threshold: 0.01 });
+
+    intersectionObserver.observe(container);
 
     return () => {
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      intersectionObserver.disconnect();
       canvas.removeEventListener('pointerdown', handlePointerDown);
       window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('pointerup', handlePointerUp);

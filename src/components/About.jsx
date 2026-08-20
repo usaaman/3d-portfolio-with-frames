@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import { useZoomReveal } from '../hooks/useZoomReveal';
+import TypewriterText from './TypewriterText';
 import {
   Grid2x2,
   Quote,
@@ -22,6 +24,8 @@ function getIconByLabel(label = '') {
 
 const AboutInner = React.memo(function AboutInner({ aboutData }) {
   const data = aboutData || {};
+  const aboutTitleRef = useRef(null);
+  useZoomReveal(aboutTitleRef);
 
   const renderedGlanceItems = React.useMemo(() => {
     const list = data.glanceItems || [];
@@ -74,7 +78,7 @@ const AboutInner = React.memo(function AboutInner({ aboutData }) {
             <Grid2x2 size={13} strokeWidth={2} />
             ABOUT ME
           </span>
-          <h2 className="about-title">
+          <h2 className="about-title" ref={aboutTitleRef}>
             {data.title || "Curious mind,"}
             {(!data.title) && <><br /><span className="about-title-accent">creative hands</span></>}
           </h2>

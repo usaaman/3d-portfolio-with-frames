@@ -20,7 +20,6 @@ const AIChatbot = React.lazy(() => import('./components/AIChatbot'));
 const Dashboard = React.lazy(() => import('./admin/pages/Dashboard'));
 const HeroManager = React.lazy(() => import('./admin/pages/HeroManager'));
 const AboutManager = React.lazy(() => import('./admin/pages/AboutManager'));
-const SkillsManager = React.lazy(() => import('./admin/pages/SkillsManager'));
 const ProjectsManager = React.lazy(() => import('./admin/pages/ProjectsManager'));
 const ServicesManager = React.lazy(() => import('./admin/pages/ServicesManager'));
 const ResumeManager = React.lazy(() => import('./admin/pages/ResumeManager'));
@@ -72,8 +71,8 @@ function PortfolioView() {
 
   React.useEffect(() => {
     if (portfolio.loading) return;
-    const sections = ['home', 'about', 'skills', 'projects', 'services', 'contact'];
-    
+    const sections = ['home', 'about', 'projects', 'services', 'contact'];
+
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -96,7 +95,7 @@ function PortfolioView() {
     <>
       <Header resume={portfolio.resume} />
       <main>
-        <HeroAboutScroll hero={portfolio.hero} about={portfolio.about} resume={portfolio.resume} skills={portfolio.skills} />
+        <HeroAboutScroll hero={portfolio.hero} about={portfolio.about} resume={portfolio.resume} />
         <Projects projects={portfolio.projects} />
         <Services services={portfolio.services} />
         <Contact socials={portfolio.socialLinks} />
@@ -123,7 +122,7 @@ export default function App() {
         {/* Protected Dashboard CMS and Managers */}
         <Route path="/admin" element={<AdminLayout auth={auth} />}>
           <Route index element={<Navigate to="/admin/dashboard" replace />} />
-          
+
           <Route path="dashboard" element={
             <React.Suspense fallback={<LazyLoader />}><Dashboard /></React.Suspense>
           } />
@@ -132,9 +131,6 @@ export default function App() {
           } />
           <Route path="about" element={
             <React.Suspense fallback={<LazyLoader />}><AboutManager /></React.Suspense>
-          } />
-          <Route path="skills" element={
-            <React.Suspense fallback={<LazyLoader />}><SkillsManager /></React.Suspense>
           } />
           <Route path="projects" element={
             <React.Suspense fallback={<LazyLoader />}><ProjectsManager /></React.Suspense>

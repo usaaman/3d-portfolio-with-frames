@@ -26,7 +26,7 @@ const FALLBACK_HERO = {
   linkedinUrl: 'https://www.linkedin.com/in/muhammad-usman-a76984378/',
   twitterUrl: 'https://twitter.com/',
   emailAddress: 'musmannazir97@gmail.com',
-  avatarUrl: '/frames/frame-138.webp',
+  avatarUrl: '/favicon.svg',
 };
 
 const FALLBACK_ABOUT = {
@@ -45,7 +45,7 @@ const FALLBACK_ABOUT = {
     { id: 2, type: 'experience', date: '2025 - Present', title: 'Full Stack Web Freelancer', institution: 'Remote / Client Services' },
     { id: 3, type: 'experience', date: '2022 - 2024', title: 'Lead CapCut Video Editor', institution: 'Creative Studio' }
   ],
-  imageUrl: '/frames/frame-081.webp',
+  imageUrl: '/favicon.svg',
 };
 
 const FALLBACK_SOCIALS = {
@@ -110,7 +110,6 @@ export default function usePortfolioData() {
       about: false,
       socialLinks: false,
       resume: false,
-      skills: false,
       projects: false,
       services: false,
       aiConfig: false,
@@ -172,113 +171,7 @@ export default function usePortfolioData() {
       checkLoading();
     });
 
-    let migratingSkills = false;
-    const unsubSkills = onSnapshot(collection(db, 'skills'), (snap) => {
-      const skills = [];
-      snap.forEach((doc) => {
-        skills.push({ id: doc.id, ...doc.data() });
-      });
 
-      const skillsDoc = skills.find(d => d.id === 'skills-doc');
-      const catsDoc = skills.find(d => d.id === 'categories-doc');
-      const hasFrontend = catsDoc && (catsDoc.entries || []).some(c => c.id === 'cat-frontend');
-
-      if ((!skillsDoc || !skillsDoc.entries || skillsDoc.entries.length < 15 || !hasFrontend) && !migratingSkills) {
-        migratingSkills = true;
-        const initialCats = [
-          { id: 'cat-frontend', label: 'Frontend', hidden: false },
-          { id: 'cat-backend', label: 'Backend', hidden: false },
-          { id: 'cat-db-cloud', label: 'Database & Cloud', hidden: false },
-          { id: 'cat-ai-auto', label: 'AI & Automation', hidden: false },
-          { id: 'cat-programming', label: 'Programming', hidden: false },
-          { id: 'cat-tools-devops', label: 'Tools & DevOps', hidden: false }
-        ];
-        const initialSkills = [
-          // Frontend (cat-frontend)
-          { id: 1, categoryId: 'cat-frontend', name: 'HTML5', color: '#E34F26', icon: 'Globe', hidden: false },
-          { id: 2, categoryId: 'cat-frontend', name: 'CSS3', color: '#1572B6', icon: 'Globe', hidden: false },
-          { id: 3, categoryId: 'cat-frontend', name: 'JavaScript (ES6+)', color: '#F7DF1E', icon: 'Code', hidden: false },
-          { id: 4, categoryId: 'cat-frontend', name: 'TypeScript', color: '#3178C6', icon: 'Code', hidden: false },
-          { id: 5, categoryId: 'cat-frontend', name: 'React.js', color: '#61DAFB', icon: 'Cpu', hidden: false },
-          { id: 6, categoryId: 'cat-frontend', name: 'Vite', color: '#646CFF', icon: 'Cpu', hidden: false },
-          { id: 7, categoryId: 'cat-frontend', name: 'Tailwind CSS', color: '#06B6D4', icon: 'Globe', hidden: false },
-          { id: 8, categoryId: 'cat-frontend', name: 'Framer Motion', color: '#F024B3', icon: 'LayoutDashboard', hidden: false },
-          { id: 9, categoryId: 'cat-frontend', name: 'GSAP', color: '#88CE02', icon: 'LayoutDashboard', hidden: false },
-          { id: 10, categoryId: 'cat-frontend', name: 'Responsive Web Design', color: '#FFFFFF', icon: 'Globe', hidden: false },
-
-          // Backend (cat-backend)
-          { id: 11, categoryId: 'cat-backend', name: 'Node.js', color: '#339933', icon: 'Server', hidden: false },
-          { id: 12, categoryId: 'cat-backend', name: 'Express.js', color: '#FFFFFF', icon: 'Server', hidden: false },
-          { id: 13, categoryId: 'cat-backend', name: 'REST API Development', color: '#009688', icon: 'Terminal', hidden: false },
-          { id: 14, categoryId: 'cat-backend', name: 'API Integration', color: '#008080', icon: 'Terminal', hidden: false },
-          { id: 15, categoryId: 'cat-backend', name: 'Authentication (JWT)', color: '#000000', icon: 'Terminal', hidden: false },
-          { id: 16, categoryId: 'cat-backend', name: 'Firebase Authentication', color: '#FFCA28', icon: 'Flame', hidden: false },
-          { id: 17, categoryId: 'cat-backend', name: 'Middleware Development', color: '#D3D3D3', icon: 'Server', hidden: false },
-          { id: 18, categoryId: 'cat-backend', name: 'CRUD Operations', color: '#FFFFFF', icon: 'Database', hidden: false },
-
-          // Database & Cloud (cat-db-cloud)
-          { id: 19, categoryId: 'cat-db-cloud', name: 'Firebase Firestore', color: '#FFA000', icon: 'Database', hidden: false },
-          { id: 20, categoryId: 'cat-db-cloud', name: 'Firebase Storage', color: '#FFCA28', icon: 'Box', hidden: false },
-          { id: 21, categoryId: 'cat-db-cloud', name: 'Cloudinary', color: '#3448C5', icon: 'Box', hidden: false },
-          { id: 22, categoryId: 'cat-db-cloud', name: 'IndexedDB', color: '#FFFFFF', icon: 'Database', hidden: false },
-          { id: 23, categoryId: 'cat-db-cloud', name: 'MySQL', color: '#4479A1', icon: 'Database', hidden: false },
-          { id: 24, categoryId: 'cat-db-cloud', name: 'Database Design', color: '#D394FF', icon: 'Database', hidden: false },
-          { id: 25, categoryId: 'cat-db-cloud', name: 'Real-time Data Sync', color: '#34D399', icon: 'Cpu', hidden: false },
-
-          // AI & Automation (cat-ai-auto)
-          { id: 26, categoryId: 'cat-ai-auto', name: 'AI Agent Development', color: '#A78BFA', icon: 'Cpu', hidden: false },
-          { id: 27, categoryId: 'cat-ai-auto', name: 'Prompt Engineering', color: '#FFFFFF', icon: 'Terminal', hidden: false },
-          { id: 28, categoryId: 'cat-ai-auto', name: 'Groq API', color: '#F25C54', icon: 'Terminal', hidden: false },
-          { id: 29, categoryId: 'cat-ai-auto', name: 'OpenAI API', color: '#00A67E', icon: 'Cpu', hidden: false },
-          { id: 30, categoryId: 'cat-ai-auto', name: 'RAG (Retrieval-Augmented Generation)', color: '#FFFFFF', icon: 'Code', hidden: false },
-          { id: 31, categoryId: 'cat-ai-auto', name: 'Tool Calling', color: '#FFFFFF', icon: 'Terminal', hidden: false },
-          { id: 32, categoryId: 'cat-ai-auto', name: 'AI Chatbot Development', color: '#38BDF8', icon: 'Cpu', hidden: false },
-          { id: 33, categoryId: 'cat-ai-auto', name: 'Workflow Automation', color: '#F59E0B', icon: 'LayoutDashboard', hidden: false },
-
-          // Programming (cat-programming)
-          { id: 34, categoryId: 'cat-programming', name: 'Python', color: '#3776AB', icon: 'Code', hidden: false },
-          { id: 35, categoryId: 'cat-programming', name: 'C++', color: '#00599C', icon: 'Code', hidden: false },
-          { id: 36, categoryId: 'cat-programming', name: 'C#', color: '#178600', icon: 'Code', hidden: false },
-          { id: 37, categoryId: 'cat-programming', name: 'Java', color: '#007396', icon: 'Code', hidden: false },
-          { id: 38, categoryId: 'cat-programming', name: 'Assembly Language', color: '#FFFFFF', icon: 'Code', hidden: false },
-          { id: 39, categoryId: 'cat-programming', name: 'Object-Oriented Programming', color: '#FFFFFF', icon: 'Code', hidden: false },
-          { id: 40, categoryId: 'cat-programming', name: 'Data Structures & Algorithms', color: '#FFFFFF', icon: 'Code', hidden: false },
-
-          // Tools & DevOps (cat-tools-devops)
-          { id: 41, categoryId: 'cat-tools-devops', name: 'Git', color: '#F05032', icon: 'Code', hidden: false },
-          { id: 42, categoryId: 'cat-tools-devops', name: 'GitHub', color: '#FFFFFF', icon: 'Code', hidden: false },
-          { id: 43, categoryId: 'cat-tools-devops', name: 'VS Code', color: '#007ACC', icon: 'Code', hidden: false },
-          { id: 44, categoryId: 'cat-tools-devops', name: 'Postman', color: '#FF6C37', icon: 'Terminal', hidden: false },
-          { id: 45, categoryId: 'cat-tools-devops', name: 'npm', color: '#CB3837', icon: 'Terminal', hidden: false },
-          { id: 46, categoryId: 'cat-tools-devops', name: 'Cisco Packet Tracer', color: '#1C3C5A', icon: 'Server', hidden: false },
-          { id: 47, categoryId: 'cat-tools-devops', name: 'Enterprise Architect', color: '#FFFFFF', icon: 'LayoutDashboard', hidden: false },
-          { id: 48, categoryId: 'cat-tools-devops', name: 'Figma', color: '#F24E1E', icon: 'LayoutDashboard', hidden: false },
-          { id: 49, categoryId: 'cat-tools-devops', name: 'Canva', color: '#00C4CC', icon: 'LayoutDashboard', hidden: false },
-          { id: 50, categoryId: 'cat-tools-devops', name: 'CapCut', color: '#10B981', icon: 'Video', hidden: false }
-        ];
-
-        Promise.all([
-          setDoc(doc(db, 'skills', 'categories-doc'), { entries: initialCats }),
-          setDoc(doc(db, 'skills', 'skills-doc'), { entries: initialSkills })
-        ])
-        .then(() => {
-          console.log('Seeded 50 production skills successfully.');
-          migratingSkills = false;
-        })
-        .catch(err => {
-          console.warn('Seeding 50 production skills failed:', err);
-          migratingSkills = false;
-        });
-      }
-
-      setData(prev => ({ ...prev, skills }));
-      initialFires.skills = true;
-      checkLoading();
-    }, (error) => {
-      console.warn("Error listening to skills:", error);
-      initialFires.skills = true;
-      checkLoading();
-    });
 
     let migrating = false;
     const unsubProjects = onSnapshot(query(collection(db, 'projects'), orderBy('displayOrder', 'asc')), (snap) => {
@@ -473,7 +366,6 @@ export default function usePortfolioData() {
       unsubSocials();
       unsubResume();
       unsubAIConfig();
-      unsubSkills();
       unsubProjects();
       unsubServices();
       unsubSEO();
@@ -502,103 +394,30 @@ export default function usePortfolioData() {
         type: 'Mobile App',
         status: 'Published',
         featured: true,
-        coverImage: '/frames/frame-138.webp',
-        gallery: ['/frames/frame-138.webp']
+        coverImage: '/favicon.svg',
+        gallery: ['/favicon.svg']
       });
 
-      // Seed initial mock service
-      await setDoc(doc(db, 'services', 'svc-1'), {
-        title: 'Full Stack Development',
-        description: 'Developing highly interactive web interfaces backed by scalable cloud architectures.',
-        icon: 'Cpu',
-        order: 1,
-        visible: true,
-        featured: true,
-      });
+      // Seed initial mock services
+      const defaultServicesToSeed = [
+        { id: 'svc-1', title: 'AI Agents', description: 'Autonomous AI agents that execute complex workflows, search live data, make decisions, and automate repetitive tasks independently.', icon: 'Sparkles', order: 1, visible: true, featured: true },
+        { id: 'svc-2', title: 'AI Integration', description: 'Embedding state-of-the-art LLMs, fine-tuned models, and RAG pipelines directly into your existing web, mobile, or backend apps.', icon: 'Cpu', order: 2, visible: true, featured: true },
+        { id: 'svc-3', title: 'Chat Bots', description: 'Intelligent, context-aware conversational bots trained on your business documents for instant customer support and lead capture.', icon: 'Sparkles', order: 3, visible: true, featured: true },
+        { id: 'svc-4', title: 'Full Stack Development', description: 'Scalable end-to-end web applications built with high performance, robust backend architecture, secure user auth, and sleek modern UI.', icon: 'Layers', order: 4, visible: true, featured: true },
+        { id: 'svc-5', title: 'Landing Pages / Front End', description: 'Ultra-fast, high-converting landing pages with pixel-perfect responsive design, striking modern typography, and fluid micro-animations.', icon: 'Monitor', order: 5, visible: true, featured: true },
+        { id: 'svc-6', title: 'Admin Panels', description: 'Custom management dashboards, real-time data analytics portals, and CMS solutions tailored specifically for business operations.', icon: 'Layers', order: 6, visible: true, featured: true },
+        { id: 'svc-7', title: 'Video Editing & Graphic Design', description: 'Professional video editing for promotional ads, high-engagement reels, visual branding, UI/UX wireframes, and creative marketing assets.', icon: 'Video', order: 7, visible: true, featured: true },
+      ];
+      for (const svc of defaultServicesToSeed) {
+        await setDoc(doc(db, 'services', svc.id), svc);
+      }
 
-      // Seed initial skills categories
-      await setDoc(doc(db, 'skills', 'categories-doc'), {
-        entries: [
-          { id: 'cat-frontend', label: 'Frontend', hidden: false },
-          { id: 'cat-backend', label: 'Backend', hidden: false },
-          { id: 'cat-db-cloud', label: 'Database & Cloud', hidden: false },
-          { id: 'cat-ai-auto', label: 'AI & Automation', hidden: false },
-          { id: 'cat-programming', label: 'Programming', hidden: false },
-          { id: 'cat-tools-devops', label: 'Tools & DevOps', hidden: false }
-        ]
-      });
 
-      // Seed initial skills
-      await setDoc(doc(db, 'skills', 'skills-doc'), {
-        entries: [
-          // Frontend (cat-frontend)
-          { id: 1, categoryId: 'cat-frontend', name: 'HTML5', color: '#E34F26', icon: 'Globe', hidden: false },
-          { id: 2, categoryId: 'cat-frontend', name: 'CSS3', color: '#1572B6', icon: 'Globe', hidden: false },
-          { id: 3, categoryId: 'cat-frontend', name: 'JavaScript (ES6+)', color: '#F7DF1E', icon: 'Code', hidden: false },
-          { id: 4, categoryId: 'cat-frontend', name: 'TypeScript', color: '#3178C6', icon: 'Code', hidden: false },
-          { id: 5, categoryId: 'cat-frontend', name: 'React.js', color: '#61DAFB', icon: 'Cpu', hidden: false },
-          { id: 6, categoryId: 'cat-frontend', name: 'Vite', color: '#646CFF', icon: 'Cpu', hidden: false },
-          { id: 7, categoryId: 'cat-frontend', name: 'Tailwind CSS', color: '#06B6D4', icon: 'Globe', hidden: false },
-          { id: 8, categoryId: 'cat-frontend', name: 'Framer Motion', color: '#F024B3', icon: 'LayoutDashboard', hidden: false },
-          { id: 9, categoryId: 'cat-frontend', name: 'GSAP', color: '#88CE02', icon: 'LayoutDashboard', hidden: false },
-          { id: 10, categoryId: 'cat-frontend', name: 'Responsive Web Design', color: '#FFFFFF', icon: 'Globe', hidden: false },
-
-          // Backend (cat-backend)
-          { id: 11, categoryId: 'cat-backend', name: 'Node.js', color: '#339933', icon: 'Server', hidden: false },
-          { id: 12, categoryId: 'cat-backend', name: 'Express.js', color: '#FFFFFF', icon: 'Server', hidden: false },
-          { id: 13, categoryId: 'cat-backend', name: 'REST API Development', color: '#009688', icon: 'Terminal', hidden: false },
-          { id: 14, categoryId: 'cat-backend', name: 'API Integration', color: '#008080', icon: 'Terminal', hidden: false },
-          { id: 15, categoryId: 'cat-backend', name: 'Authentication (JWT)', color: '#000000', icon: 'Terminal', hidden: false },
-          { id: 16, categoryId: 'cat-backend', name: 'Firebase Authentication', color: '#FFCA28', icon: 'Flame', hidden: false },
-          { id: 17, categoryId: 'cat-backend', name: 'Middleware Development', color: '#D3D3D3', icon: 'Server', hidden: false },
-          { id: 18, categoryId: 'cat-backend', name: 'CRUD Operations', color: '#FFFFFF', icon: 'Database', hidden: false },
-
-          // Database & Cloud (cat-db-cloud)
-          { id: 19, categoryId: 'cat-db-cloud', name: 'Firebase Firestore', color: '#FFA000', icon: 'Database', hidden: false },
-          { id: 20, categoryId: 'cat-db-cloud', name: 'Firebase Storage', color: '#FFCA28', icon: 'Box', hidden: false },
-          { id: 21, categoryId: 'cat-db-cloud', name: 'Cloudinary', color: '#3448C5', icon: 'Box', hidden: false },
-          { id: 22, categoryId: 'cat-db-cloud', name: 'IndexedDB', color: '#FFFFFF', icon: 'Database', hidden: false },
-          { id: 23, categoryId: 'cat-db-cloud', name: 'MySQL', color: '#4479A1', icon: 'Database', hidden: false },
-          { id: 24, categoryId: 'cat-db-cloud', name: 'Database Design', color: '#D394FF', icon: 'Database', hidden: false },
-          { id: 25, categoryId: 'cat-db-cloud', name: 'Real-time Data Sync', color: '#34D399', icon: 'Cpu', hidden: false },
-
-          // AI & Automation (cat-ai-auto)
-          { id: 26, categoryId: 'cat-ai-auto', name: 'AI Agent Development', color: '#A78BFA', icon: 'Cpu', hidden: false },
-          { id: 27, categoryId: 'cat-ai-auto', name: 'Prompt Engineering', color: '#FFFFFF', icon: 'Terminal', hidden: false },
-          { id: 28, categoryId: 'cat-ai-auto', name: 'Groq API', color: '#F25C54', icon: 'Terminal', hidden: false },
-          { id: 29, categoryId: 'cat-ai-auto', name: 'OpenAI API', color: '#00A67E', icon: 'Cpu', hidden: false },
-          { id: 30, categoryId: 'cat-ai-auto', name: 'RAG (Retrieval-Augmented Generation)', color: '#FFFFFF', icon: 'Code', hidden: false },
-          { id: 31, categoryId: 'cat-ai-auto', name: 'Tool Calling', color: '#FFFFFF', icon: 'Terminal', hidden: false },
-          { id: 32, categoryId: 'cat-ai-auto', name: 'AI Chatbot Development', color: '#38BDF8', icon: 'Cpu', hidden: false },
-          { id: 33, categoryId: 'cat-ai-auto', name: 'Workflow Automation', color: '#F59E0B', icon: 'LayoutDashboard', hidden: false },
-
-          // Programming (cat-programming)
-          { id: 34, categoryId: 'cat-programming', name: 'Python', color: '#3776AB', icon: 'Code', hidden: false },
-          { id: 35, categoryId: 'cat-programming', name: 'C++', color: '#00599C', icon: 'Code', hidden: false },
-          { id: 36, categoryId: 'cat-programming', name: 'C#', color: '#178600', icon: 'Code', hidden: false },
-          { id: 37, categoryId: 'cat-programming', name: 'Java', color: '#007396', icon: 'Code', hidden: false },
-          { id: 38, categoryId: 'cat-programming', name: 'Assembly Language', color: '#FFFFFF', icon: 'Code', hidden: false },
-          { id: 39, categoryId: 'cat-programming', name: 'Object-Oriented Programming', color: '#FFFFFF', icon: 'Code', hidden: false },
-          { id: 40, categoryId: 'cat-programming', name: 'Data Structures & Algorithms', color: '#FFFFFF', icon: 'Code', hidden: false },
-
-          // Tools & DevOps (cat-tools-devops)
-          { id: 41, categoryId: 'cat-tools-devops', name: 'Git', color: '#F05032', icon: 'Code', hidden: false },
-          { id: 42, categoryId: 'cat-tools-devops', name: 'GitHub', color: '#FFFFFF', icon: 'Code', hidden: false },
-          { id: 43, categoryId: 'cat-tools-devops', name: 'VS Code', color: '#007ACC', icon: 'Code', hidden: false },
-          { id: 44, categoryId: 'cat-tools-devops', name: 'Postman', color: '#FF6C37', icon: 'Terminal', hidden: false },
-          { id: 45, categoryId: 'cat-tools-devops', name: 'npm', color: '#CB3837', icon: 'Terminal', hidden: false },
-          { id: 46, categoryId: 'cat-tools-devops', name: 'Cisco Packet Tracer', color: '#1C3C5A', icon: 'Server', hidden: false },
-          { id: 47, categoryId: 'cat-tools-devops', name: 'Enterprise Architect', color: '#FFFFFF', icon: 'LayoutDashboard', hidden: false },
-          { id: 48, categoryId: 'cat-tools-devops', name: 'Figma', color: '#F24E1E', icon: 'LayoutDashboard', hidden: false },
-          { id: 49, categoryId: 'cat-tools-devops', name: 'Canva', color: '#00C4CC', icon: 'LayoutDashboard', hidden: false },
-          { id: 50, categoryId: 'cat-tools-devops', name: 'CapCut', color: '#10B981', icon: 'Video', hidden: false }
-        ]
-      });
 
       // Seed initial media docs
       const mediaList = [
-        { id: 'm-1', name: 'frame-138.webp', folder: 'Character Assets', size: '24 KB', resolution: '400x400', path: '/frames/frame-138.webp', type: 'image' },
-        { id: 'm-2', name: 'frame-081.webp', folder: 'Character Assets', size: '28 KB', resolution: '400x400', path: '/frames/frame-081.webp', type: 'image' },
+        { id: 'm-1', name: 'favicon.svg', folder: 'Character Assets', size: '9 KB', resolution: '—', path: '/favicon.svg', type: 'image' },
+        { id: 'm-2', name: 'favicon.svg', folder: 'Character Assets', size: '9 KB', resolution: '—', path: '/favicon.svg', type: 'image' },
         { id: 'm-3', name: 'cust-timetable-mock.png', folder: 'Project Images', size: '142 KB', resolution: '1280x720', path: '/projects/timetable.png', type: 'image' },
         { id: 'm-4', name: 'fitsphere-screenshot.png', folder: 'Project Images', size: '210 KB', resolution: '1280x720', path: '/projects/fitsphere.png', type: 'image' },
         { id: 'm-5', name: 'cv-document-eng.pdf', folder: 'Documents', size: '1.24 MB', resolution: '—', path: '/resume.pdf', type: 'pdf' },

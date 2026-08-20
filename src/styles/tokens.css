@@ -2,29 +2,43 @@
   /* ==========================================
      BRAND & SURFACE COLORS
      ========================================== */
-  --ds-color-bg-primary: #0E1525;        /* Primary background canvas */
-  --ds-color-bg-secondary: #2A2E37;      /* Secondary background card/subsections */
-  --ds-color-bg-gradient-start: #0E1525; /* Starting color of main background gradient */
-  --ds-color-bg-gradient-mid: #1A2438;   /* Middle color of main background gradient */
-  --ds-color-bg-gradient-end: #2A2E37;   /* End color of main background gradient */
-  
-  --ds-color-accent-primary: #4F8CFF;    /* Primary interaction brand blue */
-  --ds-color-accent-secondary: #65D6FF;  /* Secondary accent cyan highlight */
+  --ds-color-bg-primary: #0E1525;
+  /* Primary background canvas */
+  --ds-color-bg-secondary: #2A2E37;
+  /* Secondary background card/subsections */
+  --ds-color-bg-gradient-start: #0E1525;
+  /* Starting color of main background gradient */
+  --ds-color-bg-gradient-mid: #1A2438;
+  /* Middle color of main background gradient */
+  --ds-color-bg-gradient-end: #2A2E37;
+  /* End color of main background gradient */
+
+  --ds-color-accent-primary: #4F8CFF;
+  /* Primary interaction brand blue */
+  --ds-color-accent-secondary: #65D6FF;
+  /* Secondary accent cyan highlight */
 
   /* ==========================================
      TEXT COLORS
      ========================================== */
-  --ds-color-text-primary: #F6F4FB;      /* Default high-contrast text */
-  --ds-color-text-secondary: #B6B2C9;    /* Medium-contrast supporting text */
-  --ds-color-text-muted: #7D7A94;        /* Low-contrast captions and borders */
+  --ds-color-text-primary: #F6F4FB;
+  /* Default high-contrast text */
+  --ds-color-text-secondary: #B6B2C9;
+  /* Medium-contrast supporting text */
+  --ds-color-text-muted: #7D7A94;
+  /* Low-contrast captions and borders */
 
   /* ==========================================
      GLASS MATERIAL TOKENS
      ========================================== */
-  --ds-glass-bg: rgba(255, 255, 255, 0.08);        /* Glass panel fill */
-  --ds-glass-highlight: rgba(255, 255, 255, 0.06);   /* Internal edge highlight shine */
-  --ds-glass-border: rgba(255, 255, 255, 0.12);      /* Outline border stroke */
-  --ds-glass-blur: 22px;                            /* Backdrop blur radius */
+  --ds-glass-bg: rgba(255, 255, 255, 0.04);
+  /* Glass panel fill */
+  --ds-glass-highlight: rgba(255, 255, 255, 0.08);
+  /* Internal edge highlight shine */
+  --ds-glass-border: rgba(255, 255, 255, 0.14);
+  /* Outline border stroke */
+  --ds-glass-blur: 6px;
+  /* Backdrop blur radius */
 
   /* ==========================================
      BORDER STROKE OPACITIES
@@ -69,13 +83,20 @@
   /* ==========================================
      GEOMETRY & BORDER RADII
      ========================================== */
-  --ds-radius-small: 12px;       /* Chips, tags, small items */
-  --ds-radius-button: 16px;      /* Buttons, inline inputs */
-  --ds-radius-medium: 18px;      /* Medium size components */
-  --ds-radius-card: 28px;        /* Project cards, feature elements */
-  --ds-radius-large: 24px;       /* Sections containers */
-  --ds-radius-panel: 32px;       /* Large overlays, hero containers */
-  --ds-radius-circular: 50%;     /* Circular elements */
+  --ds-radius-small: 12px;
+  /* Chips, tags, small items */
+  --ds-radius-button: 16px;
+  /* Buttons, inline inputs */
+  --ds-radius-medium: 18px;
+  /* Medium size components */
+  --ds-radius-card: 28px;
+  /* Project cards, feature elements */
+  --ds-radius-large: 24px;
+  /* Sections containers */
+  --ds-radius-panel: 32px;
+  /* Large overlays, hero containers */
+  --ds-radius-circular: 50%;
+  /* Circular elements */
 
   /* ==========================================
      ELEVATION, BLURS & SHADOWS
@@ -83,7 +104,8 @@
   /* Shadows */
   --ds-shadow-small: 0 4px 12px rgba(0, 0, 0, 0.15);
   --ds-shadow-medium: 0 12px 32px rgba(0, 0, 0, 0.20);
-  --ds-shadow-large: 0 30px 80px rgba(0, 0, 0, 0.30);    /* Glass material shadow */
+  --ds-shadow-large: 0 30px 80px rgba(0, 0, 0, 0.30);
+  /* Glass material shadow */
 
   /* Blurs */
   --ds-blur-small: 8px;
@@ -117,7 +139,8 @@
   --ds-z-nav: 100;
   --ds-z-overlay: 500;
   --ds-z-modal: 1000;
-  --ds-z-max: 9999;              /* Toasts, floating AI widget */
+  --ds-z-max: 9999;
+  /* Toasts, floating AI widget */
 
   /* Container & Grid specifications */
   --ds-container-width: 1280px;
@@ -136,11 +159,16 @@
      MOTION & INTERACTION SYSTEMS
      ========================================== */
   /* Transition Durations */
-  --ds-duration-fast: 150ms;       /* Hover states, micro-interactions */
-  --ds-duration-button: 200ms;     /* Physical clicks, button state changes */
-  --ds-duration-medium: 300ms;     /* Cards expansion, fades, glass loading */
-  --ds-duration-slow: 600ms;       /* Major reveals, sections unfolding */
-  --ds-duration-cinematic: 1500ms; /* Scene transitions, Hero opening sequence */
+  --ds-duration-fast: 150ms;
+  /* Hover states, micro-interactions */
+  --ds-duration-button: 200ms;
+  /* Physical clicks, button state changes */
+  --ds-duration-medium: 300ms;
+  /* Cards expansion, fades, glass loading */
+  --ds-duration-slow: 600ms;
+  /* Major reveals, sections unfolding */
+  --ds-duration-cinematic: 1500ms;
+  /* Scene transitions, Hero opening sequence */
 
   /* Animation Easings */
   --ds-ease-out-natural: cubic-bezier(0.16, 1, 0.3, 1);

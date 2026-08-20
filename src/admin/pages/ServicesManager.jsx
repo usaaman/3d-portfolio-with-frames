@@ -35,9 +35,13 @@ import {
 import './ServicesManager.css';
 
 const DEFAULT_SERVICES = [
-  { id: 'svc-1', title: 'Full Stack Development', description: 'Developing highly interactive web interfaces backed by scalable cloud architectures.', icon: 'Cpu', order: 1, visible: true, featured: true },
-  { id: 'svc-2', title: 'AI Integration', description: 'Embedding smart conversational systems and custom Groq LLM pipelines into standard portals.', icon: 'Sparkles', order: 2, visible: true, featured: false },
-  { id: 'svc-3', title: 'Creative Editing', description: 'Producing highly aesthetic video edits, animations, and promotional graphics with CapCut.', icon: 'Video', order: 3, visible: true, featured: false },
+  { id: 'svc-1', title: 'AI Agents', description: 'Autonomous AI agents that execute complex workflows, search live data, make decisions, and automate repetitive tasks independently.', icon: 'Sparkles', order: 1, visible: true, featured: true },
+  { id: 'svc-2', title: 'AI Integration', description: 'Embedding state-of-the-art LLMs, fine-tuned models, and RAG pipelines directly into your existing web, mobile, or backend apps.', icon: 'Cpu', order: 2, visible: true, featured: true },
+  { id: 'svc-3', title: 'Chat Bots', description: 'Intelligent, context-aware conversational bots trained on your business documents for instant customer support and lead capture.', icon: 'Sparkles', order: 3, visible: true, featured: true },
+  { id: 'svc-4', title: 'Full Stack Development', description: 'Scalable end-to-end web applications built with high performance, robust backend architecture, secure user auth, and sleek modern UI.', icon: 'Layers', order: 4, visible: true, featured: true },
+  { id: 'svc-5', title: 'Landing Pages / Front End', description: 'Ultra-fast, high-converting landing pages with pixel-perfect responsive design, striking modern typography, and fluid micro-animations.', icon: 'Monitor', order: 5, visible: true, featured: true },
+  { id: 'svc-6', title: 'Admin Panels', description: 'Custom management dashboards, real-time data analytics portals, and CMS solutions tailored specifically for business operations.', icon: 'Layers', order: 6, visible: true, featured: true },
+  { id: 'svc-7', title: 'Video Editing & Graphic Design', description: 'Professional video editing for promotional ads, high-engagement reels, visual branding, UI/UX wireframes, and creative marketing assets.', icon: 'Video', order: 7, visible: true, featured: true },
 ];
 
 const ICON_MAP = {
@@ -430,26 +434,34 @@ export default function ServicesManager() {
           </div>
 
           <div className="services-toggles-row">
-            <label className="flex items-center gap-2 cursor-pointer user-select-none">
+            <label className={`toggle-card-option ${formData.visible ? 'is-active' : ''}`}>
+              <Globe size={18} className={formData.visible ? 'toggle-icon-active' : 'toggle-icon-inactive'} />
+              <div className="toggle-card-info">
+                <span className="toggle-card-title">Publish to Live Site</span>
+                <span className="toggle-card-sub">Show this capability on 3D portfolio ring</span>
+              </div>
               <input
                 id="visible"
                 type="checkbox"
                 checked={formData.visible}
                 onChange={handleFormChange}
-                className="remember-me-checkbox"
+                className="toggle-card-checkbox"
               />
-              <span className="text-sm font-medium text-white">Publish to Live Site</span>
             </label>
 
-            <label className="flex items-center gap-2 cursor-pointer user-select-none">
+            <label className={`toggle-card-option ${formData.featured ? 'is-active' : ''}`}>
+              <Sparkles size={18} className={formData.featured ? 'toggle-icon-active-amber' : 'toggle-icon-inactive'} />
+              <div className="toggle-card-info">
+                <span className="toggle-card-title">Featured Capability</span>
+                <span className="toggle-card-sub">Highlight with featured badge</span>
+              </div>
               <input
                 id="featured"
                 type="checkbox"
                 checked={formData.featured}
                 onChange={handleFormChange}
-                className="remember-me-checkbox"
+                className="toggle-card-checkbox"
               />
-              <span className="text-sm font-medium text-white">Promote to Orbit Ring</span>
             </label>
           </div>
         </form>

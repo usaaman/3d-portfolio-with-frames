@@ -4,10 +4,14 @@ import { doc, setDoc } from 'firebase/firestore';
 import { trackContactSubmit, logNotification } from '../utils/analytics';
 import './Contact.css';
 import Globe from './Globe';
+import { useZoomReveal } from '../hooks/useZoomReveal';
+import TypewriterText from './TypewriterText';
 
 export default function Contact({ socials }) {
   const hudRotRef = useRef(null);
-  
+  const contactHeadingRef = useRef(null);
+  useZoomReveal(contactHeadingRef);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -44,14 +48,14 @@ export default function Contact({ socials }) {
 
       if (db) {
         await setDoc(doc(db, 'contactMessages', msgId), payload);
-        
+
         await logNotification(
           'New Contact Message',
           `Message from "${payload.name}" regarding "${payload.subject}".`,
           'contact'
         );
       }
-      
+
       setStatus('success');
       setStatusMsg("Thank you! Your message has been sent. I'll get back to you shortly.");
       setFormData({
@@ -73,8 +77,8 @@ export default function Contact({ socials }) {
         <span className="dot"></span>
         Get in touch
       </div>
-      
-      <h2 id="contact-heading" className="contact-heading">
+
+      <h2 id="contact-heading" className="contact-heading" ref={contactHeadingRef}>
         {socials?.heading ? (
           socials.heading.toLowerCase().includes('great together') ? (
             <>Let's build something <span className="accent">great together</span></>
@@ -87,10 +91,11 @@ export default function Contact({ socials }) {
           <>Let's build something <span className="accent">great together</span></>
         )}
       </h2>
-      
-      <p className="contact-sub">
-        {socials?.description || "Great products start with great conversations. Tell me a bit about what you're working on — I read every message myself."}
-      </p>
+
+      <TypewriterText
+        text={socials?.description || "Great products start with great conversations. Tell me a bit about what you're working on — I read every message myself."}
+        className="contact-sub"
+      />
 
       <div className="contact-layout">
         {/* LEFT COLUMN: Form & Methods (60% / Balanced) */}
@@ -204,8 +209,8 @@ export default function Contact({ socials }) {
               <div className="method-text">
                 <div className="method-label">GitHub</div>
                 <div className="method-value">
-                  {socials?.socials?.github 
-                    ? '@' + socials.socials.github.replace(/\/$/, '').split('/').pop() 
+                  {socials?.socials?.github
+                    ? '@' + socials.socials.github.replace(/\/$/, '').split('/').pop()
                     : "@usaaman"}
                 </div>
               </div>
@@ -228,8 +233,8 @@ export default function Contact({ socials }) {
               <div className="method-text">
                 <div className="method-label">LinkedIn</div>
                 <div className="method-value">
-                  {socials?.socials?.linkedin 
-                    ? '/in/' + socials.socials.linkedin.replace(/\/$/, '').split('/').pop() 
+                  {socials?.socials?.linkedin
+                    ? '/in/' + socials.socials.linkedin.replace(/\/$/, '').split('/').pop()
                     : "/in/muhammad-usman"}
                 </div>
               </div>

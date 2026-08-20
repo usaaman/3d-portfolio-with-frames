@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, useCallback } from 'react';
+import { gsap } from 'gsap';
 import {
   Briefcase,
   Download,
@@ -6,12 +7,12 @@ import {
 } from 'lucide-react';
 import About from './About';
 import './HeroAboutScroll.css';
-import SkillsMarquee from './SkillsMarquee';
-import KineticGrid from './KineticGrid';
 import GlowLayer from './GlowLayer';
 import ReflectionOverlay from './ReflectionOverlay';
 import DepthTypography from './DepthTypography';
 import { trackResumeDownload } from '../utils/analytics';
+import RevealHeading from './RevealHeading';
+import TypewriterText from './TypewriterText';
 
 // lucide-react dropped brand/logo icons — small inline SVGs instead
 const GithubIcon = (props) => (
@@ -32,54 +33,17 @@ const TwitterIcon = (props) => (
   </svg>
 );
 
-// Scroll animation frame thresholds:
-// - Frame 70-81: Hero enters
-// - Frame 81-92: Hero expands from squeezed state (startW/startH -> endW/endH)
-// - Frame 92-100: Momentum Right (Translate X -> 18px, Rotate -> 3deg)
-// - Frame 100-112: Curved Return to center with a 6px vertical dip arc
-// - Frame 112-124: Left Overshoot (Translate X -> -5px, Rotate -> -1deg)
-// - Frame 124-138: Settle back to center
-// - Frame 138-164: Pause (stable Cover)
-// - Frame 164-197: Continuous page transition (Hero slides out top, About enters bottom)
+// Scroll animation progress thresholds (normalized 0.0 - 1.0):
+const HERO_CARD_ENTRANCE_START_PROGRESS = 0.23;
+const HERO_CARD_ENTRANCE_END_PROGRESS = 0.33;
+const HERO_CARD_ROTATION_START_PROGRESS = 0.33;
+const HERO_CARD_ROTATION_END_PROGRESS = 0.62;
+const HERO_TRANSITION_OUT_START_PROGRESS = 0.62;
+const HERO_TRANSITION_OUT_END_PROGRESS = 0.78;
 
-
-
-
-
-// ==========================================
-// ARCHITECTURE CONSTANTS & CONFIGURATION
-// ==========================================
-const FRAME_COUNT = 261;
-const STATIC_REDUCED_MOTION_FRAME = 138;
-
-// Scroll Cue frame thresholds
-const SCROLL_CUE_START_FRAME = 81;
-const SCROLL_CUE_END_FRAME = 130;
-
-// Character composition constants
-const COMPOSITION_BREAKPOINT_TABLET = 768; // CSS pixels
-const COMPOSITION_TARGET_DESKTOP = 0.75; // Align character center to 75% width
-const COMPOSITION_TARGET_MOBILE = 0.70;  // Align character center to 70% width
-const CHARACTER_SOURCE_CENTER_RATIO = 0.75; // Character visual center in source assets
-
-// Entrance and Perspective Rotation ranges
-const HERO_ENTRANCE_START_FRAME = 70;
-const HERO_CARD_ENTRANCE_START = 77;
-const HERO_CARD_ENTRANCE_END = 99;
-const HERO_CARD_ROTATION_START = 99;
-const HERO_CARD_ROTATION_END = 155;
-
-const MAX_ROTATION_X = 1.3; // max card rotation degrees
-const MAX_ROTATION_Y = 4.0; // max card rotation degrees
+const MAX_ROTATION_X = 3.5;  // noticeable tilt degrees
+const MAX_ROTATION_Y = 12.0; // noticeable right-side tilt degrees
 const MOUSE_TILT_MAX_DEGREES = 5; // max mouse-driven card rotation tilt
-
-// Transition frame and progress ranges
-const HERO_TRANSITION_OUT_START = 164;
-const HERO_TRANSITION_OUT_END = 197;
-const SKILLS_TRANSITION_IN_PROGRESS = 0.82;
-const SKILLS_TRANSITION_END_PROGRESS = 0.96;
-
-const FRAME_PATH = (i) => `/frames/frame-${String(i).padStart(3, '0')}.webp`;
 
 function smoothstep(edge0, edge1, x) {
   const t = Math.min(1, Math.max(0, (x - edge0) / (edge1 - edge0)));
@@ -90,46 +54,9 @@ function easeOutQuart(t) {
   return 1 - Math.pow(1 - t, 4);
 }
 
-/**
- * Calculates character composition coordinates and dimensions to center the character
- * nicely relative to viewport parameters, keeping visual balance on mobile, tablet, and desktop
- * while ensuring complete canvas coverage (no letterbox gaps).
- *
- * @param {number} cw - Canvas width in physical pixels
- * @param {number} ch - Canvas height in physical pixels
- * @param {number} iw - Image natural width
- * @param {number} ih - Image natural height
- * @param {number} dpr - Device Pixel Ratio
- * @returns {{dx: number, dy: number, dw: number, dh: number}}
- */
-function getCharacterComposition(cw, ch, iw, ih, dpr) {
-  const scale = Math.max(cw / iw, ch / ih);
-  const dw = iw * scale;
-  const dh = ih * scale;
-
-  // targetRatio is 75% on tablet/desktop, 70% on mobile to optimize eye-flow.
-  const targetRatio = cw > COMPOSITION_BREAKPOINT_TABLET * dpr ? COMPOSITION_TARGET_DESKTOP : COMPOSITION_TARGET_MOBILE;
-  const targetX = targetRatio * cw;
-
-  // Base alignment is right-anchored
-  let dx = cw - dw;
-  if (cw / iw < ch / ih) {
-    // On narrow/portrait viewports, align character visual center with targetX
-    // while clamping dx inside [cw - dw, 0] to ensure canvas remains fully covered.
-    const preferredDx = targetX - CHARACTER_SOURCE_CENTER_RATIO * dw;
-    dx = Math.min(0, Math.max(cw - dw, preferredDx));
-  }
-
-  const dy = 0; // top-anchored (crop bottom)
-
-  return { dx, dy, dw, dh };
-}
-
-export default function HeroAboutScroll({ hero, about, resume, skills }) {
+export default function HeroAboutScroll({ hero, about, resume }) {
   const wrapperRef = useRef(null);
-  const canvasRef = useRef(null);
-  const imagesRef = useRef([]);
-  const currentFrameRef = useRef(1);
+  const videoRef = useRef(null);
   const rafRef = useRef(null);
   const heroCardRef = useRef(null);
 
@@ -137,12 +64,20 @@ export default function HeroAboutScroll({ hero, about, resume, skills }) {
   const heroContentRef = useRef(null);
   const heroGlowRef = useRef(null);
   const aboutRef = useRef(null);
-  const skillsRef = useRef(null);
   const scrollCueRef = useRef(null);
 
-  const [loaded, setLoaded] = useState(0);
-  const [ready, setReady] = useState(false);
+  // Cloud layer DOM refs
+  const cloudLeftRef = useRef(null);
+  const cloudRightRef = useRef(null);
+  const cloudTopRef = useRef(null);
+
+  // Welcome To My Space Intro Text DOM refs
+  const welcomeTextRef = useRef(null);
+  const welcomeLine1Ref = useRef(null);
+  const welcomeLine2Ref = useRef(null);
+
   const [reducedMotion, setReducedMotion] = useState(false);
+  const hasScrolledRef = useRef(false);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -152,129 +87,35 @@ export default function HeroAboutScroll({ hero, about, resume, skills }) {
     return () => mediaQuery.removeEventListener('change', handler);
   }, []);
 
-  // Progressive staggered preloader to prevent network congestion and main thread block
-  useEffect(() => {
-    let cancelled = false;
-    const imgs = new Array(FRAME_COUNT + 1);
-    imagesRef.current = imgs;
-
-    // Load initial essential batch (Intro frames 1-50 + static active frame) first
-    const initialBatch = [];
-    for (let i = 1; i <= 50; i++) {
-      initialBatch.push(i);
-    }
-    if (!initialBatch.includes(STATIC_REDUCED_MOTION_FRAME)) {
-      initialBatch.push(STATIC_REDUCED_MOTION_FRAME);
-    }
-
-    let loadedCount = 0;
-
-    const loadFrame = (index) => {
-      return new Promise((resolve) => {
-        if (imgs[index]) {
-          resolve();
-          return;
-        }
-        const img = new Image();
-        img.src = FRAME_PATH(index);
-        img.onload = img.onerror = () => {
-          imgs[index] = img;
-          if (!cancelled) {
-            loadedCount += 1;
-            setLoaded(loadedCount);
-          }
-          resolve();
-        };
-      });
-    };
-
-    const loadInitial = async () => {
-      await Promise.all(initialBatch.map(id => loadFrame(id)));
-      if (!cancelled) {
-        setReady(true);
-        // Stagger the remaining frames in the background
-        loadRemaining(51);
-      }
-    };
-
-    const loadRemaining = async (startIndex) => {
-      if (cancelled || startIndex > FRAME_COUNT) return;
-      const batchSize = 15;
-      const batch = [];
-      for (let i = startIndex; i < startIndex + batchSize && i <= FRAME_COUNT; i++) {
-        if (!initialBatch.includes(i)) {
-          batch.push(i);
-        }
-      }
-
-      await Promise.all(batch.map(id => loadFrame(id)));
-      
-      if (!cancelled) {
-        if (window.requestIdleCallback) {
-          window.requestIdleCallback(() => loadRemaining(startIndex + batchSize));
-        } else {
-          setTimeout(() => loadRemaining(startIndex + batchSize), 50);
-        }
-      }
-    };
-
-    loadInitial();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const drawFrame = useCallback((frameIndex) => {
-    const canvas = canvasRef.current;
-    const img = imagesRef.current[frameIndex];
-    if (!canvas || !img || !img.complete || img.naturalWidth === 0) return;
-
-    const ctx = canvas.getContext('2d');
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-    
-    // Shift color adjustments to native drawing context filter (hardware accelerated)
-    ctx.filter = 'contrast(1.05) saturate(1.12) brightness(1.02)';
-
-    const cw = canvas.width;
-    const ch = canvas.height;
-    const iw = img.naturalWidth;
-    const ih = img.naturalHeight;
-
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-    const { dx, dy, dw, dh } = getCharacterComposition(cw, ch, iw, ih, dpr);
-
-    ctx.clearRect(0, 0, cw, ch);
-    ctx.drawImage(img, dx, dy, dw, dh);
-  }, []);
-
   const applyProgress = useCallback((progress) => {
-    if (reducedMotion) {
-      if (currentFrameRef.current !== STATIC_REDUCED_MOTION_FRAME) {
-        currentFrameRef.current = STATIC_REDUCED_MOTION_FRAME;
-        drawFrame(STATIC_REDUCED_MOTION_FRAME);
+    // Video scroll scrubbing
+    if (videoRef.current && videoRef.current.duration) {
+      const targetTime = progress * videoRef.current.duration;
+      if (Math.abs(videoRef.current.currentTime - targetTime) > 0.01) {
+        videoRef.current.currentTime = targetTime;
       }
-      
-      // Update DOM styles directly
+    }
+
+    if (reducedMotion) {
+      if (cloudLeftRef.current) cloudLeftRef.current.style.opacity = '0';
+      if (cloudRightRef.current) cloudRightRef.current.style.opacity = '0';
+      if (cloudTopRef.current) cloudTopRef.current.style.opacity = '0';
+      if (welcomeTextRef.current) welcomeTextRef.current.style.opacity = '0';
       if (heroContentRef.current) {
         heroContentRef.current.style.transform = 'translate3d(0, 0%, 0)';
         heroContentRef.current.style.pointerEvents = 'auto';
       }
       if (heroGlowRef.current) {
-        heroGlowRef.current.style.transform = 'translate3d(0vw, 0vh, 0) scale(1.0)';
+        heroGlowRef.current.style.transform = 'translate3d(-5vw, 0vh, 0) scale(1.0)';
+        heroGlowRef.current.style.opacity = '1';
       }
       if (heroCardRef.current) {
-        heroCardRef.current.style.transform = 'perspective(1100px) rotateX(0deg) rotateY(0deg) translate3d(0vw, 0vh, 0) scale(1.0)';
+        heroCardRef.current.style.transform = 'perspective(1100px) rotateX(0deg) rotateY(0deg) translate3d(-5vw, 0vh, 0) scale(1.0)';
+        heroCardRef.current.style.opacity = '1';
       }
       if (aboutRef.current) {
         aboutRef.current.style.transform = 'translate3d(0, 0%, 0)';
         aboutRef.current.style.pointerEvents = 'auto';
-      }
-      if (skillsRef.current) {
-        skillsRef.current.style.transform = 'translate3d(0, 0%, 0)';
-        skillsRef.current.style.pointerEvents = 'auto';
       }
       if (scrollCueRef.current) {
         scrollCueRef.current.style.opacity = '0';
@@ -282,126 +123,154 @@ export default function HeroAboutScroll({ hero, about, resume, skills }) {
       return;
     }
 
-    const frameProgress = Math.min(1.0, progress / SKILLS_TRANSITION_IN_PROGRESS);
-    const frame = Math.min(
-      FRAME_COUNT,
-      Math.max(1, Math.round(frameProgress * (FRAME_COUNT - 1)) + 1)
-    );
-    if (frame !== currentFrameRef.current) {
-      currentFrameRef.current = frame;
-      drawFrame(frame);
+    // 3 Clouds parting animation (Faster slide out: 0.0 to 0.22 scroll progress)
+    const tCloud = smoothstep(0.0, 0.22, progress);
+    const cloudOpacity = Math.max(0, 1 - tCloud * 1.4);
+
+    if (cloudLeftRef.current) {
+      cloudLeftRef.current.style.transform = `translate3d(${-140 * tCloud}vw, ${20 * tCloud}vh, 0) scale(${1.0 + 0.3 * tCloud})`;
+      cloudLeftRef.current.style.opacity = `${cloudOpacity}`;
+    }
+    if (cloudRightRef.current) {
+      cloudRightRef.current.style.transform = `translate3d(${140 * tCloud}vw, ${20 * tCloud}vh, 0) scale(${1.0 + 0.3 * tCloud})`;
+      cloudRightRef.current.style.opacity = `${cloudOpacity}`;
+    }
+    if (cloudTopRef.current) {
+      cloudTopRef.current.style.transform = `translate3d(0vw, ${-140 * tCloud}vh, 0) scale(${1.0 + 0.3 * tCloud})`;
+      cloudTopRef.current.style.opacity = `${cloudOpacity}`;
     }
 
+    // Welcome To My Space Camera Fly-Through Zoom Animation (Starts as half the clouds part: 0.10 -> 0.26 progress)
+    const tWelcome = smoothstep(0.10, 0.26, progress);
+    if (welcomeTextRef.current) {
+      const welcomeScale = 1.0 + 28.0 * Math.pow(tWelcome, 1.6);
+      const welcomeOpacity = Math.max(0, 1 - smoothstep(0.18, 0.26, progress));
+      welcomeTextRef.current.style.transform = `translate3d(-50%, -50%, 0) scale(${welcomeScale})`;
+      welcomeTextRef.current.style.opacity = `${welcomeOpacity}`;
+    }
+
+    // Hero section vertical position
     let heroY = 0;
-    if (frame < HERO_ENTRANCE_START_FRAME) {
-      heroY = 100;
-    } else if (frame < SCROLL_CUE_START_FRAME) {
-      heroY = 100 * (1 - smoothstep(HERO_ENTRANCE_START_FRAME, SCROLL_CUE_START_FRAME, frame));
-    } else if (frame < HERO_TRANSITION_OUT_START) {
+    if (progress < HERO_TRANSITION_OUT_START_PROGRESS) {
       heroY = 0;
-    } else if (frame < HERO_TRANSITION_OUT_END) {
-      heroY = -100 * smoothstep(HERO_TRANSITION_OUT_START, HERO_TRANSITION_OUT_END, frame);
+    } else if (progress < HERO_TRANSITION_OUT_END_PROGRESS) {
+      heroY = -100 * smoothstep(HERO_TRANSITION_OUT_START_PROGRESS, HERO_TRANSITION_OUT_END_PROGRESS, progress);
     } else {
       heroY = -100;
     }
 
-    let cardScale = 1.0;
-    let cardTranslateX = '0vw';
-    let cardTranslateY = '0vh';
-    let cardRotateX = 0.0;
-    let cardRotateY = 0.0;
-
-    if (frame < HERO_CARD_ENTRANCE_START) {
-      cardScale = 0.1;
-      cardTranslateX = '50vw';
-      cardTranslateY = '25vh';
-      cardRotateX = 0.0;
-      cardRotateY = 0.0;
-    } else if (frame < HERO_CARD_ENTRANCE_END) {
-      const t = (frame - HERO_CARD_ENTRANCE_START) / (HERO_CARD_ENTRANCE_END - HERO_CARD_ENTRANCE_START);
-      const eased = easeOutQuart(t);
-      cardScale = 0.1 + 0.9 * eased;
-      cardTranslateX = `${50 * (1 - eased)}vw`;
-      cardTranslateY = `${25 * (1 - eased)}vh`;
-      cardRotateX = 0.0;
-      cardRotateY = 0.0;
-    } else if (frame < HERO_CARD_ROTATION_END) {
-      const t = smoothstep(HERO_CARD_ROTATION_START, HERO_CARD_ROTATION_END, frame);
-      cardScale = 1.0;
-      cardTranslateX = '0vw';
-      cardTranslateY = '0vh';
-      cardRotateX = MAX_ROTATION_X * t;
-      cardRotateY = MAX_ROTATION_Y * t;
-    } else {
-      cardScale = 1.0;
-      cardTranslateX = '0vw';
-      cardTranslateY = '0vh';
-      cardRotateX = MAX_ROTATION_X;
-      cardRotateY = MAX_ROTATION_Y;
-    }
-
+    // About section vertical position
     let aboutY = 0;
-    if (frame < HERO_TRANSITION_OUT_START) {
+    if (progress < HERO_TRANSITION_OUT_START_PROGRESS) {
       aboutY = 100;
-    } else if (frame < HERO_TRANSITION_OUT_END) {
-      aboutY = 100 * (1 - smoothstep(HERO_TRANSITION_OUT_START, HERO_TRANSITION_OUT_END, frame));
+    } else if (progress < HERO_TRANSITION_OUT_END_PROGRESS) {
+      aboutY = 100 * (1 - smoothstep(HERO_TRANSITION_OUT_START_PROGRESS, HERO_TRANSITION_OUT_END_PROGRESS, progress));
     } else {
       aboutY = 0;
     }
 
-    let skillsY = 100;
-    if (progress > SKILLS_TRANSITION_IN_PROGRESS) {
-      const t = Math.min(1.0, Math.max(0.0, (progress - SKILLS_TRANSITION_IN_PROGRESS) / (SKILLS_TRANSITION_END_PROGRESS - SKILLS_TRANSITION_IN_PROGRESS)));
-      const eased = smoothstep(0.0, 1.0, t);
-      skillsY = 100 * (1 - eased);
+    // Scroll-driven Hero Card Entrance, Scaling & 3D Tilt
+    let cardScale = 1.0;
+    let cardTranslateX = '-5vw';
+    let cardTranslateY = '0vh';
+    let cardOpacity = 1.0;
+    let cardRotateX = 0.0;
+    let cardRotateY = 0.0;
+
+    if (progress < HERO_CARD_ENTRANCE_START_PROGRESS) {
+      // Phase 0: Hidden until scroll progress 0.23
+      cardScale = 0.15;
+      cardTranslateX = '35vw';
+      cardTranslateY = '25vh';
+      cardOpacity = 0.0;
+      cardRotateX = 0.0;
+      cardRotateY = 0.0;
+    } else if (progress < HERO_CARD_ENTRANCE_END_PROGRESS) {
+      // Phase 1: Sharp expansion & movement to left side (-5vw) (0.23 -> 0.33)
+      const t = smoothstep(HERO_CARD_ENTRANCE_START_PROGRESS, HERO_CARD_ENTRANCE_END_PROGRESS, progress);
+      cardScale = 0.15 + 0.85 * t;
+      cardTranslateX = `${35 - (35 - (-5)) * t}vw`;
+      cardTranslateY = `${25 * (1 - t)}vh`;
+      cardOpacity = smoothstep(HERO_CARD_ENTRANCE_START_PROGRESS, 0.27, progress);
+      cardRotateX = 0.0;
+      cardRotateY = 0.0;
+    } else if (progress < HERO_CARD_ROTATION_END_PROGRESS) {
+      // Phase 2: Left-shifted (-5vw) full size + noticeable right-side tilt (0.33 -> 0.62)
+      const t = smoothstep(HERO_CARD_ROTATION_START_PROGRESS, HERO_CARD_ROTATION_END_PROGRESS, progress);
+      cardScale = 1.0;
+      cardTranslateX = '-5vw';
+      cardTranslateY = '0vh';
+      cardOpacity = 1.0;
+      cardRotateX = MAX_ROTATION_X * t;
+      cardRotateY = MAX_ROTATION_Y * t;
     } else {
-      skillsY = 100;
+      // Phase 3: Transition out (0.62 -> 0.78)
+      cardScale = 1.0;
+      cardTranslateX = '-5vw';
+      cardTranslateY = '0vh';
+      cardOpacity = 1.0;
+      cardRotateX = MAX_ROTATION_X;
+      cardRotateY = MAX_ROTATION_Y;
     }
 
-    // High performance direct DOM updates (0% React rendering updates during scrolls)
+    // Direct DOM updates
     if (heroContentRef.current) {
       heroContentRef.current.style.transform = `translate3d(0, ${heroY}%, 0)`;
-      heroContentRef.current.style.pointerEvents = (Math.abs(heroY) < 10) ? 'auto' : 'none';
+      heroContentRef.current.style.pointerEvents = (Math.abs(heroY) < 10 && cardOpacity > 0.4) ? 'auto' : 'none';
     }
     if (heroGlowRef.current) {
       heroGlowRef.current.style.transform = `translate3d(${cardTranslateX}, ${cardTranslateY}, 0) scale(${cardScale})`;
+      heroGlowRef.current.style.opacity = `${cardOpacity}`;
     }
     if (heroCardRef.current) {
       heroCardRef.current.style.transform = `perspective(1100px) rotateX(var(--tilt-x, 0deg)) rotateX(${cardRotateX}deg) rotateY(var(--tilt-y, 0deg)) rotateY(${cardRotateY}deg) translate3d(${cardTranslateX}, ${cardTranslateY}, 0) scale(${cardScale})`;
+      heroCardRef.current.style.opacity = `${cardOpacity}`;
     }
     if (aboutRef.current) {
       aboutRef.current.style.transform = `translate3d(0, ${aboutY}%, 0)`;
       aboutRef.current.style.pointerEvents = (Math.abs(aboutY) < 10) ? 'auto' : 'none';
-    }
-    if (skillsRef.current) {
-      skillsRef.current.style.transform = `translate3d(0, ${skillsY}%, 0)`;
-      skillsRef.current.style.pointerEvents = (Math.abs(skillsY) < 10) ? 'auto' : 'none';
+
+      if (progress >= 0.72) {
+        aboutRef.current.classList.add('is-in-view');
+      } else if (progress < 0.55) {
+        aboutRef.current.classList.remove('is-in-view');
+      }
     }
     if (scrollCueRef.current) {
-      const showCue = frame >= SCROLL_CUE_START_FRAME && frame < SCROLL_CUE_END_FRAME;
+      const showCue = progress < HERO_TRANSITION_OUT_START_PROGRESS;
       scrollCueRef.current.style.opacity = showCue ? '1' : '0';
     }
-  }, [drawFrame, reducedMotion]);
+  }, [reducedMotion]);
 
   useEffect(() => {
+    const updateScrollProgress = () => {
+      if (window.scrollY > 0) {
+        hasScrolledRef.current = true;
+      }
+      const wrapper = wrapperRef.current;
+      if (!wrapper) return;
+      const rect = wrapper.getBoundingClientRect();
+      const total = wrapper.offsetHeight - window.innerHeight;
+      const scrolled = -rect.top;
+      const progress = total > 0 ? Math.min(1, Math.max(0, scrolled / total)) : 0;
+      applyProgress(progress);
+    };
+
     const onScroll = () => {
       if (rafRef.current !== null) return;
       rafRef.current = requestAnimationFrame(() => {
         rafRef.current = null;
-        const wrapper = wrapperRef.current;
-        if (!wrapper) return;
-        const rect = wrapper.getBoundingClientRect();
-        const total = wrapper.offsetHeight - window.innerHeight;
-        const scrolled = -rect.top;
-        const progress = total > 0 ? Math.min(1, Math.max(0, scrolled / total)) : 0;
-        applyProgress(progress);
+        updateScrollProgress();
       });
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
+    window.addEventListener('resize', updateScrollProgress, { passive: true });
+    updateScrollProgress();
+
     return () => {
       window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', updateScrollProgress);
       if (rafRef.current !== null) {
         cancelAnimationFrame(rafRef.current);
         rafRef.current = null;
@@ -409,34 +278,49 @@ export default function HeroAboutScroll({ hero, about, resume, skills }) {
     };
   }, [applyProgress]);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const resize = () => {
-      if (!canvas) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = window.innerWidth * dpr;
-      canvas.height = window.innerHeight * dpr;
-      canvas.style.width = '100%';
-      canvas.style.height = '100%';
-      drawFrame(currentFrameRef.current);
+  const [isVideoReady, setIsVideoReady] = useState(false);
+  const [loadPercent, setLoadPercent] = useState(0);
 
-      const wrapper = wrapperRef.current;
-      if (wrapper) {
-        const rect = wrapper.getBoundingClientRect();
-        const total = wrapper.offsetHeight - window.innerHeight;
-        const scrolled = -rect.top;
-        const progress = total > 0 ? Math.min(1, Math.max(0, scrolled / total)) : 0;
-        applyProgress(progress);
+  // Pause video initially and present smooth 60fps preloader before revealing scene
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    let startTime = performance.now();
+    const duration = 1200; // 1.2s smooth presentation
+    let animationFrameId = null;
+
+    const animateProgress = (now) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(1, elapsed / duration);
+      // Smooth ease-out progress curve
+      const currentPercent = Math.min(100, Math.floor(100 * (1 - Math.pow(1 - progress, 2))));
+      setLoadPercent(currentPercent);
+
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(animateProgress);
+      } else {
+        const wrapper = wrapperRef.current;
+        if (wrapper) {
+          const rect = wrapper.getBoundingClientRect();
+          const total = wrapper.offsetHeight - window.innerHeight;
+          const scrolled = -rect.top;
+          const prog = total > 0 ? Math.min(1, Math.max(0, scrolled / total)) : 0;
+          applyProgress(prog);
+        }
+        setTimeout(() => {
+          setIsVideoReady(true);
+        }, 220);
       }
     };
-    resize();
-    window.addEventListener('resize', resize);
-    return () => window.removeEventListener('resize', resize);
-  }, [drawFrame, ready, applyProgress]);
 
-  useEffect(() => {
-    if (ready) drawFrame(1);
-  }, [ready, drawFrame]);
+    video.pause();
+    animationFrameId = requestAnimationFrame(animateProgress);
+
+    return () => {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    };
+  }, [applyProgress]);
 
   const handleHeroMove = (e) => {
     if (reducedMotion) return;
@@ -448,6 +332,7 @@ export default function HeroAboutScroll({ hero, about, resume, skills }) {
     card.style.setProperty('--tilt-x', `${py * -MOUSE_TILT_MAX_DEGREES}deg`);
     card.style.setProperty('--tilt-y', `${px * MOUSE_TILT_MAX_DEGREES}deg`);
   };
+
   const handleHeroLeave = () => {
     const card = heroCardRef.current;
     if (!card) return;
@@ -455,24 +340,65 @@ export default function HeroAboutScroll({ hero, about, resume, skills }) {
     card.style.setProperty('--tilt-y', '0deg');
   };
 
-  const loadPct = Math.round((loaded / FRAME_COUNT) * 100);
-
   return (
-    <section className={`scroll-wrapper ${reducedMotion ? 'prefers-reduced-motion' : ''}`} ref={wrapperRef} id="home" aria-label="Hero and Biography">
-      {!ready && (
-        <div className="frame-loader" aria-live="polite" aria-busy="true">
-          <div className="loader-mark">MU</div>
-          <div className="loader-bar">
-            <div className="loader-fill" style={{ width: `${loadPct}%` }} />
+    <section className={`scroll-wrapper ${reducedMotion ? 'prefers-reduced-motion' : ''} ${isVideoReady ? 'is-ready' : ''}`} ref={wrapperRef} id="home" aria-label="Hero and Biography">
+      {/* Sleek Initial Preloader Overlay (Hides initial video metadata buffering) */}
+      {!isVideoReady && (
+        <div className="scene-preloader" aria-hidden="true">
+          <div className="preloader-content">
+            <div className="preloader-spinner" />
+            <div className="preloader-text">INITIALIZING EXPERIENCE</div>
+            <div className="preloader-track">
+              <div className="preloader-bar" style={{ width: `${loadPercent}%` }} />
+            </div>
           </div>
-          <div className="loader-pct eyebrow">Loading scene — {loadPct}%</div>
         </div>
       )}
-
       <div className="sticky-stage">
-        <canvas ref={canvasRef} className="scene-canvas" aria-hidden="true" />
+        <video
+          ref={videoRef}
+          src="/hero-video.mp4"
+          className="scene-video"
+          muted
+          playsInline
+          preload="auto"
+          aria-hidden="true"
+        />
         <DepthTypography text={hero?.backgroundText || "USMAN"} className="depth-bg-text" aria-hidden="true" />
-        <div className="scene-vignette" aria-hidden="true" />
+        {/* Top Cloud (z-index 4) */}
+        <img
+          ref={cloudTopRef}
+          src="/cloud.png"
+          alt=""
+          className="hero-cloud hero-cloud-top"
+          aria-hidden="true"
+        />
+
+        {/* WELCOME TO MY SPACE Intro Text (z-index 5 - above top cloud, behind side clouds) */}
+        <div
+          ref={welcomeTextRef}
+          className="welcome-space-intro"
+          aria-hidden="true"
+        >
+          <div ref={welcomeLine1Ref} className="welcome-line welcome-line-1">WELCOM TO</div>
+          <div ref={welcomeLine2Ref} className="welcome-line welcome-line-2">MY SPACE</div>
+        </div>
+
+        {/* Left & Right Side Clouds (z-index 6 - in front of text) */}
+        <img
+          ref={cloudLeftRef}
+          src="/cloud.png"
+          alt=""
+          className="hero-cloud hero-cloud-left"
+          aria-hidden="true"
+        />
+        <img
+          ref={cloudRightRef}
+          src="/cloud.png"
+          alt=""
+          className="hero-cloud hero-cloud-right"
+          aria-hidden="true"
+        />
 
         {/* HERO CONTENT */}
         <div
@@ -481,8 +407,8 @@ export default function HeroAboutScroll({ hero, about, resume, skills }) {
           className="stage-content hero-content"
           ref={heroContentRef}
           style={{
-            transform: 'translate3d(0, 100%, 0)',
-            pointerEvents: 'none',
+            transform: 'translate3d(0, 0%, 0)',
+            pointerEvents: 'auto',
           }}
         >
           {/* Reusable GlowLayer positioned behind the Hero card */}
@@ -490,10 +416,10 @@ export default function HeroAboutScroll({ hero, about, resume, skills }) {
             className="hero-glow-container"
             ref={heroGlowRef}
             style={{
-              transform: 'translate3d(50vw, 25vh, 0) scale(0.1)',
               position: 'absolute',
               pointerEvents: 'none',
               zIndex: 1,
+              opacity: 0,
             }}
             aria-hidden="true"
           >
@@ -503,16 +429,14 @@ export default function HeroAboutScroll({ hero, about, resume, skills }) {
           <div
             className="glass hero-card"
             ref={heroCardRef}
-            style={{
-              transform: 'perspective(1100px) rotateX(var(--tilt-x, 0deg)) rotateX(0deg) rotateY(var(--tilt-y, 0deg)) rotateY(0deg) translate3d(50vw, 25vh, 0) scale(0.1)',
-            }}
+            style={{ opacity: 0 }}
             onMouseMove={handleHeroMove}
             onMouseLeave={handleHeroLeave}
           >
             <ReflectionOverlay delay={1.5} aria-hidden="true" />
             <div className="hero-glow" aria-hidden="true" />
-             <p className="hero-greet">{hero?.greetText || "Hi, I'm"}</p>
-            <h1 className="hero-name">{hero?.name || "Muhammad Usman"}</h1>
+            <p className="hero-greet">{hero?.greetText || "Hi, I'm"}</p>
+            <RevealHeading text={hero?.name || "Muhammad Usman"} as="h1" className="hero-name" />
             <p className="hero-role">
               {hero?.role || "Full-Stack Developer | AI Integration Specialist | Video Editor"}
             </p>
@@ -558,28 +482,6 @@ export default function HeroAboutScroll({ hero, about, resume, skills }) {
           }}
           aboutData={about}
         />
-
-        {/* SKILLS CONTENT */}
-        <section
-          className="stage-content skills-stage-content"
-          aria-label="Skills Overview"
-          ref={skillsRef}
-          style={{
-            transform: 'translate3d(0, 100%, 0)',
-            pointerEvents: 'none',
-          }}
-        >
-          <KineticGrid
-            isStatic={reducedMotion}
-            dotColor="rgba(255, 255, 255, 0.12)"
-            lineColor="rgba(79, 140, 255, 0.08)"
-            trailColor="rgba(101, 214, 255, 0.25)"
-            spacing={40}
-            radius={200}
-            style={{ zIndex: 1 }}
-          />
-          <SkillsMarquee skills={skills} />
-        </section>
 
         <div className="scroll-cue" ref={scrollCueRef} style={{ opacity: 0, pointerEvents: 'none' }} aria-hidden="true">
           <span>scroll</span>

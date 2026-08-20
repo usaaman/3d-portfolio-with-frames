@@ -25,7 +25,7 @@ const DEFAULT_ABOUT_DATA = {
     { id: 2, type: 'experience', date: '2025 - Present', title: 'Full Stack Web Freelancer', institution: 'Remote / Client Services' },
     { id: 3, type: 'experience', date: '2022 - 2024', title: 'Lead CapCut Video Editor', institution: 'Creative Studio' }
   ],
-  imageUrl: '/frames/frame-081.webp',
+  imageUrl: '/favicon.svg',
 };
 
 export default function AboutManager() {

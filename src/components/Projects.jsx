@@ -233,7 +233,7 @@ export default function Projects({ projects }) {
               if (img && !imagesList.includes(img)) imagesList.push(img);
             });
             if (imagesList.length === 0) {
-              imagesList.push('/frames/frame-138.webp');
+              imagesList.push('/favicon.svg');
             }
             
             const activeImgIdx = activeImgIndices[idx] || 0;
@@ -283,7 +283,7 @@ export default function Projects({ projects }) {
                     <img
                       src={currentImg}
                       alt={project.title}
-                      onError={(e) => { e.target.src = '/frames/frame-138.webp'; }}
+                      onError={(e) => { e.target.src = '/favicon.svg'; }}
                     />
                     <div className="media-hover-overlay">
                       <span className="text-xs font-mono text-white/90 bg-black/70 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/10 flex items-center gap-1.5">
@@ -311,7 +311,7 @@ export default function Projects({ projects }) {
                                 [idx]: thumbIdx
                               }));
                             }}
-                            onError={(e) => { e.target.src = '/frames/frame-138.webp'; }}
+                            onError={(e) => { e.target.src = '/favicon.svg'; }}
                           />
                         );
                       })}

@@ -26,7 +26,7 @@ const DEFAULT_HERO_DATA = {
   linkedinUrl: 'https://www.linkedin.com/in/muhammad-usman-a76984378/',
   twitterUrl: 'https://twitter.com/',
   emailAddress: 'musmannazir97@gmail.com',
-  avatarUrl: '/frames/frame-138.webp', // static preview placeholder
+  avatarUrl: '/favicon.svg', // static preview placeholder
 };
 
 export default function HeroManager() {

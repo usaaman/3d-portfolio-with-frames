@@ -23,18 +23,13 @@ Open the printed local URL (usually `http://localhost:5173`).
 ## What's included
 
 - **Header** — fixed glass nav: logo (left), Home/About/Skills/Projects/Services/Contact links (center), Resume download button (right).
-- **Hero + About** — a single continuous scroll-scrubbed animation (`src/components/HeroAboutScroll.jsx`) built from 261 WebP frames in `public/frames/`.
-- All 261 frames are used, resized to 1600px wide WebP and lightly enhanced (contrast/color/sharpness) for smaller file size and a crisper look. A small CSS filter on the `<canvas>` adds a bit more punch. Originals were 1920x1080 PNG.
+- **Hero + About** — a single continuous scroll-scrubbed animation (`src/components/HeroAboutScroll.jsx`) built from a hardware-accelerated video file (`public/scroll-video.mp4`).
 
 ## How the scroll animation works
 
-- The frame sequence is pinned to the viewport (`position: sticky`) while the user scrolls through a tall wrapper (`500vh`). Nothing scrolls "up" during this phase — the scene stays stuck to the screen and only the visible frame changes, exactly as discussed.
-- Once the wrapper's scroll distance is used up (all 261 frames have played), the sticky pin naturally releases and the page resumes normal scrolling into the next section.
-- All 261 frames are preloaded before the sequence becomes interactive (loading screen shown in the meantime) so scrubbing stays smooth with no flicker.
-- Frame checkpoints (edit these constants at the top of `HeroAboutScroll.jsx` if you want to retime anything):
-  - `HERO_IN_START/END` (70-100): hero card fades in
-  - `HERO_OUT_START/END` (146-165): hero card fades out
-  - `ABOUT_IN_START/END` (214-240): about card animates in
+- The video scene is pinned to the viewport (`position: sticky`) while the user scrolls through a tall wrapper (`500vh`). The video playback head (`currentTime`) is programmatically scrubbed based on the scroll position.
+- Once the wrapper's scroll distance is used up, the sticky pin releases and the page resumes normal scrolling into the next section.
+- Playback is throttled via `requestAnimationFrame` and a change threshold delta to avoid overloading seeks, providing highly responsive hardware-decoded transitions.
 
 ## Still to do (next phases)
 
@@ -46,8 +41,8 @@ Open the printed local URL (usually `http://localhost:5173`).
 ## Folder structure
 
 ```
-public/frames/       261 optimized WebP frames (frame-001.webp ... frame-261.webp)
-src/components/       Header, HeroAboutScroll (+ their CSS)
-src/App.jsx           page composition
-src/index.css         design tokens (colors, type, glass utility)
+public/scroll-video.mp4  Scroll-driven background video
+src/components/          Header, HeroAboutScroll (+ their CSS)
+src/App.jsx              page composition
+src/index.css            design tokens (colors, type, glass utility)
 ```

@@ -90,12 +90,7 @@ export default function Sidebar({
                     <span>About</span>
                   </NavLink>
                 </li>
-                <li>
-                  <NavLink to="/admin/skills" onClick={onCloseMobile} className={({ isActive }) => `nav-sub-item ${isActive ? 'is-active' : ''}`}>
-                    <Award size={14} />
-                    <span>Skills</span>
-                  </NavLink>
-                </li>
+
                 <li>
                   <NavLink to="/admin/projects" onClick={onCloseMobile} className={({ isActive }) => `nav-sub-item ${isActive ? 'is-active' : ''}`}>
                     <Briefcase size={14} />

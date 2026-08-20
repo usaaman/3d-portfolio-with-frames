@@ -38,8 +38,8 @@ import { uploadFileToCloudinary } from '../services/cloudinary';
 import './ProjectsManager.css';
 
 const DEFAULT_PROJECTS = [
-  { id: 'proj-1', title: 'FitSphere Core', subtitle: 'Fitness Mobile Application', shortDesc: 'A fitness mobile app providing automated workout scheduling.', longDesc: 'FitSphere Core utilizes React Native on the client side coupled with Firebase Authentication and Firestore DB. It implements automatic workout scaling algorithms based on individual metrics.', techStack: 'React Native, Firebase, Expo, Redux', type: 'Mobile App', status: 'Published', featured: true, displayOrder: 1, githubUrl: 'https://github.com/usaaman/fitsphere', liveUrl: 'https://fitsphere.example.com', docUrl: '', videoUrl: '', caseStudyUrl: '', coverImage: '/frames/frame-138.webp', gallery: ['/frames/frame-138.webp', '/frames/frame-081.webp'] },
-  { id: 'proj-2', title: 'DevConnect Portal', subtitle: 'Developer Networking Platform', shortDesc: 'Social connection platform for software engineering students.', longDesc: 'DevConnect allows peer portfolio sharing and project team building. Features realtime messaging and skill matchmaking matrix filters.', techStack: 'React, Node.js, Socket.io, MongoDB', type: 'Web Application', status: 'Published', featured: false, displayOrder: 2, githubUrl: 'https://github.com/usaaman/devconnect', liveUrl: '', docUrl: '', videoUrl: '', caseStudyUrl: '', coverImage: '/frames/frame-081.webp', gallery: ['/frames/frame-081.webp'] }
+  { id: 'proj-1', title: 'FitSphere Core', subtitle: 'Fitness Mobile Application', shortDesc: 'A fitness mobile app providing automated workout scheduling.', longDesc: 'FitSphere Core utilizes React Native on the client side coupled with Firebase Authentication and Firestore DB. It implements automatic workout scaling algorithms based on individual metrics.', techStack: 'React Native, Firebase, Expo, Redux', type: 'Mobile App', status: 'Published', featured: true, displayOrder: 1, githubUrl: 'https://github.com/usaaman/fitsphere', liveUrl: 'https://fitsphere.example.com', docUrl: '', videoUrl: '', caseStudyUrl: '', coverImage: '/favicon.svg', gallery: ['/favicon.svg'] },
+  { id: 'proj-2', title: 'DevConnect Portal', subtitle: 'Developer Networking Platform', shortDesc: 'Social connection platform for software engineering students.', longDesc: 'DevConnect allows peer portfolio sharing and project team building. Features realtime messaging and skill matchmaking matrix filters.', techStack: 'React, Node.js, Socket.io, MongoDB', type: 'Web Application', status: 'Published', featured: false, displayOrder: 2, githubUrl: 'https://github.com/usaaman/devconnect', liveUrl: '', docUrl: '', videoUrl: '', caseStudyUrl: '', coverImage: '/favicon.svg', gallery: ['/favicon.svg'] }
 ];
 
 export default function ProjectsManager() {
@@ -212,7 +212,7 @@ export default function ProjectsManager() {
       docUrl: '',
       videoUrl: '',
       caseStudyUrl: '',
-      coverImage: '/frames/frame-138.webp',
+      coverImage: '/favicon.svg',
       gallery: [],
     };
     setFormData(initial);
@@ -240,7 +240,7 @@ export default function ProjectsManager() {
       docUrl: project.docUrl || '',
       videoUrl: project.videoUrl || '',
       caseStudyUrl: project.caseStudyUrl || '',
-      coverImage: project.coverImage || '/frames/frame-138.webp',
+      coverImage: project.coverImage || '/favicon.svg',
       gallery: project.gallery || [],
     };
     setFormData(initial);
@@ -486,7 +486,7 @@ export default function ProjectsManager() {
                     </td>
                     <td>
                       <div className="project-table-thumb">
-                        <img src={proj.coverImage} alt="" onError={(e) => { e.target.src = '/frames/frame-138.webp'; }} />
+                        <img src={proj.coverImage} alt="" onError={(e) => { e.target.src = '/favicon.svg'; }} />
                       </div>
                     </td>
                     <td>
@@ -720,7 +720,7 @@ export default function ProjectsManager() {
                   <Input
                     id="newImage"
                     label="Add Image URL Path"
-                    placeholder="/frames/frame-138.webp"
+                    placeholder="/favicon.svg"
                     value={newImageInput}
                     onChange={(e) => setNewImageInput(e.target.value)}
                   />
@@ -774,7 +774,7 @@ export default function ProjectsManager() {
                     const isCover = formData.coverImage === img;
                     return (
                       <div key={img + index} className={`gallery-editor-tile ${isCover ? 'is-cover' : ''}`}>
-                        <img src={img} alt="" onError={(e) => { e.target.src = '/frames/frame-138.webp'; }} />
+                        <img src={img} alt="" onError={(e) => { e.target.src = '/favicon.svg'; }} />
                         <div className="tile-hover-overlay">
                           <button
                             type="button"

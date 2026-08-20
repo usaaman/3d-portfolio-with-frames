@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react';
 import { db } from '../admin/services/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { trackResumeDownload } from '../utils/analytics';
+import { scrollToSection } from '../utils/scrollTargets';
 import './Header.css';
 
 const NAV_LINKS = [
   { label: 'Home', href: '#home' },
   { label: 'About', href: '#about' },
-  { label: 'Skills', href: '#skills' },
   { label: 'Projects', href: '#projects' },
   { label: 'Services', href: '#services' },
   { label: 'Contact', href: '#contact' },
@@ -51,7 +51,18 @@ export default function Header({ resume }) {
 
       <nav className={`nav-links ${menuOpen ? 'is-open' : ''}`}>
         {NAV_LINKS.map((link) => (
-          <a key={link.href} href={link.href} onClick={() => setMenuOpen(false)}>
+          <a
+            key={link.href}
+            href={link.href}
+            onClick={(e) => {
+              const id = link.href.replace('#', '');
+              if (['home', 'about'].includes(id)) {
+                e.preventDefault();
+                scrollToSection(id);
+              }
+              setMenuOpen(false);
+            }}
+          >
             {link.label}
           </a>
         ))}

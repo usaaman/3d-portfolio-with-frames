@@ -105,7 +105,7 @@
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  box-shadow: 
+  box-shadow:
     inset 0 4px 8px rgba(255, 255, 255, 0.15),
     inset 0 -4px 8px rgba(0, 0, 0, 0.5),
     0 15px 45px rgba(0, 0, 0, 0.5);
@@ -130,12 +130,10 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: linear-gradient(
-    135deg,
-    transparent 45%,
-    rgba(255, 255, 255, 0.08) 50%,
-    transparent 55%
-  );
+  background: linear-gradient(135deg,
+      transparent 45%,
+      rgba(255, 255, 255, 0.08) 50%,
+      transparent 55%);
   pointer-events: none;
   z-index: 4;
 }
@@ -171,7 +169,7 @@
 
 .orbit-center-sphere.is-reactive .sphere-inner {
   border-color: rgba(79, 140, 255, 0.45);
-  box-shadow: 
+  box-shadow:
     inset 0 4px 10px rgba(255, 255, 255, 0.25),
     inset 0 -4px 12px rgba(79, 140, 255, 0.15),
     0 20px 60px rgba(79, 140, 255, 0.18);
@@ -224,7 +222,7 @@
   padding: var(--ds-space-24) var(--ds-space-32);
   background: rgba(10, 15, 26, 0.4);
   /* border-radius, borders, blurs, and shadows are inherited from .ds-glass */
-  transition: 
+  transition:
     border-color var(--ds-duration-medium) var(--ds-ease-out-natural),
     box-shadow var(--ds-duration-medium) var(--ds-ease-out-natural),
     background-color var(--ds-duration-medium) var(--ds-ease-out-natural),
@@ -294,22 +292,27 @@
   --card-accent-text: #60A5FA;
   --card-accent-glow: rgba(96, 165, 250, 0.08);
 }
+
 .service-orbit-card.accent-indigo {
   --card-accent-text: #818CF8;
   --card-accent-glow: rgba(129, 140, 248, 0.08);
 }
+
 .service-orbit-card.accent-cyan {
   --card-accent-text: #22D3EE;
   --card-accent-glow: rgba(34, 211, 238, 0.08);
 }
+
 .service-orbit-card.accent-emerald {
   --card-accent-text: #34D399;
   --card-accent-glow: rgba(52, 211, 153, 0.08);
 }
+
 .service-orbit-card.accent-amber {
   --card-accent-text: #FBBF24;
   --card-accent-glow: rgba(251, 191, 36, 0.08);
 }
+
 .service-orbit-card.accent-purple {
   --card-accent-text: #E879F9;
   --card-accent-glow: rgba(232, 121, 249, 0.08);
@@ -347,14 +350,12 @@
   left: -100%;
   width: 50%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.03) 30%,
-    rgba(255, 255, 255, 0.06) 50%,
-    rgba(255, 255, 255, 0.03) 70%,
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.03) 30%,
+      rgba(255, 255, 255, 0.06) 50%,
+      rgba(255, 255, 255, 0.03) 70%,
+      transparent);
   transform: skewX(-25deg);
   pointer-events: none;
 }
@@ -368,36 +369,88 @@
    GPU-ACCELERATED INDEX-SPECIFIC ORBIT ANIMATIONS
    ============================================================================ */
 
-.orbit-node-0 { animation: counter-rotate-0 var(--orbit-speed) linear infinite; }
-.orbit-node-1 { animation: counter-rotate-1 var(--orbit-speed) linear infinite; }
-.orbit-node-2 { animation: counter-rotate-2 var(--orbit-speed) linear infinite; }
-.orbit-node-3 { animation: counter-rotate-3 var(--orbit-speed) linear infinite; }
-.orbit-node-4 { animation: counter-rotate-4 var(--orbit-speed) linear infinite; }
-.orbit-node-5 { animation: counter-rotate-5 var(--orbit-speed) linear infinite; }
+.orbit-node-0 {
+  animation: counter-rotate-0 var(--orbit-speed) linear infinite;
+}
+
+.orbit-node-1 {
+  animation: counter-rotate-1 var(--orbit-speed) linear infinite;
+}
+
+.orbit-node-2 {
+  animation: counter-rotate-2 var(--orbit-speed) linear infinite;
+}
+
+.orbit-node-3 {
+  animation: counter-rotate-3 var(--orbit-speed) linear infinite;
+}
+
+.orbit-node-4 {
+  animation: counter-rotate-4 var(--orbit-speed) linear infinite;
+}
+
+.orbit-node-5 {
+  animation: counter-rotate-5 var(--orbit-speed) linear infinite;
+}
 
 @keyframes counter-rotate-0 {
-  0% { transform: translate(-50%, -50%) rotate(0deg) translate(var(--orbit-radius)) rotate(0deg); }
-  100% { transform: translate(-50%, -50%) rotate(-360deg) translate(var(--orbit-radius)) rotate(360deg); }
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg) translate(var(--orbit-radius)) rotate(0deg);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) rotate(-360deg) translate(var(--orbit-radius)) rotate(360deg);
+  }
 }
+
 @keyframes counter-rotate-1 {
-  0% { transform: translate(-50%, -50%) rotate(60deg) translate(var(--orbit-radius)) rotate(-60deg); }
-  100% { transform: translate(-50%, -50%) rotate(-300deg) translate(var(--orbit-radius)) rotate(300deg); }
+  0% {
+    transform: translate(-50%, -50%) rotate(60deg) translate(var(--orbit-radius)) rotate(-60deg);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) rotate(-300deg) translate(var(--orbit-radius)) rotate(300deg);
+  }
 }
+
 @keyframes counter-rotate-2 {
-  0% { transform: translate(-50%, -50%) rotate(120deg) translate(var(--orbit-radius)) rotate(-120deg); }
-  100% { transform: translate(-50%, -50%) rotate(-240deg) translate(var(--orbit-radius)) rotate(240deg); }
+  0% {
+    transform: translate(-50%, -50%) rotate(120deg) translate(var(--orbit-radius)) rotate(-120deg);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) rotate(-240deg) translate(var(--orbit-radius)) rotate(240deg);
+  }
 }
+
 @keyframes counter-rotate-3 {
-  0% { transform: translate(-50%, -50%) rotate(180deg) translate(var(--orbit-radius)) rotate(-180deg); }
-  100% { transform: translate(-50%, -50%) rotate(-180deg) translate(var(--orbit-radius)) rotate(180deg); }
+  0% {
+    transform: translate(-50%, -50%) rotate(180deg) translate(var(--orbit-radius)) rotate(-180deg);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) rotate(-180deg) translate(var(--orbit-radius)) rotate(180deg);
+  }
 }
+
 @keyframes counter-rotate-4 {
-  0% { transform: translate(-50%, -50%) rotate(240deg) translate(var(--orbit-radius)) rotate(-240deg); }
-  100% { transform: translate(-50%, -50%) rotate(-120deg) translate(var(--orbit-radius)) rotate(120deg); }
+  0% {
+    transform: translate(-50%, -50%) rotate(240deg) translate(var(--orbit-radius)) rotate(-240deg);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) rotate(-120deg) translate(var(--orbit-radius)) rotate(120deg);
+  }
 }
+
 @keyframes counter-rotate-5 {
-  0% { transform: translate(-50%, -50%) rotate(300deg) translate(var(--orbit-radius)) rotate(-300deg); }
-  100% { transform: translate(-50%, -50%) rotate(-60deg) translate(var(--orbit-radius)) rotate(60deg); }
+  0% {
+    transform: translate(-50%, -50%) rotate(300deg) translate(var(--orbit-radius)) rotate(-300deg);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) rotate(-60deg) translate(var(--orbit-radius)) rotate(60deg);
+  }
 }
 
 /* ============================================================================
@@ -427,14 +480,17 @@
   .services-orbit-container {
     min-height: 720px;
   }
+
   .orbit-system-wrapper {
     width: 700px;
     height: 700px;
     --orbit-radius: 280px;
   }
+
   .orbit-node-wrapper {
     width: 280px;
   }
+
   .orbit-center-sphere {
     width: 140px;
     height: 140px;
@@ -445,21 +501,26 @@
   .services-orbit-container {
     min-height: 620px;
   }
+
   .orbit-system-wrapper {
     width: 580px;
     height: 580px;
     --orbit-radius: 220px;
   }
+
   .orbit-node-wrapper {
     width: 240px;
   }
+
   .orbit-center-sphere {
     width: 120px;
     height: 120px;
   }
+
   .orbit-card-inner {
     gap: var(--ds-space-12);
   }
+
   .orbit-card-content p {
     font-size: 11px;
     line-height: 1.35;
@@ -527,17 +588,36 @@
   .orbit-node-wrapper {
     animation: none !important;
   }
+
   /* Place nodes statically spread around orbit if motion is disabled on desktop */
-  .orbit-node-0 { transform: translate(-50%, -50%) rotate(0deg) translate(var(--orbit-radius)) rotate(0deg); }
-  .orbit-node-1 { transform: translate(-50%, -50%) rotate(60deg) translate(var(--orbit-radius)) rotate(-60deg); }
-  .orbit-node-2 { transform: translate(-50%, -50%) rotate(120deg) translate(var(--orbit-radius)) rotate(-120deg); }
-  .orbit-node-3 { transform: translate(-50%, -50%) rotate(180deg) translate(var(--orbit-radius)) rotate(-180deg); }
-  .orbit-node-4 { transform: translate(-50%, -50%) rotate(240deg) translate(var(--orbit-radius)) rotate(-240deg); }
-  .orbit-node-5 { transform: translate(-50%, -50%) rotate(300deg) translate(var(--orbit-radius)) rotate(-300deg); }
-  
+  .orbit-node-0 {
+    transform: translate(-50%, -50%) rotate(0deg) translate(var(--orbit-radius)) rotate(0deg);
+  }
+
+  .orbit-node-1 {
+    transform: translate(-50%, -50%) rotate(60deg) translate(var(--orbit-radius)) rotate(-60deg);
+  }
+
+  .orbit-node-2 {
+    transform: translate(-50%, -50%) rotate(120deg) translate(var(--orbit-radius)) rotate(-120deg);
+  }
+
+  .orbit-node-3 {
+    transform: translate(-50%, -50%) rotate(180deg) translate(var(--orbit-radius)) rotate(-180deg);
+  }
+
+  .orbit-node-4 {
+    transform: translate(-50%, -50%) rotate(240deg) translate(var(--orbit-radius)) rotate(-240deg);
+  }
+
+  .orbit-node-5 {
+    transform: translate(-50%, -50%) rotate(300deg) translate(var(--orbit-radius)) rotate(-300deg);
+  }
+
   .service-orbit-card {
     transition: none !important;
   }
+
   .orbit-center-sphere {
     transition: none !important;
   }

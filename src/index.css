@@ -3,30 +3,31 @@
 
 :root {
   /* ==========================================
-     LEGACY DESIGN TOKENS
-     Must remain unchanged to keep existing UI fully functional without visual changes.
+     DEVELOPER SUMMIT DESIGN TOKENS
+     Dark Forest Green + Amber/Orange Accent System
      ========================================== */
-  --bg: var(--ds-color-bg-primary);
-  --bg-elevated: #0c0a16;
-  --purple-900: #1e1147;
-  --purple-700: #5b21b6;
-  --purple-600: #7c3aed;
-  --purple-400: #a78bfa;
-  --cyan-500: #22d3ee;
-  --cyan-300: #8be9f8;
+  --bg: #051C18;
+  --bg-elevated: #0B2B26;
+  --purple-900: #051C18;
+  --purple-700: #0B2B26;
+  --purple-600: #0F3830;
+  --purple-400: #F5A623;
+  --cyan-500: #F5A623;
+  --cyan-300: #FFB74D;
 
-  --text-primary: #f6f4fb;
-  --text-secondary: #b6b2c9;
-  --text-muted: #7d7a94;
+  --text-primary: #F8FAFC;
+  --text-secondary: #94B3A8;
+  --text-muted: #64887B;
 
-  --glass-bg: rgba(246, 244, 251, 0.06);
-  --glass-bg-strong: rgba(246, 244, 251, 0.09);
-  --glass-border: rgba(246, 244, 251, 0.14);
-  --glass-highlight: rgba(255, 255, 255, 0.35);
+  --glass-bg: rgba(11, 43, 38, 0.55);
+  --glass-bg-strong: rgba(15, 56, 48, 0.75);
+  --glass-border: rgba(26, 82, 71, 0.45);
+  --glass-highlight: rgba(245, 166, 35, 0.15);
 
   --font-display: 'Space Grotesk', 'Inter', sans-serif;
   --font-body: 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+  --font-script: 'Caveat', cursive;
 
   color-scheme: dark;
 }
@@ -41,6 +42,7 @@
 
   --color-ds-accent-primary: var(--ds-color-accent-primary);
   --color-ds-accent-secondary: var(--ds-color-accent-secondary);
+  --color-ds-accent-cream: var(--ds-color-accent-cream);
   --color-ds-text-primary: var(--ds-color-text-primary);
   --color-ds-text-secondary: var(--ds-color-text-secondary);
   --color-ds-text-muted: var(--ds-color-text-muted);
@@ -49,59 +51,11 @@
   --font-ds-display: var(--ds-font-display);
   --font-ds-body: var(--ds-font-body);
   --font-ds-mono: var(--ds-font-mono);
+  --font-ds-script: var(--ds-font-script);
 
   --font-weight-ds-regular: var(--ds-font-weight-regular);
   --font-weight-ds-medium: var(--ds-font-weight-medium);
   --font-weight-ds-bold: var(--ds-font-weight-bold);
-
-  /* Spacing Scale */
-  --spacing-ds-8: var(--ds-space-8);
-  --spacing-ds-16: var(--ds-space-16);
-  --spacing-ds-24: var(--ds-space-24);
-  --spacing-ds-32: var(--ds-space-32);
-  --spacing-ds-48: var(--ds-space-48);
-  --spacing-ds-64: var(--ds-space-64);
-  --spacing-ds-96: var(--ds-space-96);
-  --spacing-ds-128: var(--ds-space-128);
-
-  /* Typography Scale */
-  --font-size-ds-hero: var(--ds-font-size-hero);
-  --font-size-ds-section: var(--ds-font-size-section);
-  --font-size-ds-card: var(--ds-font-size-card);
-  --font-size-ds-subtitle: var(--ds-font-size-subtitle);
-  --font-size-ds-body: var(--ds-font-size-body);
-  --font-size-ds-small: var(--ds-font-size-small);
-  --font-size-ds-caption: var(--ds-font-size-caption);
-
-  /* Letter Spacing */
-  --letter-spacing-ds-tight: var(--ds-letter-spacing-tight);
-  --letter-spacing-ds-normal: var(--ds-letter-spacing-normal);
-  --letter-spacing-ds-wide: var(--ds-letter-spacing-wide);
-
-  /* Line Heights */
-  --line-height-ds-display: var(--ds-line-height-display);
-  --line-height-ds-heading: var(--ds-line-height-heading);
-  --line-height-ds-body: var(--ds-line-height-body);
-  --line-height-ds-tight: var(--ds-line-height-tight);
-
-  /* Border Radii */
-  --radius-ds-small: var(--ds-radius-small);
-  --radius-ds-button: var(--ds-radius-button);
-  --radius-ds-medium: var(--ds-radius-medium);
-  --radius-ds-card: var(--ds-radius-card);
-  --radius-ds-large: var(--ds-radius-large);
-  --radius-ds-panel: var(--ds-radius-panel);
-  --radius-ds-circular: var(--radius-ds-circular);
-
-  /* Elevation Blurs & Shadows */
-  --shadow-ds-small: var(--ds-shadow-small);
-  --shadow-ds-medium: var(--ds-shadow-medium);
-  --shadow-ds-large: var(--ds-shadow-large);
-
-  /* Transitions & Easings */
-  --ease-ds-out-natural: var(--ds-ease-out-natural);
-  --ease-ds-in-out-natural: var(--ds-ease-in-out-natural);
-  --ease-ds-soft-spring: var(--ds-ease-soft-spring);
 }
 
 * {
@@ -112,13 +66,15 @@
 
 html {
   scroll-behavior: smooth;
+  background-color: #051C18;
 }
 
 body {
-  background: var(--bg);
+  background: linear-gradient(180deg, #051C18 0%, #0B2B26 50%, #0F3830 100%);
   color: var(--text-primary);
   font-family: var(--font-body);
   overflow-x: hidden;
+  min-height: 100vh;
 }
 
 a {
@@ -133,17 +89,18 @@ button {
 
 #root {
   min-height: 100%;
+  background: transparent;
 }
 
-/* Legacy Glass Material Class (DO NOT change existing layout appearance) */
+/* Glass Material Utility */
 .glass {
-  background: var(--ds-glass-bg);
-  border: 1px solid var(--ds-glass-border);
-  backdrop-filter: blur(var(--ds-glass-blur)) saturate(120%);
-  -webkit-backdrop-filter: blur(var(--ds-glass-blur)) saturate(120%);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--ds-glass-blur, 8px)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--ds-glass-blur, 8px)) saturate(120%);
   box-shadow:
-    inset 0 1px 0 var(--ds-glass-highlight),
-    var(--ds-shadow-large);
+    inset 0 1px 0 var(--glass-highlight),
+    0 20px 50px rgba(0, 0, 0, 0.4);
 }
 
 .eyebrow {
@@ -151,57 +108,142 @@ button {
   font-size: 12px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--cyan-300);
+  color: #F5A623;
 }
 
-/* ==========================================
-   NEW DESIGN SYSTEM COMPONENT UTILITIES
-   ========================================== */
-
-/* Glass Material Utility (Design Docs Specification) */
-.ds-glass {
-  background: var(--ds-glass-bg);
-  border: 1px solid var(--ds-glass-border);
-  backdrop-filter: blur(var(--ds-glass-blur)) saturate(120%);
-  -webkit-backdrop-filter: blur(var(--ds-glass-blur)) saturate(120%);
-  box-shadow:
-    inset 0 1px 0 var(--ds-glass-highlight),
-    var(--ds-shadow-large);
-  border-radius: var(--ds-radius-card);
+/* Handwritten Script Accent Font Utility */
+.font-script {
+  font-family: var(--font-script), 'Caveat', cursive;
+  color: #F5A623;
+  font-weight: 700;
+  display: inline-block;
+  transform: rotate(-1.5deg);
 }
 
-/* Container Layout System (1280px Grid, 80px Margins on Desktop) */
-.ds-container {
-  width: 100%;
-  max-width: var(--ds-container-width);
+/* Pill Buttons */
+.btn-pill-primary {
+  display: inline-flex;
+  items-center: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 9999px;
+  background-color: #F5A623;
+  color: #051C18;
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.02em;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 20px rgba(245, 166, 35, 0.25);
+}
+
+.btn-pill-primary:hover {
+  background-color: #FFB74D;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(245, 166, 35, 0.35);
+}
+
+.btn-pill-secondary {
+  display: inline-flex;
+  items-center: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 9999px;
+  background-color: rgba(11, 43, 38, 0.6);
+  border: 1px solid rgba(245, 166, 35, 0.4);
+  color: #F5A623;
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.02em;
+  transition: all 0.2s ease;
+}
+
+.btn-pill-secondary:hover {
+  background-color: rgba(245, 166, 35, 0.12);
+  border-color: #F5A623;
+  color: #FFB74D;
+  transform: translateY(-2px);
+}
+
+/* Stat & Tag Chips */
+.chip-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 12px;
+  background: rgba(15, 56, 48, 0.8);
+  border: 1px solid rgba(26, 82, 71, 0.6);
+  color: #94B3A8;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.chip-stat .chip-val {
+  color: #F5A623;
+  font-weight: 700;
+}
+
+/* Developer Terminal Card Component */
+.terminal-card {
+  background: rgba(7, 34, 30, 0.95);
+  border: 1px solid rgba(26, 82, 71, 0.7);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+}
+
+.terminal-header {
+  background: rgba(5, 28, 24, 0.9);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(26, 82, 71, 0.5);
+}
+
+.terminal-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.terminal-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.terminal-dot-red { background: #FF5F56; }
+.terminal-dot-yellow { background: #FFBD2E; }
+.terminal-dot-green { background: #27C93F; }
+
+.terminal-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #64887B;
   margin-left: auto;
   margin-right: auto;
-  padding-left: var(--ds-space-24);
-  padding-right: var(--ds-space-24);
 }
 
-@media (min-width: 768px) {
-  .ds-container {
-    padding-left: var(--ds-space-48);
-    padding-right: var(--ds-space-48);
-  }
+.terminal-body {
+  padding: 16px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: #94B3A8;
+  line-height: 1.6;
 }
 
-@media (min-width: 1024px) {
-  .ds-container {
-    padding-left: var(--ds-container-margin);
-    padding-right: var(--ds-container-margin);
-  }
+/* Custom Scrollbar for developer theme */
+::-webkit-scrollbar {
+  width: 8px;
 }
-
-@media (prefers-reduced-motion: reduce) {
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
-  }
+::-webkit-scrollbar-track {
+  background: #051C18;
+}
+::-webkit-scrollbar-thumb {
+  background: #1A5247;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #F5A623;
 }

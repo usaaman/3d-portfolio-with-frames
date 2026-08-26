@@ -171,6 +171,16 @@ export default function usePortfolioData() {
       checkLoading();
     });
 
+    const unsubSkills = onSnapshot(doc(db, 'skills', 'skills-doc'), (snap) => {
+      if (snap.exists()) {
+        const skillsDoc = snap.data();
+        const entries = skillsDoc.entries || skillsDoc.skills || [];
+        setData(prev => ({ ...prev, skills: entries }));
+      }
+    }, (error) => {
+      console.warn("Error listening to skills:", error);
+    });
+
 
 
     let migrating = false;
@@ -366,6 +376,7 @@ export default function usePortfolioData() {
       unsubSocials();
       unsubResume();
       unsubAIConfig();
+      unsubSkills();
       unsubProjects();
       unsubServices();
       unsubSEO();

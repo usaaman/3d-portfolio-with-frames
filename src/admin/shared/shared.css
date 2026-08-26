@@ -59,15 +59,17 @@
 
 /* Button Variants */
 .admin-btn-primary {
-  color: var(--ds-color-bg-primary);
-  background: linear-gradient(135deg, var(--ds-color-accent-secondary), var(--ds-color-accent-primary));
-  border-color: rgba(101, 214, 255, 0.4);
+  color: #051C18;
+  background: #F5A623;
+  border-color: #F5A623;
+  font-weight: 700;
 }
 
 .admin-btn-primary:hover:not(:disabled) {
-  filter: brightness(1.08);
+  background: #FFB74D;
+  border-color: #FFB74D;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(79, 140, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(245, 166, 35, 0.3);
 }
 
 .admin-btn-ghost {

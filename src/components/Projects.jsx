@@ -181,25 +181,25 @@ export default function Projects({ projects }) {
       style={{ height: `${totalScrollHeightVh}vh` }}
     >
       {/* Sticky Stage Viewport Container */}
-      <div className="sticky top-0 w-full h-screen overflow-hidden flex flex-col items-center justify-center bg-black">
+      <div className="sticky top-0 w-full h-screen overflow-hidden flex flex-col items-center justify-center bg-[#051C18]">
         {/* Ambient Backlight */}
         <div className="stage-glow-new" aria-hidden="true"></div>
 
         {/* Header Title Layer (Top Left) */}
         <div className="absolute top-6 left-6 md:left-8 z-40 hidden md:block">
-          <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block">Stage Catalog</span>
+          <span className="text-[10px] font-mono text-[#64887B] uppercase tracking-widest block">Stage Catalog</span>
           <h1 className="text-sm font-semibold text-white tracking-tight">Keynote Showcase</h1>
         </div>
 
         {/* Stage Position Indicator (Left Edge) */}
         <div className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-40 hidden sm:flex flex-col items-center gap-4 text-xs font-mono">
-          <span className="text-zinc-500 text-[10px] uppercase tracking-widest rotate-[-90deg] mb-6">Stage Index</span>
+          <span className="text-[#64887B] text-[10px] uppercase tracking-widest rotate-[-90deg] mb-6">Stage Index</span>
           <div className="flex flex-col gap-3">
             {activeProjects.map((_, i) => (
               <button
                 key={i}
                 className={`w-2.5 h-2.5 rounded-full border border-white/30 transition-all duration-300 hover:scale-125 cursor-pointer ${
-                  i === currentStageIndex ? 'bg-blue-400 border-blue-400 w-3 h-3' : 'bg-transparent'
+                  i === currentStageIndex ? 'bg-[#F5A623] border-[#F5A623] w-3 h-3' : 'bg-transparent'
                 }`}
                 onClick={() => scrollToCard(i)}
                 title={`Jump to Project ${i + 1}`}
@@ -209,13 +209,13 @@ export default function Projects({ projects }) {
         </div>
 
         {/* Slide Counter Badge (Top Right) */}
-        <div className="absolute top-6 right-6 md:right-8 z-40 flex items-center gap-3 bg-black/60 border border-white/10 backdrop-blur-md px-4 py-1.5 rounded-full text-xs text-zinc-300 font-mono shadow-lg">
-          <span className="text-blue-400 font-bold tracking-wider">PROJECT</span>
+        <div className="absolute top-6 right-6 md:right-8 z-40 flex items-center gap-3 bg-[#07221E]/80 border border-[#1A5247] backdrop-blur-md px-4 py-1.5 rounded-full text-xs text-zinc-300 font-mono shadow-lg">
+          <span className="text-[#F5A623] font-bold tracking-wider">PROJECT</span>
           <span className="text-white font-bold text-sm">
             {String(currentStageIndex + 1).padStart(2, '0')}
           </span>
-          <span className="text-zinc-600">/</span>
-          <span className="text-zinc-500">
+          <span className="text-[#64887B]">/</span>
+          <span className="text-[#94B3A8]">
             {String(activeProjects.length).padStart(2, '0')}
           </span>
         </div>
@@ -286,8 +286,8 @@ export default function Projects({ projects }) {
                       onError={(e) => { e.target.src = '/favicon.svg'; }}
                     />
                     <div className="media-hover-overlay">
-                      <span className="text-xs font-mono text-white/90 bg-black/70 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/10 flex items-center gap-1.5">
-                        <Expand className="w-3.5 h-3.5 text-blue-400" />
+                      <span className="text-xs font-mono text-white/90 bg-[#07221E]/90 px-3 py-1.5 rounded-full backdrop-blur-sm border border-[#1A5247] flex items-center gap-1.5">
+                        <Expand className="w-3.5 h-3.5 text-[#F5A623]" />
                         Interactive Preview Active
                       </span>
                     </div>

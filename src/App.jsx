@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Header from './components/Header';
 import HeroAboutScroll from './components/HeroAboutScroll';
+import Skills from './components/Skills';
 import Projects from './components/Projects';
 import Services from './components/Services';
 import Contact from './components/Contact';
@@ -71,7 +72,7 @@ function PortfolioView() {
 
   React.useEffect(() => {
     if (portfolio.loading) return;
-    const sections = ['home', 'about', 'projects', 'services', 'contact'];
+    const sections = ['home', 'about', 'skills', 'projects', 'services', 'contact'];
 
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -95,7 +96,7 @@ function PortfolioView() {
     <>
       <Header resume={portfolio.resume} />
       <main>
-        <HeroAboutScroll hero={portfolio.hero} about={portfolio.about} resume={portfolio.resume} />
+        <HeroAboutScroll hero={portfolio.hero} about={portfolio.about} resume={portfolio.resume} skills={portfolio.skills} />
         <Projects projects={portfolio.projects} />
         <Services services={portfolio.services} />
         <Contact socials={portfolio.socialLinks} />

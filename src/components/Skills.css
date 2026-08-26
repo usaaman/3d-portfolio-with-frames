@@ -1,109 +1,299 @@
-/* Ambient Glowing Background Blobs for Glass Transparency */
-.skills-ambient-glow-1 {
-  position: absolute;
-  width: 550px;
-  height: 550px;
-  background: radial-gradient(circle, rgba(0, 245, 255, 0.24) 0%, rgba(99, 102, 241, 0.14) 50%, rgba(11, 15, 25, 0) 70%);
-  top: -100px;
-  left: -100px;
-  border-radius: 50%;
-  filter: blur(90px);
-  pointer-events: none;
-  z-index: 0;
+/* ==========================================================================
+   DYNAMIC 3D TECH STACK WALL (60FPS ULTRA-SMOOTH PARALLAX & TRACKING)
+   ========================================================================== */
+
+.skills-wall-section {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  padding: 80px 24px 60px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(180deg, #051C18 0%, #0B2B26 100%);
+  overflow: hidden;
+  z-index: 5;
 }
 
-.skills-ambient-glow-2 {
+/* ── Ambient Glows ── */
+.sw-glow {
   position: absolute;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.22) 0%, rgba(56, 189, 248, 0.12) 50%, rgba(11, 15, 25, 0) 70%);
-  bottom: -120px;
-  right: -120px;
   border-radius: 50%;
-  filter: blur(100px);
   pointer-events: none;
   z-index: 0;
+  filter: blur(130px);
 }
 
-.skills-ambient-glow-3 {
-  position: absolute;
+.sw-glow-1 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(245, 166, 35, 0.12) 0%, transparent 70%);
+  top: -80px;
+  right: -60px;
+}
+
+.sw-glow-2 {
   width: 450px;
   height: 450px;
-  background: radial-gradient(circle, rgba(0, 245, 255, 0.18) 0%, rgba(147, 51, 234, 0.1) 50%, rgba(11, 15, 25, 0) 70%);
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(245, 166, 35, 0.08) 0%, transparent 70%);
+  bottom: -60px;
+  left: -80px;
+}
+
+/* ── Header ── */
+.sw-header {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  margin-bottom: 44px;
+}
+
+.sw-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--ds-font-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #F5A623;
+  margin-bottom: 14px;
+}
+
+.sw-dot {
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  filter: blur(80px);
-  pointer-events: none;
-  z-index: 0;
+  background: #F5A623;
+  box-shadow: 0 0 10px #F5A623;
 }
 
-.skills-glass-card {
-  background: rgba(15, 23, 42, 0.42);
-  backdrop-filter: blur(28px) saturate(160%);
-  -webkit-backdrop-filter: blur(28px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 
-    0 30px 70px -15px rgba(0, 0, 0, 0.5),
-    inset 0 1px 2px 0 rgba(255, 255, 255, 0.25),
-    0 0 50px 0 rgba(0, 245, 255, 0.08);
+.sw-title {
+  font-family: var(--ds-font-display, 'Inter', sans-serif);
+  font-weight: 800;
+  font-size: clamp(30px, 4.5vw, 52px);
+  line-height: 1.15;
+  color: #F8FAFC;
+  margin: 0 0 12px;
 }
 
-/* Skill Pill Text Styling */
-.skills-pill-text {
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-weight: 700;
-  user-select: none;
-  pointer-events: none;
-  text-rendering: geometricPrecision;
+.sw-subtitle {
+  font-size: 15px;
+  color: #94B3A8;
+  max-width: 440px;
+  margin: 0 auto;
+  line-height: 1.6;
 }
 
-/* Font Awesome inside SVG textPath support */
-.skills-fa-solid {
-  font-family: "Font Awesome 6 Free", sans-serif;
-  font-weight: 900;
-}
-.skills-fa-brand {
-  font-family: "Font Awesome 6 Brands", sans-serif;
-  font-weight: 400;
-}
-
-@keyframes skills-spin-cw {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+/* ── 3D Stage Grid (8 Columns Desktop) ── */
+.sw-grid-3d {
+  position: relative;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 14px;
+  width: 100%;
+  max-width: 1020px;
+  perspective: 1000px;
 }
 
-@keyframes skills-spin-ccw {
-  0% { transform: rotate(360deg); }
-  100% { transform: rotate(-360deg); }
-}
-
-/* Rotation origin pinned precisely to SVG center (500, 500) */
-.skills-orbit-ring {
-  transform-origin: 500px 500px;
-  transform-box: view-box;
-}
-
-.skills-orbit-ring.paused {
-  animation-play-state: paused !important;
-}
-
-/* Skill Pill Base Styling */
-.skills-pill-group {
-  pointer-events: auto;
-}
-
-.skills-neumorphic-center {
+/* ── Individual 3D Skill Cell ── */
+.sw-cell-3d {
+  position: relative;
+  perspective: 600px;
+  transform-style: preserve-3d;
   cursor: pointer;
-  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.22s ease;
+
+  /* Entrance animation */
+  opacity: 0;
+  transform: translateY(24px) scale(0.9);
 }
 
-.skills-neumorphic-center:hover {
-  transform: translate(500px, 500px) scale(1.06) !important;
-  filter: drop-shadow(0 0 18px rgba(0, 245, 255, 0.45));
+/* Staggered entrance when revealed */
+.is-revealed .sw-cell-3d {
+  animation: cell-enter-3d 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: calc(var(--i) * 0.02s);
 }
 
-.skills-neumorphic-center:active {
-  transform: translate(500px, 500px) scale(0.95) !important;
+@keyframes cell-enter-3d {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── 3D Card Inner (Rotates & Tilts with Depth) ── */
+.sw-cell-inner-3d {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 6px 12px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, rgba(15, 56, 48, 0.65) 0%, rgba(7, 34, 30, 0.85) 100%);
+  border: 1px solid rgba(26, 82, 71, 0.6);
+  box-shadow:
+    0 8px 20px -4px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform;
+  /* Ambient tilt following section mouse position */
+  transform: perspective(600px) rotateX(calc(var(--sec-mouse-y, 0) * -3deg)) rotateY(calc(var(--sec-mouse-x, 0) * 3deg)) translateZ(0px);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+}
+
+/* Smooth 3D Hover state on targeted card */
+.sw-cell-3d.is-hovered .sw-cell-inner-3d,
+.sw-cell-3d:hover .sw-cell-inner-3d {
+  background: linear-gradient(145deg, rgba(245, 166, 35, 0.10) 0%, rgba(15, 56, 48, 0.70) 100%);
+  border-color: rgba(245, 166, 35, 0.40);
+  box-shadow:
+    0 10px 24px -4px rgba(0, 0, 0, 0.5),
+    0 0 16px rgba(245, 166, 35, 0.15),
+    inset 0 1px 0 rgba(245, 166, 35, 0.2);
+  transform: perspective(600px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) translateZ(6px) scale(1.03);
+  transition: transform 0.1s linear, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/* ── 3D Icon Wrapper (GPU Accelerated Parallax Tracking) ── */
+.sw-icon-wrap-3d {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform;
+  /* Ambient subtle drift following cursor across entire section */
+  transform: translate3d(calc(var(--sec-mouse-x, 0) * 4px), calc(var(--sec-mouse-y, 0) * 4px), 6px);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
+}
+
+/* Zero-lag linear tracking during mouse motion over hovered card */
+.sw-cell-3d.is-hovered .sw-icon-wrap-3d,
+.sw-cell-3d:hover .sw-icon-wrap-3d {
+  transform: translate3d(var(--shift-x, 0px), var(--shift-y, 0px), 12px) scale(1.06);
+  transition: transform 0.08s linear, filter 0.3s ease;
+}
+
+.sw-devicon-3d {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+  transition: filter 0.3s ease;
+}
+
+.sw-cell-3d.is-hovered .sw-devicon-3d,
+.sw-cell-3d:hover .sw-devicon-3d {
+  filter: drop-shadow(0 6px 14px rgba(245, 166, 35, 0.4));
+}
+
+.sw-lucide-3d {
+  color: #94B3A8;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+  transition: color 0.3s ease, filter 0.3s ease;
+}
+
+.sw-cell-3d.is-hovered .sw-lucide-3d,
+.sw-cell-3d:hover .sw-lucide-3d {
+  color: #F5A623;
+  filter: drop-shadow(0 4px 10px rgba(245, 166, 35, 0.4));
+}
+
+/* ── 3D Label (Elevated on Z-Axis) ── */
+.sw-label-3d {
+  font-family: var(--ds-font-mono, 'JetBrains Mono', monospace);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #94B3A8;
+  text-align: center;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  transform: translateZ(6px);
+  transition: color 0.3s ease, transform 0.35s ease;
+}
+
+.sw-cell-3d.is-hovered .sw-label-3d,
+.sw-cell-3d:hover .sw-label-3d {
+  color: #F8FAFC;
+  transform: translateZ(12px);
+}
+
+/* ── Responsive 3D Grid Breakpoints ── */
+@media (max-width: 1024px) {
+  .sw-grid-3d {
+    grid-template-columns: repeat(7, 1fr);
+    max-width: 860px;
+  }
+}
+
+@media (max-width: 860px) {
+  .sw-grid-3d {
+    grid-template-columns: repeat(6, 1fr);
+    max-width: 720px;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .skills-wall-section {
+    padding: 60px 16px 40px;
+  }
+
+  .sw-grid-3d {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+
+  .sw-cell-inner-3d {
+    padding: 12px 4px 10px;
+    border-radius: 12px;
+  }
+
+  .sw-devicon-3d {
+    width: 24px;
+    height: 24px;
+  }
+
+  .sw-lucide-3d {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  .sw-label-3d {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 420px) {
+  .sw-grid-3d {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+
+  .sw-cell-inner-3d {
+    padding: 10px 2px 8px;
+    gap: 4px;
+  }
+
+  .sw-devicon-3d {
+    width: 20px;
+    height: 20px;
+  }
+
+  .sw-label-3d {
+    font-size: 8px;
+  }
 }

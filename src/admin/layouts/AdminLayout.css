@@ -5,23 +5,23 @@
   overflow: hidden;
   box-sizing: border-box;
 
-  /* Theme Overrides - Solid Neutral Dark Gray Theme */
-  --ds-color-bg-primary: #0a0a0a;
-  --ds-color-bg-secondary: #121212;
-  --ds-color-bg-gradient-start: #0a0a0a;
-  --ds-color-bg-gradient-mid: #0f0f0f;
-  --ds-color-bg-gradient-end: #121212;
+  /* Theme Overrides - Developer Summit Dark Green Theme */
+  --ds-color-bg-primary: #051C18;
+  --ds-color-bg-secondary: #0B2B26;
+  --ds-color-bg-gradient-start: #051C18;
+  --ds-color-bg-gradient-mid: #0B2B26;
+  --ds-color-bg-gradient-end: #0F3830;
 
-  --ds-color-accent-primary: #0066cc;
-  --ds-color-accent-secondary: #0077ee;
+  --ds-color-accent-primary: #F5A623;
+  --ds-color-accent-secondary: #FFB74D;
 
-  --ds-color-text-primary: #ffffff;
-  --ds-color-text-secondary: #a3a3a3;
-  --ds-color-text-muted: #666666;
+  --ds-color-text-primary: #F8FAFC;
+  --ds-color-text-secondary: #94B3A8;
+  --ds-color-text-muted: #64887B;
 
-  --ds-glass-bg: #121212;
+  --ds-glass-bg: #07221E;
   --ds-glass-highlight: transparent;
-  --ds-glass-border: #222222;
+  --ds-glass-border: #1A5247;
   --ds-glass-blur: 0px;
 
   --ds-radius-small: 4px;

@@ -1,51 +1,53 @@
 :root {
   /* ==========================================
-     BRAND & SURFACE COLORS
+     BRAND & SURFACE COLORS (Developer Summit Theme)
      ========================================== */
-  --ds-color-bg-primary: #0E1525;
-  /* Primary background canvas */
-  --ds-color-bg-secondary: #2A2E37;
-  /* Secondary background card/subsections */
-  --ds-color-bg-gradient-start: #0E1525;
-  /* Starting color of main background gradient */
-  --ds-color-bg-gradient-mid: #1A2438;
-  /* Middle color of main background gradient */
-  --ds-color-bg-gradient-end: #2A2E37;
-  /* End color of main background gradient */
+  --ds-color-bg-primary: #051C18;
+  /* Deep dark forest green canvas */
+  --ds-color-bg-secondary: #0B2B26;
+  /* Dark emerald green background for cards */
+  --ds-color-bg-gradient-start: #051C18;
+  /* Deep dark forest green */
+  --ds-color-bg-gradient-mid: #0B2B26;
+  /* Dark emerald green */
+  --ds-color-bg-gradient-end: #0F3830;
+  /* Lighter dark green depth */
 
-  --ds-color-accent-primary: #4F8CFF;
-  /* Primary interaction brand blue */
-  --ds-color-accent-secondary: #65D6FF;
-  /* Secondary accent cyan highlight */
+  --ds-color-accent-primary: #F5A623;
+  /* Warm amber/orange primary accent */
+  --ds-color-accent-secondary: #FFB74D;
+  /* Soft warm amber highlight */
+  --ds-color-accent-cream: #F4F1EA;
+  /* Soft off-white/cream secondary accent */
 
   /* ==========================================
      TEXT COLORS
      ========================================== */
-  --ds-color-text-primary: #F6F4FB;
-  /* Default high-contrast text */
-  --ds-color-text-secondary: #B6B2C9;
-  /* Medium-contrast supporting text */
-  --ds-color-text-muted: #7D7A94;
-  /* Low-contrast captions and borders */
+  --ds-color-text-primary: #F8FAFC;
+  /* High-contrast crisp text */
+  --ds-color-text-secondary: #94B3A8;
+  /* Muted light-green-grey body text */
+  --ds-color-text-muted: #64887B;
+  /* Low-contrast green-tinted captions and borders */
 
   /* ==========================================
      GLASS MATERIAL TOKENS
      ========================================== */
-  --ds-glass-bg: rgba(255, 255, 255, 0.04);
-  /* Glass panel fill */
-  --ds-glass-highlight: rgba(255, 255, 255, 0.08);
-  /* Internal edge highlight shine */
-  --ds-glass-border: rgba(255, 255, 255, 0.14);
-  /* Outline border stroke */
-  --ds-glass-blur: 6px;
+  --ds-glass-bg: rgba(11, 43, 38, 0.45);
+  /* Dark forest glass fill */
+  --ds-glass-highlight: rgba(245, 166, 35, 0.12);
+  /* Amber internal edge highlight */
+  --ds-glass-border: rgba(26, 82, 71, 0.45);
+  /* Dark green outline border stroke */
+  --ds-glass-blur: 8px;
   /* Backdrop blur radius */
 
   /* ==========================================
      BORDER STROKE OPACITIES
      ========================================== */
-  --ds-border-opacity-subtle: 0.10;
-  --ds-border-opacity-default: 0.12;
-  --ds-border-opacity-strong: 0.18;
+  --ds-border-opacity-subtle: 0.15;
+  --ds-border-opacity-default: 0.25;
+  --ds-border-opacity-strong: 0.40;
 
   /* ==========================================
      TYPOGRAPHY SYSTEM
@@ -54,6 +56,7 @@
   --ds-font-display: 'Space Grotesk', 'Inter', sans-serif;
   --ds-font-body: 'Inter', sans-serif;
   --ds-font-mono: 'JetBrains Mono', monospace;
+  --ds-font-script: 'Caveat', cursive;
 
   /* Font Sizes */
   --ds-font-size-hero: 72px;

@@ -81,14 +81,14 @@ export default function Contact({ socials }) {
       <h2 id="contact-heading" className="contact-heading" ref={contactHeadingRef}>
         {socials?.heading ? (
           socials.heading.toLowerCase().includes('great together') ? (
-            <>Let's build something <span className="accent">great together</span></>
+            <>Let's build something <span className="font-script text-[#F5A623] inline-block -rotate-1">great together</span></>
           ) : socials.heading.toLowerCase().includes('together') ? (
-            <>{socials.heading.replace(/together/i, '')} <span className="accent">together</span></>
+            <>{socials.heading.replace(/together/i, '')} <span className="font-script text-[#F5A623] inline-block -rotate-1">together</span></>
           ) : (
             socials.heading
           )
         ) : (
-          <>Let's build something <span className="accent">great together</span></>
+          <>Let's build something <span className="font-script text-[#F5A623] inline-block -rotate-1">great together</span></>
         )}
       </h2>
 

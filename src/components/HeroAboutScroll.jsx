@@ -6,6 +6,7 @@ import {
   Mail,
 } from 'lucide-react';
 import About from './About';
+import Skills from './Skills';
 import './HeroAboutScroll.css';
 import GlowLayer from './GlowLayer';
 import ReflectionOverlay from './ReflectionOverlay';
@@ -34,12 +35,12 @@ const TwitterIcon = (props) => (
 );
 
 // Scroll animation progress thresholds (normalized 0.0 - 1.0):
-const HERO_CARD_ENTRANCE_START_PROGRESS = 0.23;
-const HERO_CARD_ENTRANCE_END_PROGRESS = 0.33;
-const HERO_CARD_ROTATION_START_PROGRESS = 0.33;
-const HERO_CARD_ROTATION_END_PROGRESS = 0.62;
-const HERO_TRANSITION_OUT_START_PROGRESS = 0.62;
-const HERO_TRANSITION_OUT_END_PROGRESS = 0.78;
+const HERO_CARD_ENTRANCE_START_PROGRESS = 0.14;
+const HERO_CARD_ENTRANCE_END_PROGRESS = 0.20;
+const HERO_CARD_ROTATION_START_PROGRESS = 0.28;
+const HERO_CARD_ROTATION_END_PROGRESS = 0.48;
+const HERO_TRANSITION_OUT_START_PROGRESS = 0.48;
+const HERO_TRANSITION_OUT_END_PROGRESS = 0.60;
 
 const MAX_ROTATION_X = 3.5;  // noticeable tilt degrees
 const MAX_ROTATION_Y = 12.0; // noticeable right-side tilt degrees
@@ -50,11 +51,7 @@ function smoothstep(edge0, edge1, x) {
   return t * t * (3 - 2 * t);
 }
 
-function easeOutQuart(t) {
-  return 1 - Math.pow(1 - t, 4);
-}
-
-export default function HeroAboutScroll({ hero, about, resume }) {
+export default function HeroAboutScroll({ hero, about, resume, skills }) {
   const wrapperRef = useRef(null);
   const videoRef = useRef(null);
   const rafRef = useRef(null);
@@ -64,7 +61,10 @@ export default function HeroAboutScroll({ hero, about, resume }) {
   const heroContentRef = useRef(null);
   const heroGlowRef = useRef(null);
   const aboutRef = useRef(null);
+  const skillsRef = useRef(null);
   const scrollCueRef = useRef(null);
+
+  const [unfoldProgress, setUnfoldProgress] = useState(0);
 
   // Cloud layer DOM refs
   const cloudLeftRef = useRef(null);
@@ -77,7 +77,6 @@ export default function HeroAboutScroll({ hero, about, resume }) {
   const welcomeLine2Ref = useRef(null);
 
   const [reducedMotion, setReducedMotion] = useState(false);
-  const hasScrolledRef = useRef(false);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -88,11 +87,18 @@ export default function HeroAboutScroll({ hero, about, resume }) {
   }, []);
 
   const applyProgress = useCallback((progress) => {
-    // Video scroll scrubbing
-    if (videoRef.current && videoRef.current.duration) {
-      const targetTime = progress * videoRef.current.duration;
-      if (Math.abs(videoRef.current.currentTime - targetTime) > 0.01) {
-        videoRef.current.currentTime = targetTime;
+    // Video background stays 100% visible on its last frame (holding 0.08s before end to prevent HTML5 black end-frame)
+    if (videoRef.current && Number.isFinite(videoRef.current.duration) && videoRef.current.duration > 0) {
+      videoRef.current.style.opacity = '1';
+      const videoProg = Math.min(1.0, progress / 0.70);
+      const maxTime = Math.max(0, videoRef.current.duration - 0.08);
+      const targetTime = Math.min(maxTime, videoProg * videoRef.current.duration);
+      if (Number.isFinite(targetTime) && Math.abs(videoRef.current.currentTime - targetTime) > 0.01) {
+        try {
+          videoRef.current.currentTime = targetTime;
+        } catch (e) {
+          // ignore seek error while buffer loading
+        }
       }
     }
 
@@ -115,41 +121,28 @@ export default function HeroAboutScroll({ hero, about, resume }) {
       }
       if (aboutRef.current) {
         aboutRef.current.style.transform = 'translate3d(0, 0%, 0)';
+        aboutRef.current.style.opacity = '1';
         aboutRef.current.style.pointerEvents = 'auto';
+      }
+      if (skillsRef.current) {
+        skillsRef.current.style.transform = 'translate3d(0, 0%, 0)';
+        skillsRef.current.style.opacity = '1';
+        skillsRef.current.style.pointerEvents = 'auto';
       }
       if (scrollCueRef.current) {
         scrollCueRef.current.style.opacity = '0';
       }
+      setUnfoldProgress(1.0);
       return;
     }
 
-    // 3 Clouds parting animation (Faster slide out: 0.0 to 0.22 scroll progress)
-    const tCloud = smoothstep(0.0, 0.22, progress);
-    const cloudOpacity = Math.max(0, 1 - tCloud * 1.4);
+    // Cloud and Intro overlays hidden to ensure clean immediate hero visibility
+    if (cloudLeftRef.current) cloudLeftRef.current.style.opacity = '0';
+    if (cloudRightRef.current) cloudRightRef.current.style.opacity = '0';
+    if (cloudTopRef.current) cloudTopRef.current.style.opacity = '0';
+    if (welcomeTextRef.current) welcomeTextRef.current.style.opacity = '0';
 
-    if (cloudLeftRef.current) {
-      cloudLeftRef.current.style.transform = `translate3d(${-140 * tCloud}vw, ${20 * tCloud}vh, 0) scale(${1.0 + 0.3 * tCloud})`;
-      cloudLeftRef.current.style.opacity = `${cloudOpacity}`;
-    }
-    if (cloudRightRef.current) {
-      cloudRightRef.current.style.transform = `translate3d(${140 * tCloud}vw, ${20 * tCloud}vh, 0) scale(${1.0 + 0.3 * tCloud})`;
-      cloudRightRef.current.style.opacity = `${cloudOpacity}`;
-    }
-    if (cloudTopRef.current) {
-      cloudTopRef.current.style.transform = `translate3d(0vw, ${-140 * tCloud}vh, 0) scale(${1.0 + 0.3 * tCloud})`;
-      cloudTopRef.current.style.opacity = `${cloudOpacity}`;
-    }
-
-    // Welcome To My Space Camera Fly-Through Zoom Animation (Starts as half the clouds part: 0.10 -> 0.26 progress)
-    const tWelcome = smoothstep(0.10, 0.26, progress);
-    if (welcomeTextRef.current) {
-      const welcomeScale = 1.0 + 28.0 * Math.pow(tWelcome, 1.6);
-      const welcomeOpacity = Math.max(0, 1 - smoothstep(0.18, 0.26, progress));
-      welcomeTextRef.current.style.transform = `translate3d(-50%, -50%, 0) scale(${welcomeScale})`;
-      welcomeTextRef.current.style.opacity = `${welcomeOpacity}`;
-    }
-
-    // Hero section vertical position
+    // Hero section vertical position (scrolls UP off-screen at end of hero phase: 0.48 -> 0.60)
     let heroY = 0;
     if (progress < HERO_TRANSITION_OUT_START_PROGRESS) {
       heroY = 0;
@@ -159,17 +152,42 @@ export default function HeroAboutScroll({ hero, about, resume }) {
       heroY = -100;
     }
 
-    // About section vertical position
-    let aboutY = 0;
+    // About section vertical position (Enters from +100%, stays at 0%)
+    let aboutY = 100;
+    let aboutOpacity = 0.0;
+
     if (progress < HERO_TRANSITION_OUT_START_PROGRESS) {
       aboutY = 100;
+      aboutOpacity = 0.0;
     } else if (progress < HERO_TRANSITION_OUT_END_PROGRESS) {
       aboutY = 100 * (1 - smoothstep(HERO_TRANSITION_OUT_START_PROGRESS, HERO_TRANSITION_OUT_END_PROGRESS, progress));
+      aboutOpacity = smoothstep(HERO_TRANSITION_OUT_START_PROGRESS, HERO_TRANSITION_OUT_END_PROGRESS, progress);
     } else {
       aboutY = 0;
+      aboutOpacity = 1.0;
     }
 
-    // Scroll-driven Hero Card Entrance, Scaling & 3D Tilt
+    // Skills section vertical position (Enters from +100vh -> 0vh as video last frame completes: progress 0.70 -> 0.85)
+    let skillsY = 100;
+    let skillsOpacity = 0.0;
+    let currentSkillsUnfold = 0.0;
+
+    if (progress < 0.70) {
+      skillsY = 100;
+      skillsOpacity = 0.0;
+      currentSkillsUnfold = 0.0;
+    } else if (progress < 0.85) {
+      const t = smoothstep(0.70, 0.85, progress);
+      skillsY = 100 * (1 - t);
+      skillsOpacity = smoothstep(0.70, 0.78, progress);
+      currentSkillsUnfold = smoothstep(0.72, 0.88, progress);
+    } else {
+      skillsY = 0;
+      skillsOpacity = 1.0;
+      currentSkillsUnfold = 1.0;
+    }
+
+    // Scroll-driven Hero Card Entrance (0.14 - 0.20 from right 35vw/25vh scale 0.15 to left -5vw scale 1.0)
     let cardScale = 1.0;
     let cardTranslateX = '-5vw';
     let cardTranslateY = '0vh';
@@ -178,7 +196,6 @@ export default function HeroAboutScroll({ hero, about, resume }) {
     let cardRotateY = 0.0;
 
     if (progress < HERO_CARD_ENTRANCE_START_PROGRESS) {
-      // Phase 0: Hidden until scroll progress 0.23
       cardScale = 0.15;
       cardTranslateX = '35vw';
       cardTranslateY = '25vh';
@@ -186,16 +203,14 @@ export default function HeroAboutScroll({ hero, about, resume }) {
       cardRotateX = 0.0;
       cardRotateY = 0.0;
     } else if (progress < HERO_CARD_ENTRANCE_END_PROGRESS) {
-      // Phase 1: Sharp expansion & movement to left side (-5vw) (0.23 -> 0.33)
       const t = smoothstep(HERO_CARD_ENTRANCE_START_PROGRESS, HERO_CARD_ENTRANCE_END_PROGRESS, progress);
       cardScale = 0.15 + 0.85 * t;
       cardTranslateX = `${35 - (35 - (-5)) * t}vw`;
       cardTranslateY = `${25 * (1 - t)}vh`;
-      cardOpacity = smoothstep(HERO_CARD_ENTRANCE_START_PROGRESS, 0.27, progress);
+      cardOpacity = smoothstep(HERO_CARD_ENTRANCE_START_PROGRESS, HERO_CARD_ENTRANCE_START_PROGRESS + 0.03, progress);
       cardRotateX = 0.0;
       cardRotateY = 0.0;
     } else if (progress < HERO_CARD_ROTATION_END_PROGRESS) {
-      // Phase 2: Left-shifted (-5vw) full size + noticeable right-side tilt (0.33 -> 0.62)
       const t = smoothstep(HERO_CARD_ROTATION_START_PROGRESS, HERO_CARD_ROTATION_END_PROGRESS, progress);
       cardScale = 1.0;
       cardTranslateX = '-5vw';
@@ -204,7 +219,6 @@ export default function HeroAboutScroll({ hero, about, resume }) {
       cardRotateX = MAX_ROTATION_X * t;
       cardRotateY = MAX_ROTATION_Y * t;
     } else {
-      // Phase 3: Transition out (0.62 -> 0.78)
       cardScale = 1.0;
       cardTranslateX = '-5vw';
       cardTranslateY = '0vh';
@@ -228,14 +242,24 @@ export default function HeroAboutScroll({ hero, about, resume }) {
     }
     if (aboutRef.current) {
       aboutRef.current.style.transform = `translate3d(0, ${aboutY}%, 0)`;
-      aboutRef.current.style.pointerEvents = (Math.abs(aboutY) < 10) ? 'auto' : 'none';
+      aboutRef.current.style.opacity = `${aboutOpacity}`;
+      aboutRef.current.style.pointerEvents = (Math.abs(aboutY) < 10 && aboutOpacity > 0.3) ? 'auto' : 'none';
 
-      if (progress >= 0.72) {
+      if (progress >= 0.55) {
         aboutRef.current.classList.add('is-in-view');
-      } else if (progress < 0.55) {
+      } else {
         aboutRef.current.classList.remove('is-in-view');
       }
     }
+
+    if (skillsRef.current) {
+      skillsRef.current.style.transform = `translate3d(0, ${skillsY}vh, 0)`;
+      skillsRef.current.style.opacity = `${skillsOpacity}`;
+      skillsRef.current.style.pointerEvents = (skillsY < 25 && skillsOpacity > 0.3) ? 'auto' : 'none';
+    }
+
+    setUnfoldProgress(currentSkillsUnfold);
+
     if (scrollCueRef.current) {
       const showCue = progress < HERO_TRANSITION_OUT_START_PROGRESS;
       scrollCueRef.current.style.opacity = showCue ? '1' : '0';
@@ -244,9 +268,6 @@ export default function HeroAboutScroll({ hero, about, resume }) {
 
   useEffect(() => {
     const updateScrollProgress = () => {
-      if (window.scrollY > 0) {
-        hasScrolledRef.current = true;
-      }
       const wrapper = wrapperRef.current;
       if (!wrapper) return;
       const rect = wrapper.getBoundingClientRect();
@@ -278,22 +299,20 @@ export default function HeroAboutScroll({ hero, about, resume }) {
     };
   }, [applyProgress]);
 
-  const [isVideoReady, setIsVideoReady] = useState(false);
+  const [isVideoReady, setIsVideoReady] = useState(true);
   const [loadPercent, setLoadPercent] = useState(0);
 
-  // Pause video initially and present smooth 60fps preloader before revealing scene
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
     let startTime = performance.now();
-    const duration = 1200; // 1.2s smooth presentation
+    const duration = 1200;
     let animationFrameId = null;
 
     const animateProgress = (now) => {
       const elapsed = now - startTime;
       const progress = Math.min(1, elapsed / duration);
-      // Smooth ease-out progress curve
       const currentPercent = Math.min(100, Math.floor(100 * (1 - Math.pow(1 - progress, 2))));
       setLoadPercent(currentPercent);
 
@@ -341,8 +360,7 @@ export default function HeroAboutScroll({ hero, about, resume }) {
   };
 
   return (
-    <section className={`scroll-wrapper ${reducedMotion ? 'prefers-reduced-motion' : ''} ${isVideoReady ? 'is-ready' : ''}`} ref={wrapperRef} id="home" aria-label="Hero and Biography">
-      {/* Sleek Initial Preloader Overlay (Hides initial video metadata buffering) */}
+    <section className={`scroll-wrapper ${reducedMotion ? 'prefers-reduced-motion' : ''} ${isVideoReady ? 'is-ready' : ''}`} ref={wrapperRef} id="home" aria-label="Hero Biography and Skills">
       {!isVideoReady && (
         <div className="scene-preloader" aria-hidden="true">
           <div className="preloader-content">
@@ -365,7 +383,6 @@ export default function HeroAboutScroll({ hero, about, resume }) {
           aria-hidden="true"
         />
         <DepthTypography text={hero?.backgroundText || "USMAN"} className="depth-bg-text" aria-hidden="true" />
-        {/* Top Cloud (z-index 4) */}
         <img
           ref={cloudTopRef}
           src="/cloud.png"
@@ -374,7 +391,6 @@ export default function HeroAboutScroll({ hero, about, resume }) {
           aria-hidden="true"
         />
 
-        {/* WELCOME TO MY SPACE Intro Text (z-index 5 - above top cloud, behind side clouds) */}
         <div
           ref={welcomeTextRef}
           className="welcome-space-intro"
@@ -384,7 +400,6 @@ export default function HeroAboutScroll({ hero, about, resume }) {
           <div ref={welcomeLine2Ref} className="welcome-line welcome-line-2">MY SPACE</div>
         </div>
 
-        {/* Left & Right Side Clouds (z-index 6 - in front of text) */}
         <img
           ref={cloudLeftRef}
           src="/cloud.png"
@@ -400,7 +415,6 @@ export default function HeroAboutScroll({ hero, about, resume }) {
           aria-hidden="true"
         />
 
-        {/* HERO CONTENT */}
         <div
           role="region"
           aria-label="Hero Introduction"
@@ -411,7 +425,6 @@ export default function HeroAboutScroll({ hero, about, resume }) {
             pointerEvents: 'auto',
           }}
         >
-          {/* Reusable GlowLayer positioned behind the Hero card */}
           <div
             className="hero-glow-container"
             ref={heroGlowRef}
@@ -429,7 +442,7 @@ export default function HeroAboutScroll({ hero, about, resume }) {
           <div
             className="glass hero-card"
             ref={heroCardRef}
-            style={{ opacity: 0 }}
+            style={{ opacity: 1 }}
             onMouseMove={handleHeroMove}
             onMouseLeave={handleHeroLeave}
           >
@@ -473,7 +486,6 @@ export default function HeroAboutScroll({ hero, about, resume }) {
           </div>
         </div>
 
-        {/* ABOUT CONTENT */}
         <About
           ref={aboutRef}
           style={{
@@ -481,6 +493,21 @@ export default function HeroAboutScroll({ hero, about, resume }) {
             pointerEvents: 'none',
           }}
           aboutData={about}
+        />
+
+        {/* SKILLS CONTENT */}
+        <Skills
+          ref={skillsRef}
+          skillsData={skills}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            transform: 'translate3d(0, 100vh, 0)',
+            opacity: 0,
+            pointerEvents: 'none',
+            zIndex: 20,
+          }}
+          unfoldProgress={unfoldProgress}
         />
 
         <div className="scroll-cue" ref={scrollCueRef} style={{ opacity: 0, pointerEvents: 'none' }} aria-hidden="true">

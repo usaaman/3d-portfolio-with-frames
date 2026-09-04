@@ -35,16 +35,19 @@ const TwitterIcon = (props) => (
 );
 
 // Scroll animation progress thresholds (normalized 0.0 - 1.0):
-const HERO_CARD_ENTRANCE_START_PROGRESS = 0.14;
+const HERO_CARD_ENTRANCE_START_PROGRESS = 0.08;
 const HERO_CARD_ENTRANCE_END_PROGRESS = 0.20;
-const HERO_CARD_ROTATION_START_PROGRESS = 0.28;
-const HERO_CARD_ROTATION_END_PROGRESS = 0.48;
-const HERO_TRANSITION_OUT_START_PROGRESS = 0.48;
+const HERO_CARD_ROTATION_START_PROGRESS = 0.20;
+const HERO_CARD_ROTATION_END_PROGRESS = 0.40;
+const HERO_TRANSITION_OUT_START_PROGRESS = 0.40;
 const HERO_TRANSITION_OUT_END_PROGRESS = 0.60;
 
 const MAX_ROTATION_X = 3.5;  // noticeable tilt degrees
 const MAX_ROTATION_Y = 12.0; // noticeable right-side tilt degrees
 const MOUSE_TILT_MAX_DEGREES = 5; // max mouse-driven card rotation tilt
+
+const FRAME_COUNT = 200;
+const FRAME_PATH = (i) => `/frames/frame-${String(i).padStart(3, '0')}.webp`;
 
 function smoothstep(edge0, edge1, x) {
   const t = Math.min(1, Math.max(0, (x - edge0) / (edge1 - edge0)));
@@ -53,8 +56,9 @@ function smoothstep(edge0, edge1, x) {
 
 export default function HeroAboutScroll({ hero, about, resume, skills }) {
   const wrapperRef = useRef(null);
-  const videoRef = useRef(null);
-  const rafRef = useRef(null);
+  const canvasRef = useRef(null);
+  const imagesRef = useRef([]);
+  const currentFrameRef = useRef(1);
   const heroCardRef = useRef(null);
 
   // High-performance DOM refs for direct style animation on scroll
@@ -64,7 +68,8 @@ export default function HeroAboutScroll({ hero, about, resume, skills }) {
   const skillsRef = useRef(null);
   const scrollCueRef = useRef(null);
 
-  const [unfoldProgress, setUnfoldProgress] = useState(0);
+  const [loaded, setLoaded] = useState(0);
+  const [ready, setReady] = useState(false);
 
   // Cloud layer DOM refs
   const cloudLeftRef = useRef(null);
@@ -76,6 +81,10 @@ export default function HeroAboutScroll({ hero, about, resume, skills }) {
   const welcomeLine1Ref = useRef(null);
   const welcomeLine2Ref = useRef(null);
 
+  const targetProgressRef = useRef(0);
+  const smoothProgressRef = useRef(0);
+  const rafLoopRef = useRef(null);
+
   const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
@@ -86,22 +95,83 @@ export default function HeroAboutScroll({ hero, about, resume, skills }) {
     return () => mediaQuery.removeEventListener('change', handler);
   }, []);
 
-  const applyProgress = useCallback((progress) => {
-    // Video background stays 100% visible on its last frame (holding 0.08s before end to prevent HTML5 black end-frame)
-    if (videoRef.current && Number.isFinite(videoRef.current.duration) && videoRef.current.duration > 0) {
-      videoRef.current.style.opacity = '1';
-      const videoProg = Math.min(1.0, progress / 0.70);
-      const maxTime = Math.max(0, videoRef.current.duration - 0.08);
-      const targetTime = Math.min(maxTime, videoProg * videoRef.current.duration);
-      if (Number.isFinite(targetTime) && Math.abs(videoRef.current.currentTime - targetTime) > 0.01) {
-        try {
-          videoRef.current.currentTime = targetTime;
-        } catch (e) {
-          // ignore seek error while buffer loading
-        }
-      }
-    }
+  // Preload all 261 WebP frames for instantaneous zero-latency GPU rendering
+  useEffect(() => {
+    let cancelled = false;
+    let count = 0;
+    const imgs = new Array(FRAME_COUNT + 1);
 
+    for (let i = 1; i <= FRAME_COUNT; i++) {
+      const img = new Image();
+      img.src = FRAME_PATH(i);
+      img.onload = img.onerror = () => {
+        count += 1;
+        if (!cancelled) setLoaded(count);
+        if (count === FRAME_COUNT && !cancelled) {
+          setReady(true);
+        }
+      };
+      imgs[i] = img;
+    }
+    imagesRef.current = imgs;
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Hardware-accelerated Canvas Frame Painting
+  const drawFrame = useCallback((frameIndex) => {
+    const canvas = canvasRef.current;
+    const img = imagesRef.current[frameIndex];
+    if (!canvas || !img || !img.complete || img.naturalWidth === 0) return;
+
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+
+    const cw = canvas.width;
+    const ch = canvas.height;
+    const iw = img.naturalWidth;
+    const ih = img.naturalHeight;
+
+    // Cover-fit, but anchored to the RIGHT edge instead of centered.
+    // The character sits on the right side of every frame, so horizontal
+    // cropping trims from the left while character remains fully in view.
+    const scale = Math.max(cw / iw, ch / ih);
+    const dw = iw * scale;
+    const dh = ih * scale;
+    const dx = cw - dw; // right-anchored
+    const dy = (ch - dh) / 2; // vertically centered
+
+    ctx.clearRect(0, 0, cw, ch);
+    ctx.drawImage(img, dx, dy, dw, dh);
+  }, []);
+
+  // Canvas physical pixel resolution sizing (handles high-DPI retina screens)
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const resize = () => {
+      if (!canvas) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
+      drawFrame(currentFrameRef.current || 1);
+    };
+    resize();
+    window.addEventListener('resize', resize);
+    return () => window.removeEventListener('resize', resize);
+  }, [drawFrame, ready]);
+
+  useEffect(() => {
+    if (ready) {
+      drawFrame(1);
+    }
+  }, [ready, drawFrame]);
+
+  const applyProgress = useCallback((progress) => {
     if (reducedMotion) {
       if (cloudLeftRef.current) cloudLeftRef.current.style.opacity = '0';
       if (cloudRightRef.current) cloudRightRef.current.style.opacity = '0';
@@ -132,7 +202,6 @@ export default function HeroAboutScroll({ hero, about, resume, skills }) {
       if (scrollCueRef.current) {
         scrollCueRef.current.style.opacity = '0';
       }
-      setUnfoldProgress(1.0);
       return;
     }
 
@@ -142,7 +211,7 @@ export default function HeroAboutScroll({ hero, about, resume, skills }) {
     if (cloudTopRef.current) cloudTopRef.current.style.opacity = '0';
     if (welcomeTextRef.current) welcomeTextRef.current.style.opacity = '0';
 
-    // Hero section vertical position (scrolls UP off-screen at end of hero phase: 0.48 -> 0.60)
+    // Hero section vertical position (scrolls UP off-screen at end of hero phase: 0.40 -> 0.60)
     let heroY = 0;
     if (progress < HERO_TRANSITION_OUT_START_PROGRESS) {
       heroY = 0;
@@ -187,7 +256,7 @@ export default function HeroAboutScroll({ hero, about, resume, skills }) {
       currentSkillsUnfold = 1.0;
     }
 
-    // Scroll-driven Hero Card Entrance (0.14 - 0.20 from right 35vw/25vh scale 0.15 to left -5vw scale 1.0)
+    // Scroll-driven Hero Card Entrance (0.08 - 0.20 from right 35vw/25vh scale 0.15 to left -5vw scale 1.0)
     let cardScale = 1.0;
     let cardTranslateX = '-5vw';
     let cardTranslateY = '0vh';
@@ -258,15 +327,72 @@ export default function HeroAboutScroll({ hero, about, resume, skills }) {
       skillsRef.current.style.pointerEvents = (skillsY < 25 && skillsOpacity > 0.3) ? 'auto' : 'none';
     }
 
-    setUnfoldProgress(currentSkillsUnfold);
-
     if (scrollCueRef.current) {
       const showCue = progress < HERO_TRANSITION_OUT_START_PROGRESS;
       scrollCueRef.current.style.opacity = showCue ? '1' : '0';
     }
   }, [reducedMotion]);
 
+  // High-performance auto-idling LERP ticker loop (0% CPU/GPU when idle or off-screen)
   useEffect(() => {
+    let active = true;
+    let inView = true;
+    let isRunning = false;
+    let rafId = null;
+
+    const tick = () => {
+      if (!active || !inView) {
+        isRunning = false;
+        rafId = null;
+        return;
+      }
+
+      if (reducedMotion) {
+        applyProgress(targetProgressRef.current);
+        if (ready) drawFrame(138);
+        isRunning = false;
+        rafId = null;
+        return;
+      }
+
+      const target = targetProgressRef.current;
+      const current = smoothProgressRef.current;
+      const diff = target - current;
+
+      if (Math.abs(diff) > 0.0003) {
+        smoothProgressRef.current += diff * 0.18;
+      } else {
+        smoothProgressRef.current = target;
+      }
+
+      const p = smoothProgressRef.current;
+      applyProgress(p);
+
+      // Instant GPU draw of preloaded WebP frame
+      if (ready) {
+        const frameProgress = Math.min(1.0, p / 0.65);
+        const frameIndex = Math.min(FRAME_COUNT, Math.max(1, Math.round(frameProgress * (FRAME_COUNT - 1)) + 1));
+        if (frameIndex !== currentFrameRef.current) {
+          currentFrameRef.current = frameIndex;
+          drawFrame(frameIndex);
+        }
+      }
+
+      if (Math.abs(target - smoothProgressRef.current) > 0.0003) {
+        rafId = requestAnimationFrame(tick);
+      } else {
+        isRunning = false;
+        rafId = null;
+      }
+    };
+
+    const startTicker = () => {
+      if (!isRunning && inView && active) {
+        isRunning = true;
+        rafId = requestAnimationFrame(tick);
+      }
+    };
+
     const updateScrollProgress = () => {
       const wrapper = wrapperRef.current;
       if (!wrapper) return;
@@ -274,72 +400,34 @@ export default function HeroAboutScroll({ hero, about, resume, skills }) {
       const total = wrapper.offsetHeight - window.innerHeight;
       const scrolled = -rect.top;
       const progress = total > 0 ? Math.min(1, Math.max(0, scrolled / total)) : 0;
-      applyProgress(progress);
+      targetProgressRef.current = progress;
+      startTicker();
     };
 
-    const onScroll = () => {
-      if (rafRef.current !== null) return;
-      rafRef.current = requestAnimationFrame(() => {
-        rafRef.current = null;
-        updateScrollProgress();
-      });
-    };
+    // Pause canvas and RAF loop when Hero/About is completely scrolled out of view
+    const observer = new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      if (inView) {
+        startTicker();
+      }
+    }, { threshold: 0.01 });
 
-    window.addEventListener('scroll', onScroll, { passive: true });
+    if (wrapperRef.current) {
+      observer.observe(wrapperRef.current);
+    }
+
+    window.addEventListener('scroll', updateScrollProgress, { passive: true });
     window.addEventListener('resize', updateScrollProgress, { passive: true });
     updateScrollProgress();
 
     return () => {
-      window.removeEventListener('scroll', onScroll);
+      active = false;
+      window.removeEventListener('scroll', updateScrollProgress);
       window.removeEventListener('resize', updateScrollProgress);
-      if (rafRef.current !== null) {
-        cancelAnimationFrame(rafRef.current);
-        rafRef.current = null;
-      }
+      observer.disconnect();
+      if (rafId) cancelAnimationFrame(rafId);
     };
-  }, [applyProgress]);
-
-  const [isVideoReady, setIsVideoReady] = useState(true);
-  const [loadPercent, setLoadPercent] = useState(0);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    let startTime = performance.now();
-    const duration = 1200;
-    let animationFrameId = null;
-
-    const animateProgress = (now) => {
-      const elapsed = now - startTime;
-      const progress = Math.min(1, elapsed / duration);
-      const currentPercent = Math.min(100, Math.floor(100 * (1 - Math.pow(1 - progress, 2))));
-      setLoadPercent(currentPercent);
-
-      if (progress < 1) {
-        animationFrameId = requestAnimationFrame(animateProgress);
-      } else {
-        const wrapper = wrapperRef.current;
-        if (wrapper) {
-          const rect = wrapper.getBoundingClientRect();
-          const total = wrapper.offsetHeight - window.innerHeight;
-          const scrolled = -rect.top;
-          const prog = total > 0 ? Math.min(1, Math.max(0, scrolled / total)) : 0;
-          applyProgress(prog);
-        }
-        setTimeout(() => {
-          setIsVideoReady(true);
-        }, 220);
-      }
-    };
-
-    video.pause();
-    animationFrameId = requestAnimationFrame(animateProgress);
-
-    return () => {
-      if (animationFrameId) cancelAnimationFrame(animationFrameId);
-    };
-  }, [applyProgress]);
+  }, [applyProgress, drawFrame, ready, reducedMotion]);
 
   const handleHeroMove = (e) => {
     if (reducedMotion) return;
@@ -359,27 +447,28 @@ export default function HeroAboutScroll({ hero, about, resume, skills }) {
     card.style.setProperty('--tilt-y', '0deg');
   };
 
+  const loadPct = Math.round((loaded / FRAME_COUNT) * 100);
+
   return (
-    <section className={`scroll-wrapper ${reducedMotion ? 'prefers-reduced-motion' : ''} ${isVideoReady ? 'is-ready' : ''}`} ref={wrapperRef} id="home" aria-label="Hero Biography and Skills">
-      {!isVideoReady && (
+    <section className={`scroll-wrapper ${reducedMotion ? 'prefers-reduced-motion' : ''} ${ready ? 'is-ready' : ''}`} ref={wrapperRef} id="home" aria-label="Hero Biography and Skills">
+      {!ready && (
         <div className="scene-preloader" aria-hidden="true">
           <div className="preloader-content">
             <div className="preloader-spinner" />
             <div className="preloader-text">INITIALIZING EXPERIENCE</div>
             <div className="preloader-track">
-              <div className="preloader-bar" style={{ width: `${loadPercent}%` }} />
+              <div className="preloader-bar" style={{ width: `${loadPct}%` }} />
+            </div>
+            <div style={{ fontSize: '11px', marginTop: '8px', color: 'var(--ds-color-text-tertiary)', letterSpacing: '0.05em' }}>
+              {loadPct}%
             </div>
           </div>
         </div>
       )}
       <div className="sticky-stage">
-        <video
-          ref={videoRef}
-          src="/hero-video.mp4"
-          className="scene-video"
-          muted
-          playsInline
-          preload="auto"
+        <canvas
+          ref={canvasRef}
+          className="scene-canvas"
           aria-hidden="true"
         />
         <DepthTypography text={hero?.backgroundText || "USMAN"} className="depth-bg-text" aria-hidden="true" />
@@ -507,7 +596,6 @@ export default function HeroAboutScroll({ hero, about, resume, skills }) {
             pointerEvents: 'none',
             zIndex: 20,
           }}
-          unfoldProgress={unfoldProgress}
         />
 
         <div className="scroll-cue" ref={scrollCueRef} style={{ opacity: 0, pointerEvents: 'none' }} aria-hidden="true">

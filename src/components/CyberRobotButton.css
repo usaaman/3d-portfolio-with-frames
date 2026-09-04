@@ -1,0 +1,176 @@
+/* ============================================================================
+   CYBER ROBOT FLOATING BUTTON - HIGH TECH THEME STYLING
+   ============================================================================ */
+
+.cyber-robot-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  user-select: none;
+}
+
+/* Base Interactive Button */
+.cyber-robot-btn {
+  width: 72px;
+  height: 72px;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  outline: none;
+  transform-style: preserve-3d;
+  transition: filter 0.3s ease, box-shadow 0.3s ease;
+  filter: drop-shadow(0 12px 25px rgba(0, 0, 0, 0.6))
+         drop-shadow(0 0 20px rgba(16, 185, 129, 0.25));
+}
+
+.cyber-robot-btn:hover {
+  filter: drop-shadow(0 16px 35px rgba(0, 0, 0, 0.75))
+         drop-shadow(0 0 30px rgba(16, 185, 129, 0.45))
+         drop-shadow(0 0 15px rgba(245, 166, 35, 0.3));
+}
+
+/* Ambient Backlight Glow */
+.robot-ambient-glow {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(16, 185, 129, 0.28) 0%,
+    rgba(245, 166, 35, 0.12) 45%,
+    transparent 70%
+  );
+  animation: robot-glow-pulse 3s infinite ease-in-out;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes robot-glow-pulse {
+  0%, 100% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 0.9;
+  }
+}
+
+/* Dashed Orbital Tech Rings */
+.robot-orbital-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(245, 166, 35, 0.5);
+  animation: robot-ring-clockwise 14s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.robot-orbital-ring-reverse {
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 1px dotted rgba(52, 211, 153, 0.45);
+  animation: robot-ring-counter 10s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes robot-ring-clockwise {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes robot-ring-counter {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+/* SVG Robot Drawing */
+.robot-chassis-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  position: relative;
+  z-index: 2;
+  overflow: visible;
+}
+
+/* Smooth Eyes Group */
+.robot-eyes-group {
+  transform-box: fill-box;
+}
+
+/* Natural Digital Blink */
+.robot-eyes-group.is-blinking {
+  transform: scaleY(0.08) !important;
+}
+
+/* Close Icon Overlay */
+.robot-close-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #FFB74D 0%, #F5A623 60%, #D48806 100%);
+  border: 1.5px solid #FFFFFF;
+  color: #051C18;
+  display: grid;
+  place-items: center;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), 0 0 10px rgba(245, 166, 35, 0.6);
+  animation: robot-badge-pop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes robot-badge-pop {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Status Indicator Beacon */
+.robot-status-indicator {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.robot-status-pulse {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #10B981;
+  opacity: 0.75;
+  animation: robot-status-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.robot-status-core {
+  position: relative;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #34D399;
+  border: 1px solid #051C18;
+  box-shadow: 0 0 6px #10B981;
+}
+
+@keyframes robot-status-ping {
+  75%, 100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}

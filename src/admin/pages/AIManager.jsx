@@ -15,7 +15,7 @@ const DEFAULT_AI_CONFIG = {
   suggestedQuestions: "Tell me about FitSphere, What technologies do you use?, Show your best projects",
   temperature: 0.6,
   conversationLimit: 20,
-  modelSelection: 'llama-3.3-70b-versatile'
+  modelSelection: 'openai/gpt-oss-20b'
 };
 
 export default function AIManager() {
@@ -272,10 +272,10 @@ export default function AIManager() {
                     outline: 'none',
                   }}
                 >
-                  <option value="llama-3.3-70b-versatile">Llama 3.3 70B Versatile (Groq Speed)</option>
-                  <option value="llama-3.1-8b-instant">Llama 3.1 8B Instant (Fast)</option>
-                  <option value="deepseek-chat-v3">DeepSeek Chat V3 (Reasoning Placeholder)</option>
-                  <option value="gemini-2.5-flash">Gemini 2.5 Flash (Advanced Placeholder)</option>
+                  <option value="groq/compound-mini">Groq Compound Mini (Ultra-Fast & Versatile)</option>
+                  <option value="openai/gpt-oss-20b">GPT-OSS 20B (High Intelligence Open Model)</option>
+                  <option value="qwen/qwen3.6-27b">Qwen 3.6 27B (Advanced AI Reasoning)</option>
+                  <option value="groq/compound">Groq Compound (Full Production Scale)</option>
                 </select>
               </div>
 

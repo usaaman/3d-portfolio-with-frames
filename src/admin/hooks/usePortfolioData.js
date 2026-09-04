@@ -83,25 +83,125 @@ const FALLBACK_AI_CONFIG = {
   ],
   temperature: 0.6,
   conversationLimit: 20,
-  modelSelection: 'llama-3.3-70b-versatile'
+  modelSelection: 'openai/gpt-oss-20b'
 };
+
+const FALLBACK_PROJECTS = [
+  {
+    id: 'medcore-pos',
+    title: 'MedCore POS',
+    subtitle: 'Flagship Medical Point of Sale System',
+    shortDesc: 'A premium, high-performance point-of-sale system tailored for modern medical clinics and pharmacies.',
+    longDesc: 'A premium, high-performance point-of-sale system tailored for modern medical clinics and pharmacies. Integrates real-time patient billing, prescription insurance clearance pipelines, and secure drug inventory tracking under strict healthcare regulations.',
+    techStack: 'React.js, Node.js, Express.js, REST APIs, MySQL, Tailwind CSS',
+    githubUrl: 'https://github.com/usaaman/medcore-pos',
+    liveUrl: 'https://medcore-pos.demo.com',
+    coverImage: '/projects/medcore.png',
+    gallery: ['/projects/medcore.png'],
+    displayOrder: 1,
+    status: 'Published',
+    featured: true,
+    type: 'Web App'
+  },
+  {
+    id: 'ai-chat-app',
+    title: 'AI Chat App',
+    subtitle: 'Conversational Artificial Intelligence Client',
+    shortDesc: 'An advanced chat assistant with real-time streaming answers, code highlight syntaxes, chat history management, and multi-model toggle selectors.',
+    longDesc: 'An advanced chat assistant with real-time streaming answers, code highlight syntaxes, chat history management, and multi-model toggle selectors. Connects with state-of-the-art LLMs via a secure serverless backend.',
+    techStack: 'Next.js, TypeScript, OpenAI API, Claude API, Framer Motion, Tailwind CSS',
+    githubUrl: 'https://github.com/usaaman/ai-chat-app',
+    liveUrl: 'https://ai-chat-app.demo.com',
+    coverImage: '/projects/ai-chat.png',
+    gallery: ['/projects/ai-chat.png'],
+    displayOrder: 2,
+    status: 'Published',
+    featured: true,
+    type: 'Web App'
+  },
+  {
+    id: 'personal-portfolio',
+    title: 'Personal Portfolio + AI CMS',
+    subtitle: 'Developer Portfolio and Intelligent Content Manager',
+    shortDesc: 'A high-end developer portfolio utilizing a custom serverless CMS powered by natural language commands.',
+    longDesc: 'A high-end developer portfolio utilizing a custom serverless CMS powered by natural language commands. Allows writing, deleting, or reordering case study cards using simple English text commands.',
+    techStack: 'React.js, Vite, Firebase, Firestore, Generative AI, Tailwind CSS',
+    githubUrl: 'https://github.com/usaaman/portfolio-cms',
+    liveUrl: 'https://portfolio-cms.demo.com',
+    coverImage: '/projects/portfolio.png',
+    gallery: ['/projects/portfolio.png'],
+    displayOrder: 3,
+    status: 'Published',
+    featured: true,
+    type: 'Web App'
+  },
+  {
+    id: 'movie-recommender',
+    title: 'Movie Suggestion System',
+    subtitle: 'AI-Based Movie Recommendation Engine',
+    shortDesc: 'A recommendation platform analyzing user taste preferences, movie genres, and visual themes to curate tailored watchlist suggestions.',
+    longDesc: 'A recommendation platform analyzing user taste preferences, movie genres, and visual themes to curate tailored watchlist suggestions. Employs vector search matching logic and real-time movie rating statistics.',
+    techStack: 'React.js, Python, FastAPI, REST APIs, PostgreSQL, Tailwind CSS',
+    githubUrl: 'https://github.com/usaaman/movie-recommender',
+    liveUrl: 'https://movie-recommender.demo.com',
+    coverImage: '/projects/movie.png',
+    gallery: ['/projects/movie.png'],
+    displayOrder: 4,
+    status: 'Published',
+    featured: true,
+    type: 'AI System'
+  },
+  {
+    id: 'chat-application',
+    title: 'Chat Application',
+    subtitle: 'Real-Time Shared Channels Messaging App',
+    shortDesc: 'A collaborative real-time messaging client featuring persistent text channels, live typing indicators, online status tags, active thread replies, and structured image/file share capabilities.',
+    longDesc: 'A collaborative real-time messaging client featuring persistent text channels, live typing indicators, online status tags, active thread replies, and structured image/file share capabilities.',
+    techStack: 'React.js, Node.js, Express.js, Firebase, REST APIs, Tailwind CSS',
+    githubUrl: 'https://github.com/usaaman/chat-app',
+    liveUrl: 'https://chat-app.demo.com',
+    coverImage: '/projects/chat.png',
+    gallery: ['/projects/chat.png'],
+    displayOrder: 5,
+    status: 'Published',
+    featured: true,
+    type: 'Web App'
+  },
+  {
+    id: 'design-showcase',
+    title: 'UI Ideas / Design Showcase',
+    subtitle: 'Premium User Interfaces and Design Playground',
+    shortDesc: 'A playground showcasing premium interface design tokens, glassmorphic layout experiments, rich interactive micro-animations, and cutting-edge dark mode theme styling systems.',
+    longDesc: 'A playground showcasing premium interface design tokens, glassmorphic layout experiments, rich interactive micro-animations, and cutting-edge dark mode theme styling systems.',
+    techStack: 'HTML, CSS, JavaScript, Responsive Design, Figma, UI Design',
+    githubUrl: 'https://github.com/usaaman/design-showcase',
+    liveUrl: 'https://design-showcase.demo.com',
+    coverImage: '/projects/design.png',
+    gallery: ['/projects/design.png'],
+    displayOrder: 6,
+    status: 'Published',
+    featured: true,
+    type: 'Design UI'
+  }
+];
 
 export default function usePortfolioData() {
   const [data, setData] = useState({
     hero: { ...FALLBACK_HERO },
     about: { ...FALLBACK_ABOUT },
     skills: [],
-    projects: [],
+    projects: FALLBACK_PROJECTS,
     services: [],
     socialLinks: { ...FALLBACK_SOCIALS },
     resume: { ...FALLBACK_RESUME },
     aiConfig: { ...FALLBACK_AI_CONFIG },
     loading: true,
+    loadingProgress: 10,
   });
 
   useEffect(() => {
     if (!db) {
-      setData(prev => ({ ...prev, loading: false }));
+      setData(prev => ({ ...prev, loading: false, loadingProgress: 100 }));
       return;
     }
 
@@ -116,9 +216,15 @@ export default function usePortfolioData() {
     };
 
     const checkLoading = () => {
-      if (Object.values(initialFires).every(Boolean)) {
-        setData(prev => ({ ...prev, loading: false }));
-      }
+      const keys = Object.keys(initialFires);
+      const doneCount = keys.filter(k => initialFires[k]).length;
+      const progress = Math.min(100, Math.round((doneCount / keys.length) * 90) + 10);
+      const isDone = doneCount === keys.length;
+      setData(prev => ({
+        ...prev,
+        loadingProgress: isDone ? 100 : progress,
+        loading: !isDone,
+      }));
     };
 
     const unsubHero = onSnapshot(doc(db, 'hero', 'singleton'), (snap) => {

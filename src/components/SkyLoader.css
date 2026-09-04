@@ -1,0 +1,231 @@
+/* Full screen Developer Summit dark green/sky overlay */
+.sky-loader-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 35%, #0d3830 0%, #051C18 75%, #02120f 100%);
+  z-index: 99999;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+  font-family: var(--ds-font-body, system-ui, -apple-system, sans-serif);
+}
+
+.sky-loader-card {
+  width: 100%;
+  max-width: 360px;
+  padding: 28px;
+  background: rgba(11, 43, 38, 0.85);
+  border: 1px solid rgba(26, 82, 71, 0.7);
+  border-radius: 28px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 
+    0 24px 60px rgba(0, 0, 0, 0.75),
+    inset 0 1px 1px rgba(245, 166, 35, 0.3),
+    0 0 30px rgba(16, 185, 129, 0.15);
+  text-align: center;
+}
+
+.sky-stage {
+  position: relative;
+  height: 250px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 20px;
+  background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.12) 0%, rgba(5, 28, 24, 0.6) 100%);
+  border: 1px solid rgba(26, 82, 71, 0.4);
+}
+
+/* ==========================================================================
+   CYBER HEXAGON MU LOGO SVG ANIMATIONS
+   ========================================================================== */
+
+.mu-logo-svg {
+  width: 220px;
+  height: 220px;
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.6));
+  animation: logoFloat 4s ease-in-out infinite;
+}
+
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.02);
+  }
+}
+
+/* Outer Hexagon Base & Glow */
+.hex-outer-base {
+  fill: rgba(11, 43, 38, 0.7);
+  stroke: #10b981;
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+.hex-outer-glow {
+  fill: none;
+  stroke: #fbbf24;
+  stroke-width: 2px;
+  opacity: 0.6;
+  filter: drop-shadow(0 0 12px #f59e0b);
+  animation: pulseGlow 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes pulseGlow {
+  0% {
+    opacity: 0.3;
+    stroke-width: 1.5px;
+  }
+  100% {
+    opacity: 0.9;
+    stroke-width: 3px;
+  }
+}
+
+/* Circuit Lines */
+.circuit-track-base {
+  fill: none;
+  stroke: rgba(16, 185, 129, 0.2);
+  stroke-width: 3px;
+  stroke-linecap: round;
+}
+
+.circuit-energy-line {
+  fill: none;
+  stroke: url(#greenGoldGrad);
+  stroke-width: 3px;
+  stroke-dasharray: 120 180;
+  stroke-dashoffset: 300;
+  animation: circuitFlow 2s linear infinite;
+  stroke-linecap: round;
+}
+
+@keyframes circuitFlow {
+  0% {
+    stroke-dashoffset: 300;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Inner Thin Hexagon */
+.hex-inner-base {
+  fill: none;
+  stroke: rgba(251, 191, 36, 0.45);
+  stroke-width: 1.5px;
+  stroke-dasharray: 6 4;
+}
+
+/* Circuit Node Dots */
+.node-dot {
+  filter: drop-shadow(0 0 6px #f59e0b);
+  animation: nodePulse 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes nodePulse {
+  0% {
+    r: 4px;
+    opacity: 0.7;
+  }
+  100% {
+    r: 6.5px;
+    opacity: 1;
+    fill: #fbbf24;
+  }
+}
+
+/* 3D MU Letters */
+.mu-green-front {
+  fill: url(#greenGoldGrad);
+  filter: drop-shadow(0 4px 12px rgba(245, 166, 35, 0.4));
+  transition: all 0.3s ease;
+}
+
+.mu-green-side {
+  fill: #059669;
+  opacity: 0.9;
+}
+
+/* Background Sparks Animation */
+.spark {
+  animation: sparkPulse 2s ease-in-out infinite alternate;
+}
+
+.spark-1 { animation-delay: 0s; }
+.spark-2 { animation-delay: 0.5s; }
+.spark-3 { animation-delay: 1s; }
+.spark-4 { animation-delay: 1.5s; }
+
+@keyframes sparkPulse {
+  0% { opacity: 0.3; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1.4); }
+}
+
+/* Liquid fill clip transition */
+.liquid-clip-rect {
+  transition: y 0.2s ease-out;
+}
+
+/* Progress bar & typography (Amber & Emerald Palette) */
+.loader-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13.5px;
+  margin-bottom: 10px;
+}
+
+.status-txt {
+  color: #94B3A8;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+}
+
+.percent-txt {
+  color: #F5A623;
+  font-weight: 700;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 10px rgba(245, 166, 35, 0.4);
+}
+
+.progress-track {
+  position: relative;
+  width: 100%;
+  height: 10px;
+  background: rgba(5, 28, 24, 0.9);
+  border: 1px solid rgba(26, 82, 71, 0.8);
+  border-radius: 99px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.progress-bar {
+  position: relative;
+  height: 100%;
+  min-width: 4px;
+  background: linear-gradient(90deg, #10B981 0%, #F5A623 50%, #FFB74D 100%);
+  border-radius: 99px;
+  box-shadow: 0 0 14px rgba(245, 166, 35, 0.8), 0 0 6px rgba(16, 185, 129, 0.6);
+  transition: width 0.1s linear;
+}
+
+.progress-bar-head {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 12px;
+  height: 100%;
+  background: #FFFFFF;
+  border-radius: 99px;
+  box-shadow: 0 0 10px #FFFFFF, 0 0 18px #F5A623;
+  opacity: 0.9;
+}

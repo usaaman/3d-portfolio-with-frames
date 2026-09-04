@@ -1,6 +1,6 @@
 .scroll-wrapper {
   position: relative;
-  height: 600vh;
+  height: 500vh;
   background: var(--bg);
 }
 
@@ -13,15 +13,16 @@
   background: var(--bg);
 }
 
+.scene-canvas,
 .scene-video {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
   display: block;
   z-index: 2;
   pointer-events: none;
+  filter: contrast(1.05) saturate(1.12) brightness(1.02);
   /* Sits in front of background text, behind card */
 }
 
@@ -503,26 +504,27 @@
 .about-content {
   align-items: center;
   justify-content: flex-start;
-  padding: 64px 5vw 24px;
+  padding: 64px 4vw 24px clamp(120px, 9.5vw, 160px);
   z-index: 10;
 }
 
 @media (max-width: 1440px) {
   .about-content {
     padding-top: 96px;
+    padding-left: clamp(115px, 9vw, 145px);
   }
 }
 
 @media (max-width: 900px) {
   .about-content {
     padding-top: 80px;
+    padding-left: var(--ds-space-24);
+    padding-right: var(--ds-space-24);
   }
 }
 
-
-
 .about-wrap {
-  width: min(900px, 92vw);
+  width: min(860px, calc(100vw - clamp(140px, 12vw, 190px)));
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -534,7 +536,8 @@
   grid-template-columns: 2fr 1fr;
   gap: 0;
   border-radius: var(--ds-radius-card);
-  overflow: visible;
+  overflow: hidden;
+  position: relative;
   flex-shrink: 0;
   backdrop-filter: blur(12px) saturate(120%);
   -webkit-backdrop-filter: blur(12px) saturate(120%);
@@ -647,6 +650,8 @@
   backdrop-filter: blur(4px) saturate(110%);
   -webkit-backdrop-filter: blur(4px) saturate(110%);
   background: rgba(255, 255, 255, 0.06);
+  position: relative;
+  overflow: hidden;
 }
 
 @media (min-width: 901px) {
@@ -804,6 +809,8 @@
   min-height: 90px;
   /* Reduced visual height */
   box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
 }
 
 .explore-card:hover {
@@ -812,7 +819,41 @@
   /* Border transition */
   box-shadow: var(--ds-shadow-medium), 0 0 16px rgba(101, 214, 255, 0.05);
   /* Shadow transition */
-  /* NO translateY, NO bouncing, NO scaling */
+}
+
+/* ==========================================================================
+   Luminous White Glow / Chamak Shimmer Sweep on Card Hover
+   ========================================================================== */
+.about-main::after,
+.glance-container::after,
+.explore-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 70%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.02) 20%,
+    rgba(255, 255, 255, 0.24) 50%,
+    rgba(255, 255, 255, 0.02) 80%,
+    transparent 100%
+  );
+  transform: skewX(-25deg);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease, left 0s 1.6s;
+  z-index: 15;
+}
+
+.about-main:hover::after,
+.glance-container:hover::after,
+.explore-card:hover::after {
+  opacity: 1;
+  left: 200%;
+  transition: left 1.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
 }
 
 .explore-icon-wrapper {
@@ -938,7 +979,7 @@
 
 @media (max-width: 720px) {
   .scroll-wrapper {
-    height: 380vh;
+    height: 420vh;
   }
 
   .stage-content {
@@ -970,6 +1011,7 @@
   }
 
   .about-wrap {
+    width: min(900px, 92vw);
     max-height: 76vh;
   }
 
@@ -1006,6 +1048,7 @@
   overflow: visible !important;
 }
 
+.scroll-wrapper.prefers-reduced-motion .scene-canvas,
 .scroll-wrapper.prefers-reduced-motion .scene-video {
   position: fixed !important;
   height: 100vh !important;

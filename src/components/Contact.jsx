@@ -275,23 +275,23 @@ export default function Contact({ socials }) {
           <div className="bracket" id="bl-br"></div>
 
           <div className="hud" id="hud-top-left">
-            <div className="title">ORIGINKIT // GLOBE</div>
-            <div className="sub"><span className="status-dot"></span>HOLOGRAPHIC PROJECTION ACTIVE</div>
+            <div className="title">GLOBAL REACH</div>
+            <div className="sub"><span className="status-dot"></span>ACTIVE WORLDWIDE</div>
           </div>
 
           <div className="hud" id="hud-top-right">
-            <div className="label">RENDER MODE</div>
-            <div className="value">DOT MATRIX / STAND-MOUNTED</div>
+            <div className="label">BASE LOCATION</div>
+            <div className="value">ISLAMABAD (UTC+5)</div>
           </div>
 
           <div className="hud" id="hud-bottom-left">
-            <div className="label">ROTATION</div>
-            <div className="value" ref={hudRotRef}>Y 000.0°</div>
+            <div className="label">ROTATION // TIMEZONES</div>
+            <div className="value"><span ref={hudRotRef}>Y 000.0°</span> • US / UK / APAC</div>
           </div>
 
           <div className="hud" id="hud-bottom-right">
-            <div className="label">NODES LINKED</div>
-            <div className="value">05 / 05</div>
+            <div className="label">RESPONSE COMMITMENT</div>
+            <div className="value">&lt; 24 HOURS</div>
           </div>
 
           <Globe hudRotRef={hudRotRef} />

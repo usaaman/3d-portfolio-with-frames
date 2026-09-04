@@ -15,19 +15,122 @@ const ExternalLinkSvg = () => (
   </svg>
 );
 
+const DEFAULT_PROJECTS = [
+  {
+    id: 'medcore-pos',
+    title: 'MedCore POS',
+    subtitle: 'Flagship Medical Point of Sale System',
+    shortDesc: 'A premium, high-performance point-of-sale system tailored for modern medical clinics and pharmacies.',
+    longDesc: 'A premium, high-performance point-of-sale system tailored for modern medical clinics and pharmacies. Integrates real-time patient billing, prescription insurance clearance pipelines, and secure drug inventory tracking under strict healthcare regulations.',
+    techStack: 'React.js, Node.js, Express.js, REST APIs, MySQL, Tailwind CSS',
+    githubUrl: 'https://github.com/usaaman/medcore-pos',
+    liveUrl: 'https://medcore-pos.demo.com',
+    coverImage: '/projects/medcore.png',
+    gallery: ['/projects/medcore.png'],
+    displayOrder: 1,
+    status: 'Published',
+    featured: true,
+    type: 'Web App'
+  },
+  {
+    id: 'ai-chat-app',
+    title: 'AI Chat App',
+    subtitle: 'Conversational Artificial Intelligence Client',
+    shortDesc: 'An advanced chat assistant with real-time streaming answers, code highlight syntaxes, chat history management, and multi-model toggle selectors.',
+    longDesc: 'An advanced chat assistant with real-time streaming answers, code highlight syntaxes, chat history management, and multi-model toggle selectors. Connects with state-of-the-art LLMs via a secure serverless backend.',
+    techStack: 'Next.js, TypeScript, OpenAI API, Claude API, Framer Motion, Tailwind CSS',
+    githubUrl: 'https://github.com/usaaman/ai-chat-app',
+    liveUrl: 'https://ai-chat-app.demo.com',
+    coverImage: '/projects/ai-chat.png',
+    gallery: ['/projects/ai-chat.png'],
+    displayOrder: 2,
+    status: 'Published',
+    featured: true,
+    type: 'Web App'
+  },
+  {
+    id: 'personal-portfolio',
+    title: 'Personal Portfolio + AI CMS',
+    subtitle: 'Developer Portfolio and Intelligent Content Manager',
+    shortDesc: 'A high-end developer portfolio utilizing a custom serverless CMS powered by natural language commands.',
+    longDesc: 'A high-end developer portfolio utilizing a custom serverless CMS powered by natural language commands. Allows writing, deleting, or reordering case study cards using simple English text commands.',
+    techStack: 'React.js, Vite, Firebase, Firestore, Generative AI, Tailwind CSS',
+    githubUrl: 'https://github.com/usaaman/portfolio-cms',
+    liveUrl: 'https://portfolio-cms.demo.com',
+    coverImage: '/projects/portfolio.png',
+    gallery: ['/projects/portfolio.png'],
+    displayOrder: 3,
+    status: 'Published',
+    featured: true,
+    type: 'Web App'
+  },
+  {
+    id: 'movie-recommender',
+    title: 'Movie Suggestion System',
+    subtitle: 'AI-Based Movie Recommendation Engine',
+    shortDesc: 'A recommendation platform analyzing user taste preferences, movie genres, and visual themes to curate tailored watchlist suggestions.',
+    longDesc: 'A recommendation platform analyzing user taste preferences, movie genres, and visual themes to curate tailored watchlist suggestions. Employs vector search matching logic and real-time movie rating statistics.',
+    techStack: 'React.js, Python, FastAPI, REST APIs, PostgreSQL, Tailwind CSS',
+    githubUrl: 'https://github.com/usaaman/movie-recommender',
+    liveUrl: 'https://movie-recommender.demo.com',
+    coverImage: '/projects/movie.png',
+    gallery: ['/projects/movie.png'],
+    displayOrder: 4,
+    status: 'Published',
+    featured: true,
+    type: 'AI System'
+  },
+  {
+    id: 'chat-application',
+    title: 'Chat Application',
+    subtitle: 'Real-Time Shared Channels Messaging App',
+    shortDesc: 'A collaborative real-time messaging client featuring persistent text channels, live typing indicators, online status tags, active thread replies, and structured image/file share capabilities.',
+    longDesc: 'A collaborative real-time messaging client featuring persistent text channels, live typing indicators, online status tags, active thread replies, and structured image/file share capabilities.',
+    techStack: 'React.js, Node.js, Express.js, Firebase, REST APIs, Tailwind CSS',
+    githubUrl: 'https://github.com/usaaman/chat-app',
+    liveUrl: 'https://chat-app.demo.com',
+    coverImage: '/projects/chat.png',
+    gallery: ['/projects/chat.png'],
+    displayOrder: 5,
+    status: 'Published',
+    featured: true,
+    type: 'Web App'
+  },
+  {
+    id: 'design-showcase',
+    title: 'UI Ideas / Design Showcase',
+    subtitle: 'Premium User Interfaces and Design Playground',
+    shortDesc: 'A playground showcasing premium interface design tokens, glassmorphic layout experiments, rich interactive micro-animations, and cutting-edge dark mode theme styling systems.',
+    longDesc: 'A playground showcasing premium interface design tokens, glassmorphic layout experiments, rich interactive micro-animations, and cutting-edge dark mode theme styling systems.',
+    techStack: 'HTML, CSS, JavaScript, Responsive Design, Figma, UI Design',
+    githubUrl: 'https://github.com/usaaman/design-showcase',
+    liveUrl: 'https://design-showcase.demo.com',
+    coverImage: '/projects/design.png',
+    gallery: ['/projects/design.png'],
+    displayOrder: 6,
+    status: 'Published',
+    featured: true,
+    type: 'Design UI'
+  }
+];
+
 export default function Projects({ projects }) {
   const scrollWrapperRef = useRef(null);
   const cardRefs = useRef([]);
+  const overlayRefs = useRef([]);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [currentStageIndex, setCurrentStageIndex] = useState(0);
+  const currentIdxRef = useRef(0);
   const [activeImgIndices, setActiveImgIndices] = useState({});
   const [modalProject, setModalProject] = useState(null);
 
   const activeProjects = useMemo(() => {
-    if (projects && projects.length > 0) {
-      return projects.filter((p) => p.status === 'Published');
+    let list = projects;
+    if (!list || list.length === 0) {
+      list = DEFAULT_PROJECTS;
     }
-    return [];
+    const filtered = list.filter((p) => !p.status || p.status.toLowerCase() !== 'draft');
+    return filtered.length > 0 ? filtered : DEFAULT_PROJECTS;
   }, [projects]);
 
   // Accessibility listener for prefers-reduced-motion
@@ -39,18 +142,33 @@ export default function Projects({ projects }) {
     return () => media.removeEventListener('change', handler);
   }, []);
 
-  // Stacking Scroll Animation Engine
+  // Keyboard accessibility for Live Preview Modal
+  useEffect(() => {
+    if (!modalProject) return;
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setModalProject(null);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [modalProject]);
+
+  // Apple-Level 3D Card Stacking Engine - 120 FPS Zero-Lag Architecture
   useEffect(() => {
     if (reducedMotion || activeProjects.length === 0) {
       activeProjects.forEach((_, index) => {
         const card = cardRefs.current[index];
+        const overlay = overlayRefs.current[index];
         if (card) {
           card.style.transform = '';
           card.style.opacity = '';
-          card.style.filter = '';
           card.style.zIndex = '';
           card.style.pointerEvents = '';
           card.style.visibility = '';
+        }
+        if (overlay) {
+          overlay.style.opacity = '0';
         }
       });
       return;
@@ -59,99 +177,163 @@ export default function Projects({ projects }) {
     const wrapper = scrollWrapperRef.current;
     if (!wrapper) return;
 
-    const handleScroll = () => {
+    let targetProgress = 0;
+    let currentProgress = 0;
+    let isRunning = false;
+    let rafId = null;
+
+    const calcTargetProgress = () => {
       const rect = wrapper.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const totalScrollable = rect.height - viewportHeight;
-
-      if (totalScrollable <= 0) return;
-
+      const totalScrollable = rect.height - window.innerHeight;
+      if (totalScrollable <= 0) return 0;
       const scrolled = -rect.top;
-      let rawProgress = scrolled / totalScrollable;
-      rawProgress = Math.max(0, Math.min(1, rawProgress));
-
-      const N = activeProjects.length;
-      const sectionProgress = rawProgress * (N - 1);
-      const currentIndex = Math.floor(sectionProgress);
-      const localProgress = sectionProgress - currentIndex;
-
-      activeProjects.forEach((_, index) => {
-        const card = cardRefs.current[index];
-        if (!card) return;
-
-        let scale = 1;
-        let translateY = 0;
-        let opacity = 1;
-        let blur = 0;
-        let zIndex = 10;
-        let pointerEvents = 'auto';
-        let isVh = false;
-
-        if (index < currentIndex) {
-          // Scrolled past
-          scale = 0.92;
-          translateY = -60;
-          opacity = 0;
-          blur = 15;
-          zIndex = 0;
-          pointerEvents = 'none';
-        } else if (index === currentIndex) {
-          // Active outgoing card
-          scale = 1 - 0.08 * localProgress;
-          translateY = -60 * localProgress;
-          opacity = 1 - localProgress;
-          blur = 15 * localProgress;
-          zIndex = 10;
-          pointerEvents = localProgress > 0.85 ? 'none' : 'auto';
-        } else if (index === currentIndex + 1) {
-          // Incoming card sliding up over top
-          scale = 1;
-          translateY = 100 * (1 - localProgress);
-          opacity = 1;
-          blur = 0;
-          zIndex = 20;
-          pointerEvents = 'auto';
-          isVh = true;
-        } else {
-          // In queue below
-          scale = 1;
-          translateY = 100;
-          opacity = 0;
-          blur = 0;
-          zIndex = 0;
-          pointerEvents = 'none';
-          isVh = true;
-        }
-
-        card.style.transform = isVh 
-          ? `translate3d(0, ${translateY}vh, 0) scale(${scale})` 
-          : `translate3d(0, ${translateY}px, 0) scale(${scale})`;
-        card.style.opacity = `${opacity}`;
-        card.style.filter = blur > 0 ? `blur(${blur}px)` : '';
-        card.style.zIndex = `${zIndex}`;
-        card.style.pointerEvents = pointerEvents;
-        card.style.visibility = opacity <= 0.01 ? 'hidden' : 'visible';
-      });
-
-      setCurrentStageIndex(currentIndex);
+      return Math.max(0, Math.min(1, scrolled / totalScrollable));
     };
 
-    let active = true;
-    let rafId = null;
-    const updateLoop = () => {
-      handleScroll();
-      if (active) {
-        rafId = requestAnimationFrame(updateLoop);
+    const updateCards = (progress) => {
+      const N = activeProjects.length;
+      const sectionProgress = progress * (N - 1);
+      const activeIdx = Math.min(N - 1, Math.max(0, Math.round(sectionProgress)));
+
+      // Only notify React when index actually changes to eliminate re-render hitching
+      if (activeIdx !== currentIdxRef.current) {
+        currentIdxRef.current = activeIdx;
+        setCurrentStageIndex(activeIdx);
+      }
+
+      for (let index = 0; index < N; index++) {
+        const card = cardRefs.current[index];
+        const overlay = overlayRefs.current[index];
+        if (!card) continue;
+
+        const delta = sectionProgress - index;
+
+        let translateY = 0;
+        let scale = 1.0;
+        let rotateX = 0;
+        let opacity = 1.0;
+        let overlayOpacity = 0;
+        let zIndex = 10 + index;
+        let pointerEvents = 'auto';
+        let visibility = 'visible';
+        let isVh = false;
+
+        if (delta <= -1.0) {
+          // In queue deep below viewport
+          translateY = 100;
+          scale = 0.90;
+          rotateX = 10;
+          opacity = 0;
+          visibility = 'hidden';
+          pointerEvents = 'none';
+          isVh = true;
+          overlayOpacity = 0;
+        } else if (delta < 0.0) {
+          // Incoming card sliding up over the stack
+          const t = delta + 1.0; // 0.0 -> 1.0
+          const easeArrival = 1 - Math.pow(1 - t, 3); // Cubic ease out
+          translateY = (1 - easeArrival) * 100;
+          isVh = true;
+
+          // 3D perspective tilt: tilts slightly backward as it rises, flattening on arrival
+          rotateX = 10 * (1 - easeArrival);
+
+          // Full-size expansion: expands slightly (1.02) then settles to 1.000
+          if (t < 0.85) {
+            const k = t / 0.85;
+            scale = 0.92 + 0.10 * (1 - Math.pow(1 - k, 2));
+          } else {
+            const k = (t - 0.85) / 0.15;
+            scale = 1.02 - 0.02 * (1 - Math.pow(1 - k, 2));
+          }
+
+          opacity = Math.min(1, t / 0.22);
+          zIndex = 30 + index * 2;
+          pointerEvents = t > 0.85 ? 'auto' : 'none';
+          overlayOpacity = 0;
+        } else if (delta === 0.0) {
+          // Active card at center stage
+          translateY = 0;
+          scale = 1.000;
+          rotateX = 0;
+          opacity = 1.0;
+          zIndex = 30 + index * 2;
+          pointerEvents = 'auto';
+          overlayOpacity = 0;
+        } else {
+          // Stacked cards underneath (delta > 0.0) - Deck Stacking Effect
+          translateY = -18 * Math.min(delta, 3);
+          scale = Math.max(0.88, 1 - 0.045 * Math.min(delta, 3));
+          rotateX = -1.2 * Math.min(delta, 2);
+          zIndex = 10 + index;
+          pointerEvents = delta > 0.2 ? 'none' : 'auto';
+
+          // Ambient occlusion darkening handled via GPU compositor overlay (NO filter re-rasterization)
+          overlayOpacity = Math.min(0.70, delta * 0.28);
+
+          // Deep stack fade-out after 2.4 layers
+          if (delta > 2.4) {
+            opacity = Math.max(0, 1 - (delta - 2.4) / 0.7);
+            if (opacity <= 0.01) {
+              visibility = 'hidden';
+            }
+          } else {
+            opacity = 1.0;
+          }
+        }
+
+        const transformStr = isVh
+          ? `translate3d(0, ${translateY.toFixed(2)}vh, 0) scale(${scale.toFixed(4)}) rotateX(${rotateX.toFixed(2)}deg)`
+          : `translate3d(0, ${translateY.toFixed(2)}px, 0) scale(${scale.toFixed(4)}) rotateX(${rotateX.toFixed(2)}deg)`;
+
+        card.style.transform = transformStr;
+        card.style.opacity = `${opacity.toFixed(3)}`;
+        card.style.zIndex = `${zIndex}`;
+        card.style.pointerEvents = pointerEvents;
+        card.style.visibility = visibility;
+
+        if (overlay) {
+          overlay.style.opacity = overlayOpacity.toFixed(3);
+        }
       }
     };
 
-    rafId = requestAnimationFrame(updateLoop);
-    window.addEventListener('resize', handleScroll);
+    // Smooth spring physics interpolation loop (glides smoothly on stepped mouse wheels)
+    const animationTick = () => {
+      const diff = targetProgress - currentProgress;
+      if (Math.abs(diff) < 0.0008) {
+        currentProgress = targetProgress;
+        updateCards(currentProgress);
+        isRunning = false;
+        rafId = null;
+        return; // Auto-idles: 0% CPU & GPU when stationary!
+      }
+
+      currentProgress += diff * 0.24;
+      updateCards(currentProgress);
+      rafId = requestAnimationFrame(animationTick);
+    };
+
+    const onScroll = () => {
+      targetProgress = calcTargetProgress();
+      if (!isRunning) {
+        isRunning = true;
+        rafId = requestAnimationFrame(animationTick);
+      }
+    };
+
+    // Immediate initial alignment
+    targetProgress = calcTargetProgress();
+    currentProgress = targetProgress;
+    updateCards(currentProgress);
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
 
     return () => {
-      active = false;
-      cancelAnimationFrame(rafId);
-      window.removeEventListener('resize', handleScroll);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (rafId) cancelAnimationFrame(rafId);
     };
   }, [reducedMotion, activeProjects]);
 
@@ -168,60 +350,65 @@ export default function Projects({ projects }) {
     });
   };
 
-  const totalScrollHeightVh = activeProjects.length * 100;
-
-  if (activeProjects.length === 0) {
-    return null;
-  }
+  const totalScrollHeightVh = Math.max(1, activeProjects.length) * 115;
 
   return (
     <div
+      id="projects"
       ref={scrollWrapperRef}
       className="projects-scroll-wrapper relative w-full"
       style={{ height: `${totalScrollHeightVh}vh` }}
     >
       {/* Sticky Stage Viewport Container */}
-      <div className="sticky top-0 w-full h-screen overflow-hidden flex flex-col items-center justify-center bg-[#051C18]">
-        {/* Ambient Backlight */}
-        <div className="stage-glow-new" aria-hidden="true"></div>
+      <div className="projects-sticky-viewport">
+        {/* Dynamic Ambient Backlight */}
+        <div className="projects-ambient-backlight" aria-hidden="true"></div>
 
-        {/* Header Title Layer (Top Left) */}
-        <div className="absolute top-6 left-6 md:left-8 z-40 hidden md:block">
-          <span className="text-[10px] font-mono text-[#64887B] uppercase tracking-widest block">Stage Catalog</span>
-          <h1 className="text-sm font-semibold text-white tracking-tight">Keynote Showcase</h1>
-        </div>
+        {/* Top Section Header Bar */}
+        <div className="projects-top-header">
+          {/* Left: Section Badge & Title */}
+          <div className="projects-header-left">
+            <div className="projects-badge">
+              <span className="projects-badge-dot" />
+              <span className="projects-badge-text">FEATURED WORK // ARCHIVE</span>
+            </div>
+            <h2 className="projects-main-heading">
+              Selected <span className="projects-heading-accent">Case Studies</span>
+            </h2>
+          </div>
 
-        {/* Stage Position Indicator (Left Edge) */}
-        <div className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-40 hidden sm:flex flex-col items-center gap-4 text-xs font-mono">
-          <span className="text-[#64887B] text-[10px] uppercase tracking-widest rotate-[-90deg] mb-6">Stage Index</span>
-          <div className="flex flex-col gap-3">
-            {activeProjects.map((_, i) => (
-              <button
-                key={i}
-                className={`w-2.5 h-2.5 rounded-full border border-white/30 transition-all duration-300 hover:scale-125 cursor-pointer ${
-                  i === currentStageIndex ? 'bg-[#F5A623] border-[#F5A623] w-3 h-3' : 'bg-transparent'
-                }`}
-                onClick={() => scrollToCard(i)}
-                title={`Jump to Project ${i + 1}`}
-              />
-            ))}
+          {/* Right: Apple Keynote Project Status Pill with Balanced Padding */}
+          <div className="projects-header-right">
+            <div className="projects-counter-pill">
+              <span className="projects-counter-tag">PROJECT</span>
+              <div className="projects-counter-numbers">
+                <span className="projects-counter-current">
+                  {String(currentStageIndex + 1).padStart(2, '0')}
+                </span>
+                <span className="projects-counter-divider">/</span>
+                <span className="projects-counter-total">
+                  {String(activeProjects.length).padStart(2, '0')}
+                </span>
+              </div>
+
+              {/* Integrated Interactive Stage Dots */}
+              <div className="projects-counter-dots" title="Jump to project">
+                {activeProjects.map((_, i) => (
+                  <button
+                    key={i}
+                    className={`projects-dot-btn ${i === currentStageIndex ? 'active' : ''} ${i < currentStageIndex ? 'passed' : ''}`}
+                    onClick={() => scrollToCard(i)}
+                    title={`Jump to Project ${i + 1}`}
+                    aria-label={`Project ${i + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Slide Counter Badge (Top Right) */}
-        <div className="absolute top-6 right-6 md:right-8 z-40 flex items-center gap-3 bg-[#07221E]/80 border border-[#1A5247] backdrop-blur-md px-4 py-1.5 rounded-full text-xs text-zinc-300 font-mono shadow-lg">
-          <span className="text-[#F5A623] font-bold tracking-wider">PROJECT</span>
-          <span className="text-white font-bold text-sm">
-            {String(currentStageIndex + 1).padStart(2, '0')}
-          </span>
-          <span className="text-[#64887B]">/</span>
-          <span className="text-[#94B3A8]">
-            {String(activeProjects.length).padStart(2, '0')}
-          </span>
-        </div>
-
-        {/* Cards Wrapper Container */}
-        <div className="relative w-full h-full flex items-center justify-center">
+        {/* Apple 3D Cards Stacking Deck Stage */}
+        <div className="projects-cards-stage">
           {activeProjects.map((project, idx) => {
             const gallery = project.gallery || [];
             const cover = project.coverImage || '';
@@ -253,13 +440,19 @@ export default function Projects({ projects }) {
             return (
               <div
                 key={project.id}
-                className="stage-card-new project-card-container absolute"
+                className="stage-card-new project-card-container"
                 ref={(el) => (cardRefs.current[idx] = el)}
                 style={{
                   width: '90vw',
-                  maxWidth: '820px' // Mockup updated to 820px
+                  maxWidth: '820px' // Strictly preserved
                 }}
               >
+                {/* GPU-Composited Darkening Overlay for Apple Stacking */}
+                <div
+                  className="card-stack-overlay"
+                  ref={(el) => (overlayRefs.current[idx] = el)}
+                />
+
                 {/* 1. Card Header */}
                 <div className="card-header-el">
                   <div className="header-text-el">
@@ -279,7 +472,19 @@ export default function Projects({ projects }) {
                   className="card-media-el"
                   style={imagesList.length <= 1 ? { gridTemplateColumns: '1fr' } : {}}
                 >
-                  <div className="media-main-el">
+                  <div
+                    className="media-main-el"
+                    onClick={() => {
+                      trackProjectClick(project.title);
+                      setModalProject({
+                        ...project,
+                        image: currentImg
+                      });
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    title="Click for Interactive Preview"
+                  >
                     <img
                       src={currentImg}
                       alt={project.title}
@@ -353,9 +558,8 @@ export default function Projects({ projects }) {
                       onClick={() => {
                         trackProjectClick(project.title);
                         setModalProject({
-                          title: project.title,
-                          image: currentImg,
-                          liveUrl: liveUrl
+                          ...project,
+                          image: currentImg
                         });
                       }}
                       className="btn-el btn-primary-el"
@@ -372,49 +576,129 @@ export default function Projects({ projects }) {
         </div>
       </div>
 
-      {/* Fullscreen Interactive Sandbox Preview Modal */}
+      {/* Developer Summit Theme Live Preview Modal */}
       {modalProject && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl transition-all duration-300"
+          className="projects-modal-backdrop"
           onClick={() => setModalProject(null)}
         >
           <div
-            className="apple-glass rounded-2xl w-full max-w-4xl p-6 relative border border-white/20 shadow-2xl transform scale-100 transition-all duration-300"
+            className="projects-modal-card"
             onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
           >
+            {/* Top Close Button */}
             <button
               onClick={() => setModalProject(null)}
-              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors cursor-pointer"
+              className="projects-modal-close"
+              aria-label="Close Preview"
             >
               <X size={18} />
             </button>
-            <h3 className="text-2xl font-bold text-white mb-2">{modalProject.title}</h3>
-            <p className="text-xs text-zinc-400 mb-4 font-mono">Interactive Sandbox Simulation Mode</p>
 
-            <div className="relative aspect-16-9 rounded-xl overflow-hidden bg-black border border-white/10 mb-4">
-              <img src={modalProject.image} alt={modalProject.title} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
-                <div className="text-xs text-zinc-300 font-mono space-y-1">
-                  <p><span className="w-2 h-2 rounded-full bg-emerald-400 inline-block mr-2 animate-pulse"></span>Status: Live Production Environment Connected</p>
-                  <p><span className="w-2 h-2 rounded-full bg-blue-400 inline-block mr-2"></span>Latency: 14ms | WebSockets Active</p>
+            {/* Modal Header */}
+            <div className="projects-modal-header">
+              <div className="projects-modal-badge">
+                <span className="projects-modal-badge-dot" />
+                <span className="projects-modal-badge-text">
+                  {modalProject.type || 'WEB APP'} // LIVE PREVIEW ENVIRONMENT
+                </span>
+              </div>
+              <h3 className="projects-modal-title">{modalProject.title}</h3>
+              <p className="projects-modal-subtitle">
+                {modalProject.subtitle || 'Production Application Deployment'}
+              </p>
+            </div>
+
+            {/* Interactive Browser Frame */}
+            <div className="projects-modal-browser-frame">
+              <div className="projects-modal-browser-bar">
+                <div className="projects-modal-browser-dots">
+                  <span className="p-dot dot-red" />
+                  <span className="p-dot dot-amber" />
+                  <span className="p-dot dot-green" />
+                </div>
+                <div className="projects-modal-browser-url">
+                  <span className="url-lock-icon">🔒</span>
+                  <span className="url-address-text">{modalProject.liveUrl}</span>
+                </div>
+                <div className="projects-modal-browser-tag">
+                  <span className="browser-live-pulse" />
+                  <span>ONLINE</span>
+                </div>
+              </div>
+
+              <div className="projects-modal-media-wrap">
+                <img
+                  src={modalProject.image || modalProject.coverImage || '/favicon.svg'}
+                  alt={modalProject.title}
+                  className="projects-modal-image"
+                  onError={(e) => { e.target.src = '/favicon.svg'; }}
+                />
+                <div className="projects-modal-hud">
+                  <div className="projects-modal-hud-item">
+                    <span className="hud-dot-pulse emerald" />
+                    <span>Live Production Node Connected</span>
+                  </div>
+                  <div className="projects-modal-hud-item">
+                    <span className="hud-dot-pulse amber" />
+                    <span>Edge SSL Active • 14ms Response</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex justify-between items-center pt-2">
-              <span className="text-xs text-zinc-400">Click anywhere outside or hit close to return to keynote stage.</span>
-              <div className="flex gap-3">
-                <a
-                  href={modalProject.liveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-5 py-2 rounded-xl bg-blue-600 text-white font-semibold text-xs hover:bg-blue-500 transition-colors flex items-center gap-1.5"
-                >
-                  Open Live Link <ExternalLinkSvg />
-                </a>
+            {/* Modal Description & Technologies */}
+            <div className="projects-modal-body">
+              <p className="projects-modal-desc">
+                {modalProject.longDesc || modalProject.description || modalProject.shortDesc}
+              </p>
+
+              <div className="projects-modal-tags">
+                {(Array.isArray(modalProject.technologies)
+                  ? modalProject.technologies
+                  : typeof modalProject.techStack === 'string'
+                  ? modalProject.techStack.split(',').map((t) => t.trim()).filter(Boolean)
+                  : []
+                ).map((tech) => (
+                  <span key={tech} className="projects-modal-tag">
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Modal Footer Controls with Generous Theme Spacing */}
+            <div className="projects-modal-footer">
+              <span className="projects-modal-esc-hint">
+                Press <kbd>ESC</kbd> or click outside to return to keynote
+              </span>
+              <div className="projects-modal-actions">
+                {modalProject.githubUrl && (
+                  <a
+                    href={modalProject.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="projects-modal-btn btn-modal-secondary"
+                  >
+                    <GithubSvg />
+                    Repository
+                  </a>
+                )}
+                {modalProject.liveUrl && (
+                  <a
+                    href={modalProject.liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="projects-modal-btn btn-modal-primary"
+                  >
+                    Launch Live Project <ExternalLinkSvg />
+                  </a>
+                )}
                 <button
                   onClick={() => setModalProject(null)}
-                  className="px-5 py-2 rounded-xl bg-white text-black font-semibold text-xs hover:bg-zinc-200 transition-colors cursor-pointer"
+                  className="projects-modal-btn btn-modal-ghost"
                 >
                   Close Preview
                 </button>

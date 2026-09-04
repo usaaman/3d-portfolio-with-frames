@@ -13,6 +13,7 @@ import { getGroqChatCompletion, getGroqChatCompletionStream } from '../admin/ser
 import { db } from '../admin/services/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { trackAIOpen, trackAIMessage, logNotification } from '../utils/analytics';
+import CyberRobotButton from './CyberRobotButton';
 import './AIChatbot.css';
 
 // Local helper to parse simple markdown formatting (Bold, Code, Lists, Links)
@@ -198,7 +199,7 @@ export default function AIChatbot({ portfolioData }) {
       suggestedQuestions: ["Tell me about FitSphere", "What technologies do you use?", "Show your best projects"],
       temperature: 0.6,
       conversationLimit: 20,
-      modelSelection: 'llama-3.3-70b-versatile'
+      modelSelection: 'openai/gpt-oss-20b'
     };
   }, [portfolioData]);
 
@@ -392,7 +393,7 @@ STRICT INSTRUCTIONS:
         },
         controller.signal,
         {
-          model: aiConfig.modelSelection || 'llama-3.3-70b-versatile',
+          model: aiConfig.modelSelection || 'openai/gpt-oss-20b',
           temperature: aiConfig.temperature || 0.6
         }
       );
@@ -505,7 +506,7 @@ STRICT INSTRUCTIONS:
         },
         controller.signal,
         {
-          model: aiConfig.modelSelection || 'llama-3.3-70b-versatile',
+          model: aiConfig.modelSelection || 'openai/gpt-oss-20b',
           temperature: aiConfig.temperature || 0.6
         }
       );
@@ -536,59 +537,83 @@ STRICT INSTRUCTIONS:
 
   return (
     <div className="chatbot-wrapper">
-      {/* Floating Button */}
-      <button
-        type="button"
-        className={`chatbot-float-btn ${isOpen ? 'is-open' : ''}`}
-        onClick={handleOpenToggle}
-        aria-label={isOpen ? 'Close AI assistant panel' : 'Open AI assistant panel'}
-      >
-        {isOpen ? <X size={24} /> : <MessageSquare size={24} />}
-        {!isOpen && <span className="chatbot-pulse-dot" />}
-      </button>
+      {/* 3D Floating Action Button */}
+      <div className="chatbot-float-container">
+        {!isOpen && (
+          <div className="chatbot-float-tooltip">
+            <span className="tooltip-sparkle">✨</span>
+            <span>Ask Usman's AI</span>
+          </div>
+        )}
+        <CyberRobotButton
+          isOpen={isOpen}
+          onClick={handleOpenToggle}
+          ariaLabel={isOpen ? 'Close AI assistant panel' : 'Open AI assistant panel'}
+        />
+      </div>
 
-      {/* Chat Window Panel */}
+      {/* 3D Glassmorphic Chat Window Panel */}
       {isOpen && (
-        <div className="chatbot-window" role="dialog" aria-label="AI Assistant Dialog">
-          {/* Header */}
-          <div className="chatbot-header">
+        <div className="chatbot-window viewport-3d-box" role="dialog" aria-label="AI Assistant Dialog">
+          {/* Ambient 3D Animated Background Blobs */}
+          <div className="chatbot-3d-bg" aria-hidden="true">
+            <div className="blob-3d blob-1" />
+            <div className="blob-3d blob-2" />
+            <div className="glass-specular-highlight" />
+          </div>
+
+          {/* 3D Header */}
+          <div className="chatbot-header header-3d-bar">
             <div className="header-info">
-              <div className="bot-avatar" aria-hidden="true">
-                <Brain size={16} />
+              <div className="bot-avatar avatar-3d-box" aria-hidden="true">
+                <Brain size={18} />
+                <div className="avatar-3d-ring" />
               </div>
               <div className="bot-meta">
-                <h4>Usman's Assistant</h4>
-                <span className="bot-online-tag">Online • AI Representative</span>
+                <div className="meta-title-row">
+                  <h4>Usman's AI</h4>
+                  <span className="meta-badge-3d">GPT-4o / GROQ</span>
+                </div>
+                <div className="meta-status-row">
+                  <span className="bot-online-tag">Online</span>
+                  <span className="status-divider">•</span>
+                  <div className="audio-wave-visualizer" title="AI Voice Active">
+                    <span className="bar bar-1" />
+                    <span className="bar bar-2" />
+                    <span className="bar bar-3" />
+                  </div>
+                  <span className="status-label">Active Neural Link</span>
+                </div>
               </div>
             </div>
             <div className="header-actions">
               <button
                 type="button"
-                className="chatbot-header-btn"
+                className="chatbot-header-btn action-3d-btn"
                 onClick={handleClear}
                 title="Start New Chat"
                 aria-label="Start New Chat"
               >
-                <Trash2 size={14} />
+                <Trash2 size={15} />
               </button>
               <button
                 type="button"
-                className="chatbot-header-btn"
+                className="chatbot-header-btn action-3d-btn"
                 onClick={handleOpenToggle}
                 title="Close Chat Panel"
                 aria-label="Close Chat Panel"
               >
-                <X size={14} />
+                <X size={15} />
               </button>
             </div>
           </div>
 
-          {/* Messages Thread body */}
-          <div className="chatbot-body" ref={scrollRef}>
+          {/* Messages Thread Body */}
+          <div className="chatbot-body body-3d-thread" ref={scrollRef}>
             {messages.map((msg, index) => (
               <div key={index} className={`chat-bubble-row ${msg.role === 'user' ? 'is-user' : 'is-bot'}`}>
                 <div className="chat-bubble-wrapper">
-                  <div className="chat-bubble">
+                  <div className="chat-bubble bubble-3d-style">
                     {msg.role === 'assistant' ? parseMarkdown(msg.content) : <p className="chatbot-line-text">{msg.content}</p>}
                   </div>
                   <span className="msg-timestamp">{msg.timestamp || 'Just now'}</span>
@@ -598,40 +623,45 @@ STRICT INSTRUCTIONS:
 
             {isLoading && (
               <div className="chat-bubble-row is-bot">
-                <div className="chat-bubble typing-shimmer">
-                  <div className="shimmer-line" />
-                  <div className="shimmer-line short" />
+                <div className="chat-bubble bubble-3d-style typing-3d-dots">
+                  <div className="typing-dot dot-1" />
+                  <div className="typing-dot dot-2" />
+                  <div className="typing-dot dot-3" />
+                  <span className="typing-text">AI is thinking...</span>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Suggestions block */}
+          {/* Suggestions Block */}
           {messages.length === 1 && suggestions.length > 0 && !isLoading && (
-            <div className="chatbot-suggestions-container">
-              {suggestions.map((q, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  className="chatbot-suggestion-pill"
-                  onClick={() => handleSend(q)}
-                >
-                  {q}
-                </button>
-              ))}
+            <div className="chatbot-suggestions-container suggestions-3d-box">
+              <span className="suggestions-label">Suggested Questions:</span>
+              <div className="suggestions-grid">
+                {suggestions.map((q, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    className="chatbot-suggestion-pill pill-3d-chip"
+                    onClick={() => handleSend(q)}
+                  >
+                    <span>{q}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
           {/* Footer Input Form */}
-          <div className="chatbot-footer-wrapper">
+          <div className="chatbot-footer-wrapper footer-3d-box">
             {messages.length > 1 && !isLoading && (
               <button
                 type="button"
-                className="chatbot-regen-btn"
+                className="chatbot-regen-btn regen-3d-btn"
                 onClick={handleRegenerate}
                 title="Regenerate Last Reply"
               >
-                <RefreshCw size={11} />
+                <RefreshCw size={11} className="spin-icon" />
                 <span>Regenerate Response</span>
               </button>
             )}
@@ -642,7 +672,7 @@ STRICT INSTRUCTIONS:
               }}
               className="chatbot-footer"
             >
-              <div className="footer-input-row">
+              <div className="footer-input-row input-3d-capsule">
                 <input
                   type="text"
                   placeholder="Ask about Usman's skills, projects..."
@@ -653,11 +683,11 @@ STRICT INSTRUCTIONS:
                 />
                 <button
                   type="submit"
-                  className="chatbot-send-btn"
+                  className="chatbot-send-btn send-3d-btn"
                   disabled={!input.trim() || isLoading}
                   aria-label="Send message"
                 >
-                  <Send size={14} />
+                  <Send size={15} />
                 </button>
               </div>
             </form>

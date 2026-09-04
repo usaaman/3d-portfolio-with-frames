@@ -6,6 +6,7 @@ import Skills from './components/Skills';
 import Projects from './components/Projects';
 import Services from './components/Services';
 import Contact from './components/Contact';
+import SkyLoader from './components/SkyLoader';
 import './App.css';
 
 // Admin Core
@@ -62,6 +63,39 @@ function LazyLoader() {
 // Portfolio landing wrapper view
 function PortfolioView() {
   const portfolio = usePortfolioData();
+  const [splashProgress, setSplashProgress] = React.useState(0);
+  const [showSplash, setShowSplash] = React.useState(true);
+
+  React.useEffect(() => {
+    let startTime = null;
+    const duration = 3800; // 3.8 seconds smooth & majestic balloon ascent
+    let animationFrameId;
+
+    const animate = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(1, elapsed / duration);
+
+      // Smooth ease-in-out curve for natural balloon acceleration & deceleration
+      const easedProgress = progress < 0.5
+        ? 2 * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+      const currentPercent = Math.min(100, easedProgress * 100);
+
+      setSplashProgress(currentPercent);
+
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(animate);
+      }
+    };
+
+    animationFrameId = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
 
   React.useEffect(() => {
     const cleanup = initAnalytics();
@@ -94,6 +128,12 @@ function PortfolioView() {
 
   return (
     <>
+      {showSplash && (
+        <SkyLoader
+          progress={splashProgress}
+          onComplete={() => setShowSplash(false)}
+        />
+      )}
       <Header resume={portfolio.resume} />
       <main>
         <HeroAboutScroll hero={portfolio.hero} about={portfolio.about} resume={portfolio.resume} skills={portfolio.skills} />

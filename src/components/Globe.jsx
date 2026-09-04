@@ -305,17 +305,20 @@ export default function Globe({ hudRotRef }) {
     floorGlow.position.y = 0.001;
     standGroup.add(floorGlow);
 
-    // ---- interaction: drag to rotate, auto-rotate otherwise ----------------
+    // ---- interaction: drag to rotate, constant slow auto-rotate at all times ----
+    const AUTO_SPEED = 0.002; // Smooth, elegant baseline auto-rotation
     let isDragging = false;
     let lastX = 0;
     let lastY = 0;
-    let velX = 0.0018;
-    const rotation = { x: 0.3, y: 0 };
+    let userVelX = 0;
+    const rotation = { x: 0.3, y: 0.15 };
 
     const handlePointerDown = (e) => {
       isDragging = true;
       lastX = e.clientX;
       lastY = e.clientY;
+      userVelX = 0;
+      canvas.style.cursor = "grabbing";
     };
 
     const handlePointerMove = (e) => {
@@ -323,16 +326,18 @@ export default function Globe({ hudRotRef }) {
       const dx = e.clientX - lastX;
       const dy = e.clientY - lastY;
       rotation.x += dx * 0.005;
-      rotation.y = Math.max(-1.1, Math.min(1.1, rotation.y + dy * 0.005));
-      velX = dx * 0.0016;
+      rotation.y = Math.max(-0.85, Math.min(0.85, rotation.y + dy * 0.004));
+      userVelX = dx * 0.002;
       lastX = e.clientX;
       lastY = e.clientY;
     };
 
     const handlePointerUp = () => {
       isDragging = false;
+      canvas.style.cursor = "grab";
     };
 
+    canvas.style.cursor = "grab";
     canvas.addEventListener('pointerdown', handlePointerDown);
     window.addEventListener('pointermove', handlePointerMove);
     window.addEventListener('pointerup', handlePointerUp);
@@ -364,8 +369,11 @@ export default function Globe({ hudRotRef }) {
       const time = clock.elapsedTime;
 
       if (!isDragging) {
-        rotation.x += velX;
-        velX *= 0.995;
+        // Smoothly blend flick velocity back to baseline auto-rotation
+        userVelX = THREE.MathUtils.lerp(userVelX, 0, 0.04);
+        rotation.x += AUTO_SPEED + userVelX;
+        // Gently settle tilt to optimal viewing angle
+        rotation.y = THREE.MathUtils.lerp(rotation.y, 0.12, 0.015);
       }
       globeGroup.rotation.y = rotation.x;
       globeGroup.rotation.x = rotation.y;

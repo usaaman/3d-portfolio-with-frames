@@ -658,8 +658,14 @@ export default function Services3D({ services }) {
 
     window.addEventListener('resize', handleResize);
 
-    let animationFrameId;
+    let animationFrameId = null;
+    let inView = true;
+
     const animate = () => {
+      if (!inView) {
+        animationFrameId = null;
+        return;
+      }
       animationFrameId = requestAnimationFrame(animate);
 
       if (autoRotateRef.current && !isDraggingRef.current) {
@@ -691,10 +697,20 @@ export default function Services3D({ services }) {
       renderer.render(scene, camera);
     };
 
+    const intersectionObserver = new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      if (inView && !animationFrameId) {
+        animate();
+      }
+    }, { threshold: 0.05 });
+
+    intersectionObserver.observe(container);
+
     animate();
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      intersectionObserver.disconnect();
       container.removeEventListener('mouseenter', handleMouseEnter);
       container.removeEventListener('mouseleave', handleMouseLeave);
       container.removeEventListener('mousedown', onPointerDown);
@@ -726,17 +742,17 @@ export default function Services3D({ services }) {
   return (
     <section id="services" className="relative z-10 py-12 text-slate-100 font-sans overflow-x-hidden select-none bg-[#051C18]">
       {/* Header */}
-      <header className="relative z-10 pt-4 pb-3 px-4 text-center max-w-4xl mx-auto">
-        <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-[#F5A623]/10 border border-[#F5A623]/25 text-[#F5A623] text-xs font-semibold tracking-wide mb-3">
-          <span className="w-2 h-2 rounded-full bg-[#F5A623] animate-pulse"></span>
-          <span>CAPABILITIES & SERVICES SHOWCASE</span>
+      <header className="services-section-header">
+        <div className="services-badge">
+          <span className="services-badge-dot" />
+          <span className="services-badge-text">CAPABILITIES &amp; SERVICES SHOWCASE</span>
         </div>
-        <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white mb-2 font-sans">
+        <h2 className="services-main-title">
           High-Impact Tech Solutions <br className="hidden sm:inline" />
-          <span className="font-script text-[#F5A623] text-4xl md:text-6xl inline-block -rotate-1">Tailored For Your Business</span>
+          <span className="services-title-accent">Tailored For Your Vision</span>
         </h2>
-        <p className="text-[#94B3A8] text-xs md:text-sm max-w-xl mx-auto font-light">
-          Drag horizontally or click any 3D service card to inspect features, tech stacks, and request a instant quote.
+        <p className="services-subtitle">
+          Drag horizontally or click any 3D service card to inspect features, tech stacks, and request an instant quote.
         </p>
       </header>
 
@@ -745,229 +761,200 @@ export default function Services3D({ services }) {
         <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing services3d-canvas-container flex items-center justify-center mx-auto" />
       </main>
 
-      {/* Pill Buttons */}
-      <section className="relative z-10 px-4 pb-6">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            {servicesData.map((serv, i) => {
-              const ServIcon = serv.IconComponent || Bot;
-              const isActive = i === selectedIndex;
-              return (
-                <button
-                  key={serv.id + '-' + i}
-                  onClick={() => {
-                    rotateToService(i);
-                    openServiceModal(i);
-                  }}
-                  className={`pill-btn px-4 py-2 rounded-full text-xs font-bold flex items-center space-x-2 transition-all glass-pill ${
-                    isActive
-                      ? 'bg-[#F5A623]/20 text-[#F5A623] border-[#F5A623] shadow-lg'
-                      : 'text-slate-300 hover:text-white hover:border-slate-500'
-                  }`}
-                >
-                  <ServIcon className="w-3.5 h-3.5" style={{ color: isActive ? '#F5A623' : '#94B3A8' }} />
-                  <span>{serv.shortName || serv.title}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
       {/* DETAILED SERVICE MODAL & QUOTE SYSTEM */}
       {isModalOpen && currentService && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-6 bg-slate-950/80 backdrop-blur-md animate-fade-in"
+          className="services-modal-overlay"
           onClick={closeModal}
         >
           <div
-            className="relative w-full max-w-2xl bg-[#07221E] border border-[#1A5247] rounded-3xl p-6 md:p-8 shadow-2xl overflow-hidden text-left transform transition-all duration-300 scale-100 max-h-[90vh] overflow-y-auto"
+            className="services-modal-card"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Close Button */}
             <button
               onClick={closeModal}
-              className="absolute top-5 right-5 text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-700/80 rounded-full p-2 transition-colors cursor-pointer"
+              className="services-modal-close"
+              aria-label="Close modal"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
 
-            <div className="flex items-center space-x-4 mb-6">
-              <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg border border-[#1A5247]"
-                style={{ backgroundColor: 'rgba(245, 166, 35, 0.15)' }}
-              >
-                <IconComp className="w-7 h-7 text-[#F5A623]" />
+            {/* Modal Header */}
+            <div className="services-modal-header">
+              <div className="services-modal-icon-box">
+                <IconComp className="services-modal-icon" />
               </div>
-              <div>
-                <div className="inline-flex items-center space-x-1.5 text-xs font-mono text-[#F5A623] font-semibold mb-1">
+              <div className="services-modal-header-info">
+                <div className="services-modal-timeline-badge">
                   <Clock className="w-3.5 h-3.5" />
                   <span>{currentService.timeline || "Est. 1 - 2 Weeks"}</span>
                 </div>
-                <h3 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight font-sans">
+                <h3 className="services-modal-title">
                   {currentService.title}
                 </h3>
               </div>
             </div>
 
-            <div className="flex items-center border-b border-[#1A5247] mb-5">
+            {/* Modern Segmented Tab Bar */}
+            <div className="services-modal-tabs">
               <button
+                type="button"
                 onClick={() => setActiveTab('overview')}
-                className={`pb-2.5 px-3 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border-b-2 ${
-                  activeTab === 'overview'
-                    ? 'text-[#F5A623] border-[#F5A623]'
-                    : 'text-[#94B3A8] hover:text-slate-200 border-transparent'
-                }`}
+                className={`services-tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
               >
                 <Layers className="w-3.5 h-3.5" />
-                <span>Overview & Tech Stack</span>
+                <span>Overview &amp; Tech Stack</span>
               </button>
               <button
+                type="button"
                 onClick={() => setActiveTab('quote')}
-                className={`pb-2.5 px-3 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border-b-2 ${
-                  activeTab === 'quote'
-                    ? 'text-[#F5A623] border-[#F5A623]'
-                    : 'text-[#94B3A8] hover:text-slate-200 border-transparent'
-                }`}
+                className={`services-tab-btn ${activeTab === 'quote' ? 'active' : ''}`}
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>Request This Service</span>
               </button>
             </div>
 
-            {activeTab === 'overview' && (
-              <div className="space-y-5">
-                <p className="text-slate-300 text-sm leading-relaxed">
-                  {currentService.desc}
-                </p>
+            {/* Modal Body / Scrollable Area */}
+            <div className="services-modal-body">
+              {activeTab === 'overview' && (
+                <div className="services-overview-content">
+                  <p className="services-overview-desc">
+                    {currentService.desc}
+                  </p>
 
-                <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#F5A623] mb-3 flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5" /> Key Deliverables & Features
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                    {currentService.features?.map((feat, idx) => (
-                      <div key={idx} className="flex items-start space-x-2 bg-[#0F3830]/60 border border-[#1A5247] rounded-xl p-3">
-                        <CheckCircle className="w-4 h-4 text-[#F5A623] shrink-0 mt-0.5" />
-                        <span className="text-xs text-slate-200 font-medium">{feat}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#94B3A8] mb-2.5">
-                    Technologies & Frameworks
-                  </h4>
-                  <div className="flex flex-wrap gap-1.5">
-                    {currentService.tech?.map((t, idx) => (
-                      <span key={idx} className="px-2.5 py-1 rounded-lg bg-slate-900/80 border border-[#1A5247] text-xs font-mono text-[#F5A623]">
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="pt-2">
-                  <button
-                    onClick={() => setActiveTab('quote')}
-                    className="w-full py-3.5 rounded-2xl bg-[#F5A623] text-[#051C18] font-extrabold text-sm hover:bg-[#FFB74D] transition-colors shadow-lg flex items-center justify-center space-x-2 cursor-pointer"
-                  >
-                    <Send className="w-4 h-4" />
-                    <span>Get Instant Service Quote</span>
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'quote' && (
-              <div>
-                {isFormSubmitted ? (
-                  <div className="py-10 text-center space-y-3">
-                    <div className="w-16 h-16 bg-[#F5A623]/20 border border-[#F5A623] text-[#F5A623] rounded-full flex items-center justify-center mx-auto">
-                      <CheckCircle className="w-8 h-8" />
+                  <div className="services-features-section">
+                    <h4 className="services-subhead">
+                      <Sparkles className="w-3.5 h-3.5" /> Key Deliverables &amp; Features
+                    </h4>
+                    <div className="services-features-grid">
+                      {currentService.features?.map((feat, idx) => (
+                        <div key={idx} className="services-feature-card">
+                          <CheckCircle className="services-feature-check" />
+                          <span className="services-feature-text">{feat}</span>
+                        </div>
+                      ))}
                     </div>
-                    <h4 className="text-xl font-bold text-white">Quote Request Received!</h4>
-                    <p className="text-sm text-[#94B3A8] max-w-md mx-auto">
-                      Thank you <span className="text-white font-semibold">{inquiryName}</span>. I have received your request for <span className="text-[#F5A623] font-semibold">{currentService.title}</span> and will respond within 24 hours.
-                    </p>
+                  </div>
+
+                  <div className="services-tech-section">
+                    <h4 className="services-subhead text-muted">
+                      Technologies &amp; Frameworks
+                    </h4>
+                    <div className="services-tech-tags">
+                      {currentService.tech?.map((t, idx) => (
+                        <span key={idx} className="services-tech-pill">
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="services-cta-wrap">
                     <button
-                      onClick={() => setIsFormSubmitted(false)}
-                      className="mt-4 px-6 py-2 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 hover:text-white"
-                    >
-                      Send Another Inquiry
-                    </button>
-                  </div>
-                ) : (
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      setIsFormSubmitted(true);
-                    }}
-                    className="space-y-4"
-                  >
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-medium text-slate-300 mb-1">Your Full Name *</label>
-                        <input
-                          type="text"
-                          required
-                          value={inquiryName}
-                          onChange={(e) => setInquiryName(e.target.value)}
-                          placeholder="e.g. John Doe"
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B2B26] border border-[#1A5247] text-white text-xs focus:outline-none focus:border-[#F5A623]"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-medium text-slate-300 mb-1">Your Email Address *</label>
-                        <input
-                          type="email"
-                          required
-                          value={inquiryEmail}
-                          onChange={(e) => setInquiryEmail(e.target.value)}
-                          placeholder="e.g. john@company.com"
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B2B26] border border-[#1A5247] text-white text-xs focus:outline-none focus:border-[#F5A623]"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-medium text-slate-300 mb-1">Estimated Project Budget</label>
-                      <select
-                        value={inquiryBudget}
-                        onChange={(e) => setInquiryBudget(e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B2B26] border border-[#1A5247] text-white text-xs focus:outline-none focus:border-[#F5A623]"
-                      >
-                        <option value="<$1,000">&lt; $1,000 (Basic Setup)</option>
-                        <option value="$1,500 - $3,500">$1,500 - $3,500 (Standard System)</option>
-                        <option value="$3,500 - $7,500">$3,500 - $7,500 (Full Platform / Enterprise AI)</option>
-                        <option value=">$7,500">&gt; $7,500 (Long-Term / Retainer)</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-medium text-slate-300 mb-1">Project Details / Goals *</label>
-                      <textarea
-                        required
-                        rows={3}
-                        value={inquiryMessage}
-                        onChange={(e) => setInquiryMessage(e.target.value)}
-                        placeholder={`Describe what you want to build with ${currentService.title}...`}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B2B26] border border-[#1A5247] text-white text-xs focus:outline-none focus:border-[#F5A623]"
-                      />
-                    </div>
-
-                    <button
-                      type="submit"
-                      className="w-full py-3.5 rounded-2xl bg-[#F5A623] text-[#051C18] font-extrabold text-sm hover:bg-[#FFB74D] transition-colors shadow-lg flex items-center justify-center space-x-2 cursor-pointer"
+                      type="button"
+                      onClick={() => setActiveTab('quote')}
+                      className="services-submit-btn"
                     >
                       <Send className="w-4 h-4" />
-                      <span>Submit Service Inquiry</span>
+                      <span>Get Instant Service Quote</span>
                     </button>
-                  </form>
-                )}
-              </div>
-            )}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'quote' && (
+                <div className="services-quote-content">
+                  {isFormSubmitted ? (
+                    <div className="services-form-success">
+                      <div className="services-success-icon-wrap">
+                        <CheckCircle className="w-8 h-8" />
+                      </div>
+                      <h4 className="services-success-title">Quote Request Received!</h4>
+                      <p className="services-success-desc">
+                        Thank you <span className="highlight">{inquiryName}</span>. I have received your request for <span className="accent">{currentService.title}</span> and will respond within 24 hours.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setIsFormSubmitted(false)}
+                        className="services-reset-btn"
+                      >
+                        Send Another Inquiry
+                      </button>
+                    </div>
+                  ) : (
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        setIsFormSubmitted(true);
+                      }}
+                      className="services-quote-form"
+                    >
+                      <div className="services-form-row">
+                        <div className="services-form-group">
+                          <label className="services-form-label">Your Full Name *</label>
+                          <input
+                            type="text"
+                            required
+                            value={inquiryName}
+                            onChange={(e) => setInquiryName(e.target.value)}
+                            placeholder="e.g. John Doe"
+                            className="services-form-input"
+                          />
+                        </div>
+
+                        <div className="services-form-group">
+                          <label className="services-form-label">Your Email Address *</label>
+                          <input
+                            type="email"
+                            required
+                            value={inquiryEmail}
+                            onChange={(e) => setInquiryEmail(e.target.value)}
+                            placeholder="e.g. john@company.com"
+                            className="services-form-input"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="services-form-group">
+                        <label className="services-form-label">Estimated Project Budget</label>
+                        <select
+                          value={inquiryBudget}
+                          onChange={(e) => setInquiryBudget(e.target.value)}
+                          className="services-form-select"
+                        >
+                          <option value="<$1,000">&lt; $1,000 (Basic Setup)</option>
+                          <option value="$1,500 - $3,500">$1,500 - $3,500 (Standard System)</option>
+                          <option value="$3,500 - $7,500">$3,500 - $7,500 (Full Platform / Enterprise AI)</option>
+                          <option value=">$7,500">&gt; $7,500 (Long-Term / Retainer)</option>
+                        </select>
+                      </div>
+
+                      <div className="services-form-group">
+                        <label className="services-form-label">Project Details / Goals *</label>
+                        <textarea
+                          required
+                          rows={3}
+                          value={inquiryMessage}
+                          onChange={(e) => setInquiryMessage(e.target.value)}
+                          placeholder={`Describe what you want to build with ${currentService.title}...`}
+                          className="services-form-textarea"
+                        />
+                      </div>
+
+                      <button
+                        type="submit"
+                        className="services-submit-btn"
+                      >
+                        <Send className="w-4 h-4" />
+                        <span>Submit Service Inquiry</span>
+                      </button>
+                    </form>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

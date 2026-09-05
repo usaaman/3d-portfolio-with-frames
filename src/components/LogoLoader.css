@@ -1,0 +1,260 @@
+/* =========================================================
+   LOGO LOADER - 2D ANIMATED BRAND MONOGRAM
+   Theme: Deep Forest Green (#031411), Emerald (#10b981), Amber (#f5a623)
+   ========================================================= */
+
+.logo-loader-root {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999999;
+  background-color: #020c0a;
+  background-image: 
+    radial-gradient(circle at 50% 45%, rgba(16, 185, 129, 0.16) 0%, transparent 55%),
+    radial-gradient(circle at 50% 70%, rgba(245, 166, 35, 0.08) 0%, transparent 50%),
+    linear-gradient(180deg, #020a08 0%, #031411 50%, #010705 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  user-select: none;
+  box-sizing: border-box;
+  padding: 40px 24px 30px;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.45s;
+}
+
+.logo-loader-root.exiting {
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(1.05);
+  pointer-events: none;
+}
+
+/* Ambient Backlight Glow */
+.logo-loader-ambient {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, rgba(245, 166, 35, 0.08) 45%, transparent 70%);
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+/* Center Content Column */
+.logo-loader-center {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: auto 0;
+}
+
+/* Logo Floating & Breathing Stage */
+.logo-stage {
+  position: relative;
+  width: 170px;
+  height: 170px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28px;
+  animation: logoFloat 3s ease-in-out infinite;
+}
+
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(-4px) scale(1);
+  }
+  50% {
+    transform: translateY(4px) scale(1.02);
+  }
+}
+
+/* Subtle Aura Ring Behind Logo */
+.logo-aura-ring {
+  position: absolute;
+  inset: -16px;
+  border-radius: 50%;
+  border: 1px dashed rgba(16, 185, 129, 0.25);
+  animation: auraSpin 20s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes auraSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* SVG Logo Display */
+.logo-loader-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 10px 25px rgba(2, 44, 34, 0.7));
+}
+
+/* Hexagon Outer Stroke Trace */
+.loader-hex-trace {
+  stroke-dasharray: 800;
+  stroke-dashoffset: 0;
+  animation: strokeLoop 6s linear infinite;
+}
+
+@keyframes strokeLoop {
+  0% {
+    stroke-dashoffset: 800;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.loader-hex-dashed {
+  animation: dashSpin 25s linear infinite;
+  transform-origin: 250px 235px;
+}
+
+@keyframes dashSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Circuit Nodes Pulse */
+.loader-nodes circle {
+  animation: nodePulse 1.8s ease-in-out infinite alternate;
+}
+
+.node-1 { animation-delay: 0s; }
+.node-2 { animation-delay: 0.3s; }
+.node-3 { animation-delay: 0.6s; }
+.node-4 { animation-delay: 0.9s; }
+.node-5 { animation-delay: 1.2s; }
+.node-6 { animation-delay: 1.5s; }
+
+@keyframes nodePulse {
+  0% {
+    r: 6.5;
+    fill: #f5a623;
+    filter: drop-shadow(0 0 4px #f5a623);
+  }
+  100% {
+    r: 9;
+    fill: #fbbf24;
+    filter: drop-shadow(0 0 10px #fbbf24);
+  }
+}
+
+/* Minimalist HUD Counter & Status */
+.logo-hud {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo-number-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 2px;
+  margin-bottom: 12px;
+}
+
+.logo-number {
+  font-family: var(--ds-font-display, 'Space Grotesk', sans-serif);
+  font-size: 52px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -2px;
+  line-height: 1;
+  text-shadow: 0 0 25px rgba(16, 185, 129, 0.6);
+}
+
+.logo-percent-sym {
+  font-family: var(--ds-font-display, 'Space Grotesk', sans-serif);
+  font-size: 22px;
+  font-weight: 700;
+  color: #f5a623;
+}
+
+/* Progress Bar Track */
+.logo-progress-bar {
+  width: 260px;
+  max-width: 80vw;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  position: relative;
+  margin-bottom: 14px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.logo-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981 0%, #34d399 60%, #f5a623 100%);
+  border-radius: 4px;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.85);
+  transition: width 0.06s linear;
+}
+
+.logo-progress-dot {
+  position: absolute;
+  top: -4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #f5a623;
+  box-shadow: 0 0 14px #f5a623, 0 0 22px #f5a623;
+  transform: translateX(-50%);
+  transition: left 0.06s linear;
+  pointer-events: none;
+}
+
+.logo-status-text {
+  font-family: var(--ds-font-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  font-weight: 600;
+  color: #94b3a8;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+}
+
+/* Footer Tag */
+.logo-loader-footer {
+  position: relative;
+  z-index: 10;
+}
+
+.footer-code {
+  font-family: var(--ds-font-mono, 'JetBrains Mono', monospace);
+  font-size: 10.5px;
+  color: #527a70;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+  .logo-stage {
+    width: 140px;
+    height: 140px;
+    margin-bottom: 24px;
+  }
+
+  .logo-number {
+    font-size: 42px;
+  }
+
+  .logo-progress-bar {
+    width: 210px;
+  }
+}

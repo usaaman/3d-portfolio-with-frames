@@ -9,8 +9,8 @@ import {
   Copy,
   Check,
 } from 'lucide-react';
-import { getGroqChatCompletion, getGroqChatCompletionStream } from '../admin/services/groq';
-import { db } from '../admin/services/firebase';
+import { getGroqChatCompletion, getGroqChatCompletionStream } from '../services/groq';
+import { db } from '../services/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { trackAIOpen, trackAIMessage, logNotification } from '../utils/analytics';
 import CyberRobotButton from './CyberRobotButton';
@@ -203,34 +203,33 @@ export default function AIChatbot({ portfolioData }) {
     };
   }, [portfolioData]);
 
-  const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState(() => {
+  // Clean up any stale legacy localStorage items so client data is never permanently retained
+  useEffect(() => {
     try {
-      const saved = localStorage.getItem('chatbot_history');
-      if (saved) return JSON.parse(saved);
-    } catch (err) {
-      console.warn('Failed parsing chatbot history from localStorage:', err);
-    }
-    return [{ role: 'assistant', content: aiConfig.greetingMessage, timestamp: getCurrentTime() }];
-  });
+      localStorage.removeItem('chatbot_history');
+      localStorage.removeItem('chatbot_conv_id');
+      localStorage.removeItem('chatbot_created_at');
+      localStorage.removeItem('chatbot_visitor_id');
+    } catch (err) {}
+  }, []);
+
+  const [isOpen, setIsOpen] = useState(false);
+  // Strictly in-memory conversation state - resets whenever visitor leaves, reloads or crosses site
+  const [messages, setMessages] = useState(() => [
+    { role: 'assistant', content: aiConfig.greetingMessage, timestamp: getCurrentTime() }
+  ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [convId, setConvId] = useState(() => {
-    return localStorage.getItem('chatbot_conv_id') || `conv_${Date.now()}`;
-  });
+
+  // Fresh unique conversation ID for this visit/session
+  const [convId, setConvId] = useState(() => `conv_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`);
 
   const scrollRef = useRef(null);
   const streamAbortControllerRef = useRef(null);
+  const sessionCreatedAtRef = useRef(new Date().toLocaleString());
 
-  // Visitor ID Setup
-  const [visitorId] = useState(() => {
-    let id = localStorage.getItem('chatbot_visitor_id');
-    if (!id) {
-      id = `visitor_${Math.random().toString(36).substring(2, 9)}`;
-      localStorage.setItem('chatbot_visitor_id', id);
-    }
-    return id;
-  });
+  // Anonymous Visitor ID for this session
+  const [visitorId] = useState(() => `visitor_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 6)}`);
 
   // Keep greeting updated if config changes
   useEffect(() => {
@@ -243,12 +242,10 @@ export default function AIChatbot({ portfolioData }) {
   }, [aiConfig.greetingMessage]);
 
   useEffect(() => {
-    localStorage.setItem('chatbot_history', JSON.stringify(messages));
-    localStorage.setItem('chatbot_conv_id', convId);
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages, convId]);
+  }, [messages]);
 
   // Construct context-enriched system prompt
   const systemPrompt = useMemo(() => {
@@ -408,21 +405,40 @@ STRICT INSTRUCTIONS:
     try {
       if (!db) return;
       
-      let summaryText = 'Visitor inquired about Usman\'s portfolio.';
-      // To save tokens and respond fast, only generate summary if visitor sent messages
+      let summaryText = "Visitor explored Muhammad Usman's portfolio.";
+      // Generate detailed, comprehensive executive summary
       const userMsgs = history.filter(m => m.role === 'user');
       if (userMsgs.length > 0) {
-        const summaryPrompt = `You are a summarization AI. Write a one-sentence summary (under 15 words) of what the visitor was asking in this developer portfolio conversation. Keep it in the format: "Visitor asked about [topics]."
-        
-        Transcript:
-        ${history.map(m => `${m.role === 'user' ? 'Visitor' : 'AI'}: ${m.content}`).join('\n')}`;
+        const transcriptText = history
+          .map(m => `${m.role === 'user' ? 'Visitor' : 'AI Assistant'}: ${m.content}`)
+          .join('\n');
 
-        const summaryResponse = await getGroqChatCompletion(
-          [{ role: 'user', content: 'Summarize transcript.' }],
-          summaryPrompt,
-          { temperature: 0.2 }
-        );
-        summaryText = summaryResponse.replace(/^"|"$/g, '').trim();
+        const summaryPrompt = `You are a professional executive briefing AI analyzing an incoming visitor conversation on Muhammad Usman's portfolio website.
+
+Provide a thorough, comprehensive executive summary (3 to 5 sentences or structured bullet points). Do NOT make it short or 1-line.
+
+Cover these specific points:
+1. Core Intent & Topics: What projects (e.g. FitSphere, Telemetry), tech stacks, or services the visitor inquired about.
+2. Questions & Dialogue Details: Key questions asked and technical aspects explored.
+3. Client Lead Potential & Engagement: Any mention of hiring, contracts, budget, timeline, or contact info.
+4. Outcome & Guidance: How the AI assisted them (e.g. directed to email/WhatsApp, resume, or contact form).
+
+Conversation Transcript:
+${transcriptText}`;
+
+        try {
+          const summaryResponse = await getGroqChatCompletion(
+            [{ role: 'user', content: 'Provide a comprehensive executive summary of this conversation transcript.' }],
+            summaryPrompt,
+            { temperature: 0.3 }
+          );
+          if (summaryResponse) {
+            summaryText = summaryResponse.replace(/^"|"$/g, '').trim();
+          }
+        } catch (e) {
+          const userQueries = userMsgs.map(m => m.content);
+          summaryText = `• Visitor Inquiries: ${userQueries.join('; ')}\n• Conversation Volume: ${history.length} messages exchanged with AI assistant.\n• Topics Discussed: Engineering background, portfolio project scope, and technical capabilities.`;
+        }
       }
 
       const isNewChat = history.filter(m => m.role === 'user').length === 1;
@@ -434,14 +450,14 @@ STRICT INSTRUCTIONS:
         visitorId,
         messages: history.map(m => ({ role: m.role, content: m.content, timestamp: m.timestamp })),
         summary: summaryText,
-        createdAt: isNewChat ? new Date().toLocaleString() : (localStorage.getItem('chatbot_created_at') || new Date().toLocaleString()),
+        createdAt: sessionCreatedAtRef.current,
         updatedAt: new Date().toLocaleString(),
-        archived: false
+        archived: false,
+        read: false
       }, { merge: true });
 
       if (isNewChat) {
-        localStorage.setItem('chatbot_created_at', new Date().toLocaleString());
-        logNotification('New AI Chat Conversation', `Visitor ${visitorId} started a chat session: "${summaryText}"`, 'ai');
+        logNotification('New AI Chat Conversation', `Visitor started session (${convId}): "${summaryText.substring(0, 100)}..."`, 'ai');
       }
     } catch (err) {
       console.warn('Telemetry error generating chat summary:', err);
@@ -517,16 +533,14 @@ STRICT INSTRUCTIONS:
   };
 
   const handleClear = () => {
-    if (window.confirm('Delete local conversation thread and start a fresh session?')) {
+    if (window.confirm('Clear conversation and start a fresh session?')) {
       if (streamAbortControllerRef.current) {
         streamAbortControllerRef.current.abort();
       }
-      const newId = `conv_${Date.now()}`;
+      const newId = `conv_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
       setConvId(newId);
+      sessionCreatedAtRef.current = new Date().toLocaleString();
       setMessages([{ role: 'assistant', content: aiConfig.greetingMessage, timestamp: getCurrentTime() }]);
-      localStorage.removeItem('chatbot_history');
-      localStorage.removeItem('chatbot_conv_id');
-      localStorage.removeItem('chatbot_created_at');
     }
   };
 

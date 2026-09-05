@@ -249,7 +249,38 @@ const SKILL_CATEGORIES = [
   }
 ];
 
-const Skills = forwardRef(({ style, className, skillsData, unfoldProgress, ...props }, ref) => {
+const THEME_CLASSES = ['cat-programming', 'cat-webdev', 'cat-ai', 'cat-database', 'cat-security', 'cat-tools'];
+
+const CATEGORY_ICON_MAP = {
+  programming: Code2,
+  code: Code2,
+  web: Globe,
+  webdev: Globe,
+  frontend: Globe,
+  ai: Cpu,
+  automation: Cpu,
+  neural: Cpu,
+  database: Database,
+  storage: Database,
+  security: ShieldCheck,
+  cybersecurity: ShieldCheck,
+  tools: Wrench,
+  engineering: Wrench,
+  creative: Wrench,
+  design: Wrench,
+};
+
+function getCategoryIcon(cat, idx) {
+  if (cat.Icon) return cat.Icon;
+  const key = (cat.id || cat.title || '').toLowerCase();
+  for (const [k, iconComp] of Object.entries(CATEGORY_ICON_MAP)) {
+    if (key.includes(k)) return iconComp;
+  }
+  const fallbackIcons = [Code2, Globe, Cpu, Database, ShieldCheck, Wrench];
+  return fallbackIcons[idx % fallbackIcons.length];
+}
+
+const Skills = forwardRef(({ style, className, skillsData, skillsConfig, unfoldProgress, ...props }, ref) => {
   const characterColRef = useRef(null);
   const characterImgRef = useRef(null);
   const characterGlowRef = useRef(null);
@@ -350,6 +381,10 @@ const Skills = forwardRef(({ style, className, skillsData, unfoldProgress, ...pr
     wakeUp();
   };
 
+  const categoriesToRender = (skillsConfig?.categories && Array.isArray(skillsConfig.categories) && skillsConfig.categories.length > 0)
+    ? skillsConfig.categories
+    : SKILL_CATEGORIES;
+
   return (
     <section
       ref={ref}
@@ -370,7 +405,7 @@ const Skills = forwardRef(({ style, className, skillsData, unfoldProgress, ...pr
             <div ref={characterGlowRef} className="skills-character-glow" />
             <img
               ref={characterImgRef}
-              src="/character-transparent.png"
+              src={skillsConfig?.characterImg || "/character-transparent.png"}
               alt="Muhammad Usman 3D Character"
               className="skills-character-img"
               loading="eager"
@@ -393,10 +428,15 @@ const Skills = forwardRef(({ style, className, skillsData, unfoldProgress, ...pr
             </div>
 
             <div className="skills-rows-wrapper">
-              {SKILL_CATEGORIES.map((cat) => {
-                const CatIcon = cat.Icon;
+              {categoriesToRender.map((cat, idx) => {
+                const CatIcon = getCategoryIcon(cat, idx);
+                const themeClass = cat.themeClass || THEME_CLASSES[idx % THEME_CLASSES.length];
+                const direction = cat.direction || (idx % 2 === 0 ? 'left' : 'right');
+                const speed = cat.speed || '30s';
+                const skillsList = Array.isArray(cat.skills) ? cat.skills : [];
+
                 return (
-                  <div key={cat.id} className={`skills-marquee-group ${cat.themeClass}`}>
+                  <div key={cat.id || idx} className={`skills-marquee-group ${themeClass}`}>
                     {/* Futuristic Category Header with Icon Badge & Tag */}
                     <div className="skills-category-header">
                       <div className="cat-badge-container">
@@ -405,7 +445,7 @@ const Skills = forwardRef(({ style, className, skillsData, unfoldProgress, ...pr
                         </span>
                         <span className="cat-status-dot" aria-hidden="true" />
                         <span className="skills-category-title">{cat.title}</span>
-                        <span className="cat-tag-badge">{cat.tag}</span>
+                        <span className="cat-tag-badge">{cat.tag || 'TECH // SPEC'}</span>
                       </div>
                       <div className="cat-line-accent" aria-hidden="true" />
                     </div>
@@ -413,14 +453,14 @@ const Skills = forwardRef(({ style, className, skillsData, unfoldProgress, ...pr
                     <div className="marquee-row-wrapper">
                       <div
                         className={`marquee-track ${
-                          cat.direction === 'left' ? 'marquee-scroll-left' : 'marquee-scroll-right'
-                        } ${cat.themeClass}`}
-                        style={{ '--marquee-speed': cat.speed }}
+                          direction === 'left' ? 'marquee-scroll-left' : 'marquee-scroll-right'
+                        } ${themeClass}`}
+                        style={{ '--marquee-speed': speed }}
                       >
                         {/* Primary List */}
                         <div className="marquee-content">
-                          {cat.skills.map((skill, idx) => (
-                            <React.Fragment key={idx}>
+                          {skillsList.map((skill, sIdx) => (
+                            <React.Fragment key={sIdx}>
                               <span className="marquee-item">
                                 <SkillIcon skillName={skill} />
                                 <span className="marquee-item-text">{skill}</span>
@@ -432,8 +472,8 @@ const Skills = forwardRef(({ style, className, skillsData, unfoldProgress, ...pr
 
                         {/* Duplicated List for Seamless Loop */}
                         <div className="marquee-content" aria-hidden="true">
-                          {cat.skills.map((skill, idx) => (
-                            <React.Fragment key={`dup-${idx}`}>
+                          {skillsList.map((skill, sIdx) => (
+                            <React.Fragment key={`dup-${sIdx}`}>
                               <span className="marquee-item">
                                 <SkillIcon skillName={skill} />
                                 <span className="marquee-item-text">{skill}</span>

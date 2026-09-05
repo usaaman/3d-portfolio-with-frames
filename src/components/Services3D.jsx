@@ -13,7 +13,8 @@ import {
   Send,
   CheckCircle,
   Clock,
-  Sparkles
+  Sparkles,
+  ChevronDown
 } from 'lucide-react';
 import './Services3D.css';
 
@@ -166,7 +167,8 @@ function drawCustomServiceLogo(ctx, id, color) {
   ctx.lineWidth = 6;
   ctx.lineCap = "round";
 
-  switch(id) {
+  const logoIdx = (typeof id === 'number' ? Math.abs(id) : 0) % 7;
+  switch(logoIdx) {
     case 0:
       ctx.beginPath();
       ctx.arc(0, 0, 30, 0, Math.PI * 2);
@@ -421,62 +423,61 @@ export default function Services3D({ services }) {
   const isMouseOverCanvasRef = useRef(false);
 
   const servicesData = useMemo(() => {
-    let result = DEFAULT_SERVICES_DATA.map((def, idx) => ({ ...def, id: idx }));
-
+    // If live services are supplied from Firestore, map them directly
     if (services && services.length > 0) {
-      result = DEFAULT_SERVICES_DATA.map((def, idx) => {
-        const found = services.find(
-          (s) =>
-            s.title?.toLowerCase().trim() === def.title?.toLowerCase().trim() ||
-            s.shortName?.toLowerCase().trim() === def.shortName?.toLowerCase().trim()
-        );
+      return services.map((svc, idx) => {
+        // Find matching default template if available for fallbacks
+        const matchedDefault = DEFAULT_SERVICES_DATA.find(
+          (def) =>
+            def.title?.toLowerCase().trim() === svc.title?.toLowerCase().trim() ||
+            def.shortName?.toLowerCase().trim() === svc.shortName?.toLowerCase().trim()
+        ) || DEFAULT_SERVICES_DATA[idx % DEFAULT_SERVICES_DATA.length];
 
-        if (found) {
-          return {
-            ...def,
-            id: idx,
-            title: found.title || def.title,
-            shortName: found.shortName || found.title || def.shortName,
-            iconName: found.icon || def.iconName,
-            color: found.color || def.color,
-            timeline: found.timeline || def.timeline,
-            desc: found.description || found.desc || def.desc,
-            features: found.features && found.features.length > 0 ? found.features : def.features,
-            tech: found.tech && found.tech.length > 0 ? found.tech : def.tech,
-          };
-        }
-        return { ...def, id: idx };
-      });
-
-      const extraServices = services.filter(
-        (s) =>
-          !DEFAULT_SERVICES_DATA.some(
-            (def) =>
-              def.title?.toLowerCase().trim() === s.title?.toLowerCase().trim() ||
-              def.shortName?.toLowerCase().trim() === s.shortName?.toLowerCase().trim()
-          )
-      );
-
-      extraServices.forEach((extra) => {
-        const idx = result.length;
-        const fallback = DEFAULT_SERVICES_DATA[idx % DEFAULT_SERVICES_DATA.length];
-        result.push({
+        return {
           id: idx,
-          title: extra.title || `Service ${idx + 1}`,
-          shortName: extra.shortName || extra.title || `Service ${idx + 1}`,
-          iconName: extra.icon || fallback.iconName,
-          IconComponent: fallback.IconComponent,
-          color: extra.color || fallback.color,
-          timeline: extra.timeline || fallback.timeline,
-          desc: extra.description || extra.desc || fallback.desc,
-          features: extra.features || fallback.features,
-          tech: extra.tech || fallback.tech,
-        });
+          docId: svc.id,
+          title: svc.title || matchedDefault.title,
+          shortName: svc.shortName || svc.title || matchedDefault.shortName,
+          iconName: svc.iconName || svc.icon || matchedDefault.iconName,
+          iconUrl: svc.iconUrl || (typeof svc.icon === 'string' && (svc.icon.startsWith('http') || svc.icon.startsWith('data:')) ? svc.icon : null) || matchedDefault.iconUrl,
+          IconComponent: matchedDefault.IconComponent || Bot,
+          color: svc.color || matchedDefault.color || '#F5A623',
+          timeline: svc.timeline || matchedDefault.timeline || 'Est. 1 - 2 Weeks',
+          desc: svc.description || svc.desc || matchedDefault.desc,
+          features: Array.isArray(svc.features) && svc.features.length > 0
+            ? svc.features
+            : (typeof svc.features === 'string' && svc.features.trim()
+                ? svc.features.split('\n').map(f => f.trim()).filter(Boolean)
+                : matchedDefault.features),
+          tech: Array.isArray(svc.tech) && svc.tech.length > 0
+            ? svc.tech
+            : (typeof svc.tech === 'string' && svc.tech.trim()
+                ? svc.tech.split(',').map(t => t.trim()).filter(Boolean)
+                : matchedDefault.tech),
+        };
       });
     }
 
-    return result;
+    // Fallback if services has not loaded yet
+    return DEFAULT_SERVICES_DATA.map((def, idx) => ({ ...def, id: idx }));
   }, [services]);
+
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth <= 768 : false
+  );
+  const [expandedServiceId, setExpandedServiceId] = useState(null);
+
+  useEffect(() => {
+    const handleWinResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleWinResize);
+    return () => window.removeEventListener('resize', handleWinResize);
+  }, []);
+
+  const handleToggleExpand = (id) => {
+    setExpandedServiceId((prev) => (prev === id ? null : id));
+  };
 
   const rotateToService = (index) => {
     setSelectedIndex(index);
@@ -503,6 +504,8 @@ export default function Services3D({ services }) {
   };
 
   useEffect(() => {
+    if (isMobile) return;
+
     const container = containerRef.current;
     if (!container) return;
 
@@ -734,7 +737,7 @@ export default function Services3D({ services }) {
         container.removeChild(container.firstChild);
       }
     };
-  }, [servicesData]);
+  }, [servicesData, isMobile]);
 
   const currentService = servicesData[selectedIndex] || servicesData[0];
   const IconComp = currentService.IconComponent || Bot;
@@ -752,14 +755,122 @@ export default function Services3D({ services }) {
           <span className="services-title-accent">Tailored For Your Vision</span>
         </h2>
         <p className="services-subtitle">
-          Drag horizontally or click any 3D service card to inspect features, tech stacks, and request an instant quote.
+          {isMobile
+            ? 'Tap any service card to reveal deliverables, tech stacks, and request an instant quote.'
+            : 'Drag horizontally or click any 3D service card to inspect features, tech stacks, and request an instant quote.'}
         </p>
       </header>
 
-      {/* 3D CAROUSEL CANVAS */}
-      <main className="relative z-10 w-full h-[480px] md:h-[540px] my-2">
+      {/* 3D CAROUSEL CANVAS (Desktop & Laptop screens) */}
+      <main className="services3d-desktop-wrapper relative z-10 w-full h-[480px] md:h-[540px] my-2">
         <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing services3d-canvas-container flex items-center justify-center mx-auto" />
       </main>
+
+      {/* MOBILE INTERACTIVE ACCORDION (Mobile screens <= 768px) */}
+      <div className="services-mobile-container">
+        <div className="services-mobile-accordion">
+          {servicesData.map((service, idx) => {
+            const isExpanded = expandedServiceId === (service.id ?? idx);
+            const ServiceIcon = service.IconComponent || Bot;
+
+            return (
+              <div
+                key={service.id ?? idx}
+                className={`services-mobile-card ${isExpanded ? 'expanded' : ''}`}
+              >
+                {/* Header Row: Badge, Title, Icon, and Expand Indicator */}
+                <button
+                  type="button"
+                  className="services-mobile-card-header"
+                  onClick={() => handleToggleExpand(service.id ?? idx)}
+                  aria-expanded={isExpanded}
+                >
+                  <div className="services-mobile-header-left">
+                    <div className="services-mobile-icon-box">
+                      {service.iconUrl ? (
+                        <img
+                          src={service.iconUrl}
+                          alt={service.title}
+                          className="services-mobile-icon-img"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <ServiceIcon className="services-mobile-icon-svg" size={22} />
+                      )}
+                    </div>
+
+                    <div className="services-mobile-title-wrap">
+                      <span className="services-mobile-badge">
+                        <Clock size={11} />
+                        <span>{service.timeline || 'Est. 1 - 2 Weeks'}</span>
+                      </span>
+                      <h3 className="services-mobile-title">{service.title}</h3>
+                    </div>
+                  </div>
+
+                  <div className={`services-mobile-chevron ${isExpanded ? 'rotated' : ''}`}>
+                    <ChevronDown size={18} />
+                  </div>
+                </button>
+
+                {/* Collapsible Content */}
+                <div className="services-mobile-collapsible-wrapper">
+                  <div className="services-mobile-card-body">
+                    {/* Description */}
+                    <p className="services-mobile-desc">{service.desc}</p>
+
+                    {/* Features / Deliverables */}
+                    {service.features && service.features.length > 0 && (
+                      <div className="services-mobile-features">
+                        <h4 className="services-mobile-subhead">
+                          <Sparkles size={13} />
+                          <span>Key Deliverables</span>
+                        </h4>
+                        <div className="services-mobile-features-list">
+                          {service.features.map((feat, fIdx) => (
+                            <div key={fIdx} className="services-mobile-feature-item">
+                              <CheckCircle size={14} className="services-mobile-check" />
+                              <span>{feat}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Tech Tags */}
+                    {service.tech && service.tech.length > 0 && (
+                      <div className="services-mobile-tech">
+                        <h4 className="services-mobile-subhead">Technologies</h4>
+                        <div className="services-mobile-tech-tags">
+                          {service.tech.map((t, tIdx) => (
+                            <span key={tIdx} className="services-mobile-tech-pill">
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* CTA Button */}
+                    <div className="services-mobile-cta">
+                      <button
+                        type="button"
+                        onClick={() => openServiceModal(idx)}
+                        className="services-mobile-btn-request"
+                      >
+                        <Send size={14} />
+                        <span>Request Instant Quote</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
       {/* DETAILED SERVICE MODAL & QUOTE SYSTEM */}
       {isModalOpen && currentService && (

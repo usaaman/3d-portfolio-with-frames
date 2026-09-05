@@ -11,7 +11,7 @@ import './HeroAboutScroll.css';
 import GlowLayer from './GlowLayer';
 import ReflectionOverlay from './ReflectionOverlay';
 import DepthTypography from './DepthTypography';
-import { trackResumeDownload } from '../utils/analytics';
+import { recordResumeDownload } from '../utils/analytics';
 import RevealHeading from './RevealHeading';
 import TypewriterText from './TypewriterText';
 
@@ -54,7 +54,7 @@ function smoothstep(edge0, edge1, x) {
   return t * t * (3 - 2 * t);
 }
 
-export default function HeroAboutScroll({ hero, about, resume, skills }) {
+export default function HeroAboutScroll({ hero, about, resume, skills, skillsConfig }) {
   const wrapperRef = useRef(null);
   const canvasRef = useRef(null);
   const imagesRef = useRef([]);
@@ -551,13 +551,13 @@ export default function HeroAboutScroll({ hero, about, resume, skills }) {
                 <Briefcase size={16} strokeWidth={2} aria-hidden="true" />
                 {hero?.cta1Text || "View My Work"}
               </a>
-              {resume?.status !== 'Inactive' && (
+              {resume?.status !== 'Inactive' && resume?.resumeFileUrl && (
                 <a
-                  href={resume?.resumeFileUrl || "/resume.pdf"}
-                  onClick={trackResumeDownload}
+                  href={resume.resumeFileUrl}
+                  onClick={recordResumeDownload}
                   target="_blank"
                   rel="noopener noreferrer"
-                  download
+                  download={resume.filename || "Muhammad_Usman_Resume.pdf"}
                   className="btn-ghost"
                   aria-label="Download Muhammad Usman's PDF resume"
                 >
@@ -588,6 +588,7 @@ export default function HeroAboutScroll({ hero, about, resume, skills }) {
         <Skills
           ref={skillsRef}
           skillsData={skills}
+          skillsConfig={skillsConfig}
           style={{
             position: 'absolute',
             inset: 0,

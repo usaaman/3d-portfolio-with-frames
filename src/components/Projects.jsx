@@ -1,7 +1,17 @@
 import { useEffect, useRef, useState, useMemo } from 'react';
-import { X, Expand } from 'lucide-react';
+import { X, Expand, Film } from 'lucide-react';
 import { trackProjectClick } from '../utils/analytics';
 import './Projects.css';
+
+const isVideoMedia = (url) => {
+  if (typeof url !== 'string') return false;
+  return (
+    url.startsWith('data:video') ||
+    url.endsWith('.mp4') ||
+    url.endsWith('.webm') ||
+    url.includes('/video/')
+  );
+};
 
 const GithubSvg = () => (
   <svg viewBox="0 0 16 16" fill="currentColor" style={{ width: '15px', height: '15px' }}>
@@ -485,11 +495,22 @@ export default function Projects({ projects }) {
                     tabIndex={0}
                     title="Click for Interactive Preview"
                   >
-                    <img
-                      src={currentImg}
-                      alt={project.title}
-                      onError={(e) => { e.target.src = '/favicon.svg'; }}
-                    />
+                    {isVideoMedia(currentImg) ? (
+                      <video
+                        src={currentImg}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <img
+                        src={currentImg}
+                        alt={project.title}
+                        onError={(e) => { e.target.src = '/favicon.svg'; }}
+                      />
+                    )}
                     <div className="media-hover-overlay">
                       <span className="text-xs font-mono text-white/90 bg-[#07221E]/90 px-3 py-1.5 rounded-full backdrop-blur-sm border border-[#1A5247] flex items-center gap-1.5">
                         <Expand className="w-3.5 h-3.5 text-[#F5A623]" />
@@ -504,6 +525,34 @@ export default function Projects({ projects }) {
                         const isActive = (activeImgIdx % imagesList.length) === thumbIdx;
                         const isFirst = thumbIdx === 0;
                         const thumbClass = isFirst ? "thumb-screenshot-el" : "thumb-cert-el";
+                        const isVideo = isVideoMedia(imgUrl);
+
+                        if (isVideo) {
+                          return (
+                            <div
+                              key={imgUrl + thumbIdx}
+                              className={`${thumbClass} ${isActive ? 'active' : ''}`}
+                              onClick={() => {
+                                setActiveImgIndices(prev => ({
+                                  ...prev,
+                                  [idx]: thumbIdx
+                                }));
+                              }}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                background: '#051c18',
+                                color: '#f5a623',
+                                cursor: 'pointer'
+                              }}
+                              title="Video Clip"
+                            >
+                              <Film size={18} />
+                            </div>
+                          );
+                        }
+
                         return (
                           <img
                             key={imgUrl + thumbIdx}
@@ -512,8 +561,8 @@ export default function Projects({ projects }) {
                             alt={`Thumb ${thumbIdx + 1}`}
                             onClick={() => {
                               setActiveImgIndices(prev => ({
-                                ...prev,
-                                [idx]: thumbIdx
+                                  ...prev,
+                                  [idx]: thumbIdx
                               }));
                             }}
                             onError={(e) => { e.target.src = '/favicon.svg'; }}
@@ -630,12 +679,29 @@ export default function Projects({ projects }) {
               </div>
 
               <div className="projects-modal-media-wrap">
-                <img
-                  src={modalProject.image || modalProject.coverImage || '/favicon.svg'}
-                  alt={modalProject.title}
-                  className="projects-modal-image"
-                  onError={(e) => { e.target.src = '/favicon.svg'; }}
-                />
+                {(() => {
+                  const modalMedia = modalProject.image || modalProject.coverImage || '/favicon.svg';
+                  const isModalVideo = isVideoMedia(modalMedia);
+
+                  return isModalVideo ? (
+                    <video
+                      src={modalMedia}
+                      controls
+                      autoPlay
+                      loop
+                      playsInline
+                      className="projects-modal-image"
+                      style={{ maxHeight: '460px', width: '100%', background: '#051c18' }}
+                    />
+                  ) : (
+                    <img
+                      src={modalMedia}
+                      alt={modalProject.title}
+                      className="projects-modal-image"
+                      onError={(e) => { e.target.src = '/favicon.svg'; }}
+                    />
+                  );
+                })()}
                 <div className="projects-modal-hud">
                   <div className="projects-modal-hud-item">
                     <span className="hud-dot-pulse emerald" />

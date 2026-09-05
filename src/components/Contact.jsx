@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { db } from '../admin/services/firebase';
+import { db } from '../services/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { trackContactSubmit, logNotification } from '../utils/analytics';
 import './Contact.css';

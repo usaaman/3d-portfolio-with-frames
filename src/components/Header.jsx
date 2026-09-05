@@ -10,9 +10,9 @@ import {
   Menu, 
   X 
 } from 'lucide-react';
-import { db } from '../admin/services/firebase';
+import { db } from '../services/firebase';
 import { doc, setDoc } from 'firebase/firestore';
-import { trackResumeDownload } from '../utils/analytics';
+import { recordResumeDownload } from '../utils/analytics';
 import { scrollToSection } from '../utils/scrollTargets';
 import './Header.css';
 
@@ -99,19 +99,8 @@ export default function Header({ resume }) {
     };
   }, []);
 
-  const handleDownload = async () => {
-    try {
-      trackResumeDownload();
-      if (db && resume) {
-        const count = Number(resume.downloadCount || 0) + 1;
-        await setDoc(doc(db, 'resume', 'singleton'), {
-          ...resume,
-          downloadCount: count,
-        }, { merge: true });
-      }
-    } catch (e) {
-      console.warn('Telemetry error tracking CV download:', e);
-    }
+  const handleDownload = () => {
+    recordResumeDownload();
   };
 
   const resumeUrl = resume?.resumeFileUrl || '/resume.pdf';
@@ -159,7 +148,7 @@ export default function Header({ resume }) {
       {/* =========================================================================
           0. FLOATING TOP-RIGHT QUICK ACTION (Resume Download)
           ========================================================================= */}
-      {resume?.status !== 'Inactive' && (
+      {resume?.status !== 'Inactive' && resume?.resumeFileUrl && (
         <aside className="floating-top-resume-wrap" aria-label="Resume Quick Action">
           <a
             href={resumeUrl}
@@ -247,7 +236,7 @@ export default function Header({ resume }) {
         </div>
 
         {/* Bottom: Resume Download Action Button */}
-        {resume?.status !== 'Inactive' && (
+        {resume?.status !== 'Inactive' && resume?.resumeFileUrl && (
           <a
             className="sidebar-resume-btn"
             href={resumeUrl}
@@ -292,7 +281,7 @@ export default function Header({ resume }) {
         </a>
 
         <div className="mobile-header-actions">
-          {resume?.status !== 'Inactive' && (
+          {resume?.status !== 'Inactive' && resume?.resumeFileUrl && (
             <a
               className="mobile-resume-chip"
               href={resumeUrl}

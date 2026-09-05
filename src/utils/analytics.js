@@ -1,4 +1,4 @@
-import { db } from '../admin/services/firebase';
+import { db } from '../services/firebase';
 import { doc, setDoc, updateDoc, increment } from 'firebase/firestore';
 
 let currentSessionId = null;
@@ -171,6 +171,25 @@ export function trackScroll(depth) {
 }
 
 // Track Resume Download
+export async function recordResumeDownload() {
+  trackResumeDownload();
+  if (!db) return;
+  try {
+    const resumeRef = doc(db, 'resume', 'singleton');
+    await updateDoc(resumeRef, {
+      downloadCount: increment(1)
+    });
+  } catch (err) {
+    try {
+      await setDoc(doc(db, 'resume', 'singleton'), {
+        downloadCount: increment(1)
+      }, { merge: true });
+    } catch (e) {
+      console.warn('Could not record resume download telemetry:', e);
+    }
+  }
+}
+
 export function trackResumeDownload() {
   incrementField('resumeDownloads');
   // Log notification to firestore

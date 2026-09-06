@@ -26,7 +26,7 @@ import {
   writeBatch
 } from 'firebase/firestore';
 import { db } from '../../services/firebase';
-import { getGroqChatCompletion } from '../../services/groq';
+import { getGeminiChatCompletion } from '../../services/gemini';
 import ConfirmModal from '../components/ConfirmModal';
 
 export default function AIChatsManager() {
@@ -199,9 +199,10 @@ ${transcriptText}`;
 
       let summaryResult = '';
       try {
-        summaryResult = await getGroqChatCompletion(
+        summaryResult = await getGeminiChatCompletion(
           [{ role: 'user', content: prompt }],
-          'You are a senior executive intelligence assistant analyzing client inquiries on an engineer portfolio. Provide a detailed, thorough, actionable briefing.'
+          'You are a senior executive intelligence assistant analyzing client inquiries on an engineer portfolio. Provide a detailed, thorough, actionable briefing.',
+          { temperature: 0.3 }
         );
       } catch (e) {
         const userQueries = msgs.filter((m) => m.role === 'user').map((m) => m.content);

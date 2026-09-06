@@ -22,6 +22,7 @@
   user-select: none;
   box-sizing: border-box;
   padding: 40px 24px 30px;
+  transform: translateZ(0);
   transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
               transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
               visibility 0.45s;
@@ -30,7 +31,7 @@
 .logo-loader-root.exiting {
   opacity: 0;
   visibility: hidden;
-  transform: scale(1.05);
+  transform: scale(1.04);
   pointer-events: none;
 }
 
@@ -39,11 +40,11 @@
   position: absolute;
   top: 45%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) translateZ(0);
   width: 420px;
   height: 420px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, rgba(245, 166, 35, 0.08) 45%, transparent 70%);
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.22) 0%, rgba(245, 166, 35, 0.07) 45%, transparent 70%);
   filter: blur(40px);
   pointer-events: none;
 }
@@ -57,6 +58,7 @@
   align-items: center;
   justify-content: center;
   margin: auto 0;
+  transform: translateZ(0);
 }
 
 /* Logo Floating & Breathing Stage */
@@ -69,14 +71,16 @@
   justify-content: center;
   margin-bottom: 28px;
   animation: logoFloat 3s ease-in-out infinite;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 @keyframes logoFloat {
   0%, 100% {
-    transform: translateY(-4px) scale(1);
+    transform: translateY(-4px) scale(1) translateZ(0);
   }
   50% {
-    transform: translateY(4px) scale(1.02);
+    transform: translateY(4px) scale(1.02) translateZ(0);
   }
 }
 
@@ -88,11 +92,13 @@
   border: 1px dashed rgba(16, 185, 129, 0.25);
   animation: auraSpin 20s linear infinite;
   pointer-events: none;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 @keyframes auraSpin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from { transform: rotate(0deg) translateZ(0); }
+  to { transform: rotate(360deg) translateZ(0); }
 }
 
 /* SVG Logo Display */
@@ -100,7 +106,8 @@
   width: 100%;
   height: 100%;
   overflow: visible;
-  filter: drop-shadow(0 10px 25px rgba(2, 44, 34, 0.7));
+  filter: drop-shadow(0 12px 28px rgba(2, 44, 34, 0.75));
+  transform: translateZ(0);
 }
 
 /* Hexagon Outer Stroke Trace */
@@ -132,6 +139,7 @@
 /* Circuit Nodes Pulse */
 .loader-nodes circle {
   animation: nodePulse 1.8s ease-in-out infinite alternate;
+  transform-origin: center;
 }
 
 .node-1 { animation-delay: 0s; }
@@ -143,14 +151,11 @@
 
 @keyframes nodePulse {
   0% {
-    r: 6.5;
-    fill: #f5a623;
-    filter: drop-shadow(0 0 4px #f5a623);
+    opacity: 0.75;
   }
   100% {
-    r: 9;
+    opacity: 1;
     fill: #fbbf24;
-    filter: drop-shadow(0 0 10px #fbbf24);
   }
 }
 
@@ -169,21 +174,31 @@
   margin-bottom: 12px;
 }
 
+/* Futuristic Chakra Petch Font for Percentage Counter */
 .logo-number {
-  font-family: var(--ds-font-display, 'Space Grotesk', sans-serif);
-  font-size: 52px;
+  font-family: 'Chakra Petch', 'Outfit', var(--ds-font-display, 'Space Grotesk'), sans-serif;
+  font-size: 58px;
   font-weight: 800;
   color: #ffffff;
-  letter-spacing: -2px;
+  letter-spacing: -0.01em;
   line-height: 1;
-  text-shadow: 0 0 25px rgba(16, 185, 129, 0.6);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  text-shadow: 0 0 22px rgba(16, 185, 129, 0.45), 0 0 45px rgba(16, 185, 129, 0.2);
+  display: inline-block;
+  min-width: 1.85ch;
+  text-align: right;
+  will-change: contents;
 }
 
 .logo-percent-sym {
-  font-family: var(--ds-font-display, 'Space Grotesk', sans-serif);
-  font-size: 22px;
+  font-family: 'Chakra Petch', 'Outfit', var(--ds-font-display, 'Space Grotesk'), sans-serif;
+  font-size: 24px;
   font-weight: 700;
   color: #f5a623;
+  margin-left: 3px;
+  text-shadow: 0 0 14px rgba(245, 166, 35, 0.5);
+  user-select: none;
 }
 
 /* Progress Bar Track */
@@ -198,12 +213,13 @@
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
+/* Instant synchronous updates with no artificial lag transitions */
 .logo-progress-fill {
   height: 100%;
   background: linear-gradient(90deg, #10b981 0%, #34d399 60%, #f5a623 100%);
   border-radius: 4px;
   box-shadow: 0 0 16px rgba(16, 185, 129, 0.85);
-  transition: width 0.06s linear;
+  will-change: width;
 }
 
 .logo-progress-dot {
@@ -215,8 +231,8 @@
   background: #f5a623;
   box-shadow: 0 0 14px #f5a623, 0 0 22px #f5a623;
   transform: translateX(-50%);
-  transition: left 0.06s linear;
   pointer-events: none;
+  will-change: left;
 }
 
 .logo-status-text {
@@ -251,7 +267,11 @@
   }
 
   .logo-number {
-    font-size: 42px;
+    font-size: 46px;
+  }
+
+  .logo-percent-sym {
+    font-size: 20px;
   }
 
   .logo-progress-bar {

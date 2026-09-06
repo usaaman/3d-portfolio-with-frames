@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useMemo } from 'react';
 import { X, Expand, Film } from 'lucide-react';
 import { trackProjectClick } from '../utils/analytics';
+import ProjectsNeuralMatrix from './ProjectsNeuralMatrix';
 import './Projects.css';
 
 const isVideoMedia = (url) => {
@@ -373,6 +374,9 @@ export default function Projects({ projects }) {
       <div className="projects-sticky-viewport">
         {/* Dynamic Ambient Backlight */}
         <div className="projects-ambient-backlight" aria-hidden="true"></div>
+
+        {/* Idea 1: Neural Matrix Architecture (Grows with scroll, apex reveal on final card) */}
+        <ProjectsNeuralMatrix wrapperRef={scrollWrapperRef} />
 
         {/* Top Section Header Bar */}
         <div className="projects-top-header">

@@ -2,14 +2,19 @@ import React, { useEffect, useState, useRef } from 'react';
 import './LogoLoader.css';
 
 export default function LogoLoader({ onComplete }) {
-  const [percent, setPercent] = useState(1);
-  const [status, setStatus] = useState('INITIALIZING SYSTEMS...');
   const [isExiting, setIsExiting] = useState(false);
 
-  // Single-source, ultra-fluid 60fps counter starting on frame 0 (0ms delay)
+  // Direct DOM references for 60fps/120fps hardware-accelerated animations
+  const numberRef = useRef(null);
+  const fillRef = useRef(null);
+  const dotRef = useRef(null);
+  const clipRectRef = useRef(null);
+  const waveLineRef = useRef(null);
+  const statusRef = useRef(null);
+
   useEffect(() => {
     let startTime = null;
-    const duration = 1400; // 1.4s: fast, snappy, buttery smooth
+    const duration = 1600; // 1.6s: silky-smooth, fast and snappy
     let rafId;
 
     const animate = (timestamp) => {
@@ -17,31 +22,59 @@ export default function LogoLoader({ onComplete }) {
       const elapsed = timestamp - startTime;
       const progress = Math.min(1, elapsed / duration);
 
-      // Smooth ease-out curve
-      const eased = 1 - Math.pow(1 - progress, 2.5);
+      // Silky cubic ease-out curve (fast initial rise, ultra-smooth landing at 100%)
+      const eased = 1 - Math.pow(1 - progress, 2.6);
       const val = Math.max(1, Math.min(100, Math.round(eased * 100)));
-      setPercent(val);
 
-      if (val < 30) {
-        setStatus('INITIALIZING CORE...');
-      } else if (val < 65) {
-        setStatus('LOADING PORTFOLIO ASSETS...');
-      } else if (val < 92) {
-        setStatus('PREPARING INTERFACE...');
-      } else {
-        setStatus('SYSTEM READY // WELCOME');
+      // Fast direct DOM mutations (bypasses React reconciler for butter-smooth 60fps)
+      if (numberRef.current) {
+        numberRef.current.textContent = val;
+      }
+      if (fillRef.current) {
+        fillRef.current.style.width = `${val}%`;
+      }
+      if (dotRef.current) {
+        dotRef.current.style.left = `${val}%`;
+      }
+
+      // Dynamic liquid energy fill height: 420 down to 50
+      const liquidY = 420 - (val / 100) * 370;
+      if (clipRectRef.current) {
+        clipRectRef.current.setAttribute('y', liquidY);
+      }
+      if (waveLineRef.current) {
+        waveLineRef.current.setAttribute('y1', liquidY);
+        waveLineRef.current.setAttribute('y2', liquidY);
+      }
+
+      // Status messages
+      if (statusRef.current) {
+        if (val < 25) {
+          statusRef.current.textContent = 'INITIALIZING CORE...';
+        } else if (val < 60) {
+          statusRef.current.textContent = 'LOADING PORTFOLIO ASSETS...';
+        } else if (val < 90) {
+          statusRef.current.textContent = 'OPTIMIZING GRAPHICS ENGINE...';
+        } else if (val < 100) {
+          statusRef.current.textContent = 'FINALIZING INTERFACE...';
+        } else {
+          statusRef.current.textContent = 'SYSTEM ONLINE // WELCOME';
+        }
       }
 
       if (progress < 1) {
         rafId = requestAnimationFrame(animate);
       } else {
-        // Quick, silky-smooth exit
-        setTimeout(() => {
+        // Silky smooth exit transition
+        const exitTimer = setTimeout(() => {
           setIsExiting(true);
-          setTimeout(() => {
+          const completeTimer = setTimeout(() => {
             if (onComplete) onComplete();
-          }, 400);
-        }, 250);
+          }, 420);
+          return () => clearTimeout(completeTimer);
+        }, 200);
+
+        return () => clearTimeout(exitTimer);
       }
     };
 
@@ -50,9 +83,6 @@ export default function LogoLoader({ onComplete }) {
       if (rafId) cancelAnimationFrame(rafId);
     };
   }, [onComplete]);
-
-  // Liquid energy fill height (SVG y position: 420 down to 50)
-  const liquidY = 420 - (percent / 100) * 370;
 
   return (
     <div
@@ -75,10 +105,6 @@ export default function LogoLoader({ onComplete }) {
             className="logo-loader-svg"
           >
             <defs>
-              <filter id="loaderMuShadow" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="0" dy="10" stdDeviation="12" floodColor="#022c22" floodOpacity="0.8" />
-              </filter>
-
               {/* Emerald Green to Warm Amber/Gold Gradient */}
               <linearGradient id="loaderGreenGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor="#10b981" />
@@ -88,11 +114,11 @@ export default function LogoLoader({ onComplete }) {
 
               {/* Dynamic Rising Energy Clip Path */}
               <clipPath id="loaderEnergyClip">
-                <rect x="0" y={liquidY} width="500" height="500" />
+                <rect ref={clipRectRef} x="0" y="420" width="500" height="500" />
               </clipPath>
             </defs>
 
-            <g filter="url(#loaderMuShadow)">
+            <g className="loader-hex-group">
               {/* 1. Base Dark Hexagon Plate */}
               <polygon
                 points="250,50 410,142 410,328 250,420 90,328 90,142"
@@ -148,12 +174,12 @@ export default function LogoLoader({ onComplete }) {
 
               {/* 6. Glowing Golden Circuit Nodes */}
               <g className="loader-nodes">
-                <circle cx="210" cy="75" r="7.5" fill="#f5a623" className="loader-node node-1" />
-                <circle cx="290" cy="75" r="7.5" fill="#f5a623" className="loader-node node-2" />
-                <circle cx="102" cy="230" r="7.5" fill="#f5a623" className="loader-node node-3" />
-                <circle cx="398" cy="230" r="7.5" fill="#f5a623" className="loader-node node-4" />
-                <circle cx="210" cy="370" r="7.5" fill="#f5a623" className="loader-node node-5" />
-                <circle cx="290" cy="370" r="7.5" fill="#f5a623" className="loader-node node-6" />
+                <circle cx="210" cy="75" r="7" fill="#f5a623" className="loader-node node-1" />
+                <circle cx="290" cy="75" r="7" fill="#f5a623" className="loader-node node-2" />
+                <circle cx="102" cy="230" r="7" fill="#f5a623" className="loader-node node-3" />
+                <circle cx="398" cy="230" r="7" fill="#f5a623" className="loader-node node-4" />
+                <circle cx="210" cy="370" r="7" fill="#f5a623" className="loader-node node-5" />
+                <circle cx="290" cy="370" r="7" fill="#f5a623" className="loader-node node-6" />
               </g>
 
               {/* 7. Base Background MU Monogram Letters (Muted before energy fill) */}
@@ -197,10 +223,11 @@ export default function LogoLoader({ onComplete }) {
 
                 {/* Wave / Liquid Shimmer Line */}
                 <line
+                  ref={waveLineRef}
                   x1="80"
-                  y1={liquidY}
+                  y1="420"
                   x2="420"
-                  y2={liquidY}
+                  y2="420"
                   stroke="#fbbf24"
                   strokeWidth="3.5"
                   strokeLinecap="round"
@@ -214,17 +241,17 @@ export default function LogoLoader({ onComplete }) {
         {/* Minimalist Milky-Smooth HUD */}
         <div className="logo-hud">
           <div className="logo-number-row">
-            <span className="logo-number">{percent}</span>
+            <span ref={numberRef} className="logo-number">1</span>
             <span className="logo-percent-sym">%</span>
           </div>
 
           {/* Thin Glowing Progress Bar */}
           <div className="logo-progress-bar">
-            <div className="logo-progress-fill" style={{ width: `${percent}%` }} />
-            <div className="logo-progress-dot" style={{ left: `${percent}%` }} />
+            <div ref={fillRef} className="logo-progress-fill" style={{ width: '1%' }} />
+            <div ref={dotRef} className="logo-progress-dot" style={{ left: '1%' }} />
           </div>
 
-          <span className="logo-status-text">{status}</span>
+          <span ref={statusRef} className="logo-status-text">INITIALIZING CORE...</span>
         </div>
       </div>
 

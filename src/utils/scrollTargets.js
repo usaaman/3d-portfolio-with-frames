@@ -3,20 +3,21 @@
  * Accurately aligns sections within both virtual pinned stages and standard document flow.
  */
 export function scrollToSection(id) {
-  if (id === 'home') {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-    return;
-  }
-
   const wrapper = document.querySelector('.scroll-wrapper');
 
   if (wrapper) {
     const rect = wrapper.getBoundingClientRect();
     const scrollTop = window.scrollY + rect.top;
     const maxScrollDistance = Math.max(1, wrapper.offsetHeight - window.innerHeight);
+
+    if (id === 'home') {
+      // Lands precisely on the fully formed Home Card frame (~11% progress where card & character are fully visible)
+      window.scrollTo({
+        top: Math.round(scrollTop + (maxScrollDistance * 0.22)),
+        behavior: 'smooth'
+      });
+      return;
+    }
 
     if (id === 'about') {
       window.scrollTo({
@@ -33,6 +34,15 @@ export function scrollToSection(id) {
       });
       return;
     }
+  }
+
+  // Fallback for home if wrapper is not mounted yet
+  if (id === 'home') {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    return;
   }
 
   // Projects, Services, Contact sections

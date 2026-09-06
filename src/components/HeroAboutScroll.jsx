@@ -12,6 +12,7 @@ import GlowLayer from './GlowLayer';
 import ReflectionOverlay from './ReflectionOverlay';
 import DepthTypography from './DepthTypography';
 import { recordResumeDownload } from '../utils/analytics';
+import { scrollToSection } from '../utils/scrollTargets';
 import RevealHeading from './RevealHeading';
 import TypewriterText from './TypewriterText';
 
@@ -68,7 +69,6 @@ export default function HeroAboutScroll({ hero, about, resume, skills, skillsCon
   const skillsRef = useRef(null);
   const scrollCueRef = useRef(null);
 
-  const [loaded, setLoaded] = useState(0);
   const [ready, setReady] = useState(false);
 
   // Cloud layer DOM refs
@@ -95,35 +95,27 @@ export default function HeroAboutScroll({ hero, about, resume, skills, skillsCon
     return () => mediaQuery.removeEventListener('change', handler);
   }, []);
 
-  // Preload all 261 WebP frames for instantaneous zero-latency GPU rendering
-  useEffect(() => {
-    let cancelled = false;
-    let count = 0;
-    const imgs = new Array(FRAME_COUNT + 1);
-
-    for (let i = 1; i <= FRAME_COUNT; i++) {
-      const img = new Image();
-      img.src = FRAME_PATH(i);
-      img.onload = img.onerror = () => {
-        count += 1;
-        if (!cancelled) setLoaded(count);
-        if (count === FRAME_COUNT && !cancelled) {
-          setReady(true);
-        }
-      };
-      imgs[i] = img;
-    }
-    imagesRef.current = imgs;
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
   // Hardware-accelerated Canvas Frame Painting
   const drawFrame = useCallback((frameIndex) => {
     const canvas = canvasRef.current;
-    const img = imagesRef.current[frameIndex];
+    let img = imagesRef.current[frameIndex];
+
+    // Smooth fallback: If requested frame is still streaming in, use nearest loaded frame
+    if (!img || !img.complete || img.naturalWidth === 0) {
+      for (let d = 1; d <= 15; d++) {
+        const prev = imagesRef.current[frameIndex - d];
+        if (prev && prev.complete && prev.naturalWidth > 0) {
+          img = prev;
+          break;
+        }
+        const next = imagesRef.current[frameIndex + d];
+        if (next && next.complete && next.naturalWidth > 0) {
+          img = next;
+          break;
+        }
+      }
+    }
+
     if (!canvas || !img || !img.complete || img.naturalWidth === 0) return;
 
     const ctx = canvas.getContext('2d');
@@ -147,6 +139,57 @@ export default function HeroAboutScroll({ hero, about, resume, skills, skillsCon
     ctx.clearRect(0, 0, cw, ch);
     ctx.drawImage(img, dx, dy, dw, dh);
   }, []);
+
+  // Preload frame 1 immediately for instant render, stream remaining frames gently in background
+  useEffect(() => {
+    let cancelled = false;
+    const imgs = new Array(FRAME_COUNT + 1);
+    imagesRef.current = imgs;
+
+    // 1. Load Frame 1 immediately
+    const firstImg = new Image();
+    firstImg.src = FRAME_PATH(1);
+    firstImg.onload = () => {
+      if (!cancelled) {
+        imgs[1] = firstImg;
+        setReady(true);
+        drawFrame(1);
+      }
+    };
+    firstImg.onerror = () => {
+      if (!cancelled) {
+        setReady(true);
+      }
+    };
+    imgs[1] = firstImg;
+
+    // 2. Stream remaining frames in non-blocking batches of 6 frames every 25ms
+    // This leaves the main thread completely unblocked for smooth 60fps animations!
+    let nextFrame = 2;
+    let batchTimer = null;
+
+    const streamNextBatch = () => {
+      if (cancelled || nextFrame > FRAME_COUNT) return;
+      const end = Math.min(nextFrame + 6, FRAME_COUNT);
+      for (let i = nextFrame; i <= end; i++) {
+        const img = new Image();
+        img.src = FRAME_PATH(i);
+        imgs[i] = img;
+      }
+      nextFrame = end + 1;
+      if (nextFrame <= FRAME_COUNT) {
+        batchTimer = setTimeout(streamNextBatch, 25);
+      }
+    };
+
+    // Small delay to allow initial splash animation to execute at solid 60fps
+    batchTimer = setTimeout(streamNextBatch, 150);
+
+    return () => {
+      cancelled = true;
+      if (batchTimer) clearTimeout(batchTimer);
+    };
+  }, [drawFrame]);
 
   // Canvas physical pixel resolution sizing (handles high-DPI retina screens)
   useEffect(() => {
@@ -447,24 +490,8 @@ export default function HeroAboutScroll({ hero, about, resume, skills, skillsCon
     card.style.setProperty('--tilt-y', '0deg');
   };
 
-  const loadPct = Math.round((loaded / FRAME_COUNT) * 100);
-
   return (
     <section className={`scroll-wrapper ${reducedMotion ? 'prefers-reduced-motion' : ''} ${ready ? 'is-ready' : ''}`} ref={wrapperRef} id="home" aria-label="Hero Biography and Skills">
-      {!ready && (
-        <div className="scene-preloader" aria-hidden="true">
-          <div className="preloader-content">
-            <div className="preloader-spinner" />
-            <div className="preloader-text">INITIALIZING EXPERIENCE</div>
-            <div className="preloader-track">
-              <div className="preloader-bar" style={{ width: `${loadPct}%` }} />
-            </div>
-            <div style={{ fontSize: '11px', marginTop: '8px', color: 'var(--ds-color-text-tertiary)', letterSpacing: '0.05em' }}>
-              {loadPct}%
-            </div>
-          </div>
-        </div>
-      )}
       <div className="sticky-stage">
         <canvas
           ref={canvasRef}
@@ -547,7 +574,17 @@ export default function HeroAboutScroll({ hero, about, resume, skills, skillsCon
               {hero?.description || "I build intelligent web applications and craft engaging visual stories — turning ideas into functional, beautiful digital products."}
             </p>
             <div className="hero-actions">
-              <a href={hero?.cta1Link || "#projects"} className="btn-primary" aria-label="View Muhammad Usman's portfolio work">
+              <a
+                href={hero?.cta1Link || "#projects"}
+                className="btn-primary"
+                aria-label="View Muhammad Usman's portfolio work"
+                onClick={(e) => {
+                  if (!hero?.cta1Link || hero.cta1Link === '#projects') {
+                    e.preventDefault();
+                    scrollToSection('projects');
+                  }
+                }}
+              >
                 <Briefcase size={16} strokeWidth={2} aria-hidden="true" />
                 {hero?.cta1Text || "View My Work"}
               </a>

@@ -9,7 +9,8 @@ import {
   Copy,
   Check,
 } from 'lucide-react';
-import { getGroqChatCompletion, getGroqChatCompletionStream } from '../services/groq';
+import { getGeminiChatCompletion, getGeminiChatCompletionStream } from '../services/gemini';
+import { buildUsmanSystemPrompt } from '../services/usmanKnowledgeBase';
 import { db } from '../services/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { trackAIOpen, trackAIMessage, logNotification } from '../utils/analytics';
@@ -196,10 +197,15 @@ export default function AIChatbot({ portfolioData }) {
     return portfolioData?.aiConfig || {
       enabled: true,
       greetingMessage: "Hi there! I'm Usman's AI assistant. Ask me anything about his technical skills, projects, creative background, or availability!",
-      suggestedQuestions: ["Tell me about FitSphere", "What technologies do you use?", "Show your best projects"],
+      suggestedQuestions: [
+        "Tell me about Muhammad Usman",
+        "What projects has he built?",
+        "What are his core technical skills?",
+        "Is he available for work or internships?"
+      ],
       temperature: 0.6,
       conversationLimit: 20,
-      modelSelection: 'openai/gpt-oss-20b'
+      modelSelection: 'gemini-flash-lite-latest'
     };
   }, [portfolioData]);
 
@@ -247,64 +253,9 @@ export default function AIChatbot({ portfolioData }) {
     }
   }, [messages]);
 
-  // Construct context-enriched system prompt
+  // Construct context-enriched system prompt grounded in Usman's 30-section knowledge base and live CMS data
   const systemPrompt = useMemo(() => {
-    const customPrompt = aiConfig.systemPrompt || "You are an intelligent, friendly AI representative answering queries about Muhammad Usman. You must restrict answers strictly to the portfolio context provided below. If information is not in the context, politely state that you do not have that detail.";
-    
-    const projectsList = (portfolioData?.projects || []).map(p => {
-      return `- Title: ${p.title || ''}\n  Subtitle: ${p.subtitle || ''}\n  Type: ${p.type || ''}\n  Status: ${p.status || ''}\n  Tech Stack: ${p.techStack || ''}\n  Description: ${p.shortDesc || ''}\n  Full Details: ${p.longDesc || ''}`;
-    }).join('\n\n') || 'None listed.';
-
-    const catsDoc = portfolioData?.skills?.find(d => d.id === 'categories-doc');
-    const skillsDoc = portfolioData?.skills?.find(d => d.id === 'skills-doc');
-    let skillsList = '';
-    if (catsDoc && skillsDoc) {
-      const cats = catsDoc.entries || [];
-      const sks = skillsDoc.entries || [];
-      skillsList = cats.map(c => {
-        const catSkills = sks.filter(s => s.categoryId === c.id).map(s => s.name).join(', ');
-        return `- ${c.label}: ${catSkills}`;
-      }).join('\n');
-    }
-
-    const servicesList = (portfolioData?.services || []).map(s => `- ${s.title || ''}: ${s.description || ''}`).join('\n') || 'None listed.';
-
-    return `${customPrompt}
-
-Verified Portfolio Context:
-[PERSONAL DETAILS]
-- Name: ${portfolioData?.hero?.name || 'Muhammad Usman'}
-- Title: ${portfolioData?.hero?.role || 'Full-Stack Developer | AI Specialist'}
-- Profile Summary: ${portfolioData?.about?.paragraph1 || ''} ${portfolioData?.about?.paragraph2 || ''}
-- Quote: "${portfolioData?.about?.quoteText || ''}"
-- Email Address: ${portfolioData?.hero?.emailAddress || 'musmannazir97@gmail.com'}
-- WhatsApp: +92 304 5160142
-- GitHub: ${portfolioData?.hero?.githubUrl || 'https://github.com/usaaman/'}
-- LinkedIn: ${portfolioData?.hero?.linkedinUrl || 'https://www.linkedin.com/in/muhammad-usman-a76984378/'}
-- Availability: Available for part-time Software Engineering roles, Full-Stack contracts, AI engineering, and CapCut Video Editing.
-
-[EDUCATION]
-- BS Software Engineering: Capital University of Science & Technology (CUST), Islamabad. Currently in 6th semester.
-
-[SKILLS AND TECHNOLOGIES]
-${skillsList}
-
-[PROJECTS DATABASE]
-${projectsList}
-
-[SERVICES DETAILS]
-${servicesList}
-
-[RESUME META]
-- Name: ${portfolioData?.resume?.filename || 'Usman_Resume.pdf'}
-- Size: ${portfolioData?.resume?.size || '1.24 MB'}
-- Download: Direct download button available in header/hero sections.
-
-STRICT INSTRUCTIONS:
-1. Talk as Muhammad Usman's AI Assistant. Represent him professionally, clearly, and concisely.
-2. Only answer using the VERIFIED portfolio facts listed above. If questions are unrelated or facts are missing, say: "I apologize, but I only possess information regarding Usman's software projects, education, skills, and creative background."
-3. Do not invent any projects, career history, or availability.
-4. Support clean markdown layout.`;
+    return buildUsmanSystemPrompt(portfolioData, aiConfig.systemPrompt);
   }, [portfolioData, aiConfig]);
 
   // Suggested questions parser
@@ -360,7 +311,7 @@ STRICT INSTRUCTIONS:
 
     let accumulatedText = '';
     try {
-      await getGroqChatCompletionStream(
+      await getGeminiChatCompletionStream(
         updatedMessages.filter(m => m.role !== 'system'),
         systemPrompt,
         (chunk, done) => {
@@ -386,16 +337,16 @@ STRICT INSTRUCTIONS:
             ...prev.slice(0, botPlaceholderIndex),
             { role: 'assistant', content: `AI completion error: ${error.message || 'Something went wrong.'}`, timestamp: getCurrentTime() }
           ]);
-          logNotification('AI Chat Failure', `Groq response failure: ${error.message}`, 'firestore_error');
+          logNotification('AI Chat Failure', `Gemini response failure: ${error.message}`, 'firestore_error');
         },
         controller.signal,
         {
-          model: aiConfig.modelSelection || 'openai/gpt-oss-20b',
+          model: aiConfig.modelSelection || 'gemini-flash-lite-latest',
           temperature: aiConfig.temperature || 0.6
         }
       );
     } catch (err) {
-      console.warn('Groq stream fetch error:', err);
+      console.warn('Gemini stream fetch error:', err);
       setIsLoading(false);
     }
   };
@@ -418,7 +369,7 @@ STRICT INSTRUCTIONS:
 Provide a thorough, comprehensive executive summary (3 to 5 sentences or structured bullet points). Do NOT make it short or 1-line.
 
 Cover these specific points:
-1. Core Intent & Topics: What projects (e.g. FitSphere, Telemetry), tech stacks, or services the visitor inquired about.
+1. Core Intent & Topics: What projects (e.g. MedCore POS, AI Chat App, Portfolio CMS), tech stacks, or services the visitor inquired about.
 2. Questions & Dialogue Details: Key questions asked and technical aspects explored.
 3. Client Lead Potential & Engagement: Any mention of hiring, contracts, budget, timeline, or contact info.
 4. Outcome & Guidance: How the AI assisted them (e.g. directed to email/WhatsApp, resume, or contact form).
@@ -427,10 +378,10 @@ Conversation Transcript:
 ${transcriptText}`;
 
         try {
-          const summaryResponse = await getGroqChatCompletion(
+          const summaryResponse = await getGeminiChatCompletion(
             [{ role: 'user', content: 'Provide a comprehensive executive summary of this conversation transcript.' }],
             summaryPrompt,
-            { temperature: 0.3 }
+            { model: aiConfig.modelSelection || 'gemini-flash-lite-latest', temperature: 0.3 }
           );
           if (summaryResponse) {
             summaryText = summaryResponse.replace(/^"|"$/g, '').trim();
@@ -493,7 +444,7 @@ ${transcriptText}`;
 
     let accumulatedText = '';
     try {
-      await getGroqChatCompletionStream(
+      await getGeminiChatCompletionStream(
         trimmed.filter(m => m.role !== 'system'),
         systemPrompt,
         (chunk, done) => {
@@ -522,7 +473,7 @@ ${transcriptText}`;
         },
         controller.signal,
         {
-          model: aiConfig.modelSelection || 'openai/gpt-oss-20b',
+          model: aiConfig.modelSelection || 'gemini-flash-lite-latest',
           temperature: aiConfig.temperature || 0.6
         }
       );
@@ -586,7 +537,7 @@ ${transcriptText}`;
               <div className="bot-meta">
                 <div className="meta-title-row">
                   <h4>Usman's AI</h4>
-                  <span className="meta-badge-3d">GPT-4o / GROQ</span>
+                  <span className="meta-badge-3d">Google Gemini</span>
                 </div>
                 <div className="meta-status-row">
                   <span className="bot-online-tag">Online</span>

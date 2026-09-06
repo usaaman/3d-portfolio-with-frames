@@ -11,14 +11,31 @@ import {
   BookOpen,
   Calendar,
   Sparkles,
+  Code2,
+  Palette,
+  Compass,
+  Target,
+  Terminal,
+  Video,
+  User,
+  Award,
+  Layers,
 } from 'lucide-react';
 
 function getIconByLabel(label = '') {
   const norm = label.toLowerCase();
-  if (norm.includes('location') || norm.includes('place')) return MapPin;
-  if (norm.includes('stud') || norm.includes('educ') || norm.includes('school')) return GraduationCap;
-  if (norm.includes('focus') || norm.includes('special') || norm.includes('semester')) return BrainCircuit;
-  if (norm.includes('avail') || norm.includes('job') || norm.includes('work')) return Briefcase;
+  if (norm.includes('code') || norm.includes('dev') || norm.includes('full-stack') || norm.includes('web') || norm.includes('software') || norm.includes('prog')) return Code2;
+  if (norm.includes('ai') || norm.includes('agent') || norm.includes('autom') || norm.includes('intel') || norm.includes('brain') || norm.includes('model')) return BrainCircuit;
+  if (norm.includes('video') || norm.includes('edit') || norm.includes('film') || norm.includes('media')) return Video;
+  if (norm.includes('creat') || norm.includes('design') || norm.includes('art') || norm.includes('ui') || norm.includes('ux')) return Palette;
+  if (norm.includes('approach') || norm.includes('method') || norm.includes('strategy') || norm.includes('philosophy')) return Compass;
+  if (norm.includes('learn') || norm.includes('target') || norm.includes('improve') || norm.includes('goal')) return Target;
+  if (norm.includes('location') || norm.includes('place') || norm.includes('city') || norm.includes('country') || norm.includes('pk')) return MapPin;
+  if (norm.includes('stud') || norm.includes('educ') || norm.includes('school') || norm.includes('degree') || norm.includes('cust') || norm.includes('uni')) return GraduationCap;
+  if (norm.includes('semest') || norm.includes('course') || norm.includes('track')) return Layers;
+  if (norm.includes('avail') || norm.includes('job') || norm.includes('work') || norm.includes('freelanc') || norm.includes('client')) return Briefcase;
+  if (norm.includes('name') || norm.includes('who') || norm.includes('person') || norm.includes('bio')) return User;
+  if (norm.includes('tech') || norm.includes('system') || norm.includes('stack')) return Terminal;
   return Sparkles;
 }
 
@@ -32,15 +49,32 @@ const AboutInner = React.memo(function AboutInner({ aboutData }) {
 
     return list.map((item, idx) => {
       const Icon = getIconByLabel(item.label);
+      const rawVal = item.value || '';
+      const cleanVal = rawVal.startsWith('DetailVideo')
+        ? rawVal.replace('DetailVideo', 'Video')
+        : rawVal.startsWith('Detail') && rawVal.length > 6 && !rawVal.includes(' ')
+          ? rawVal.replace(/^Detail/, '')
+          : rawVal;
+
       return (
-        <div className="glance-mini-card" key={idx}>
+        <div
+          className="glance-mini-card"
+          key={idx}
+          style={{ '--i': idx }}
+        >
           <span className="glance-mini-icon" aria-hidden="true">
-            <Icon size={16} strokeWidth={2} />
+            <Icon size={15} strokeWidth={2.2} />
           </span>
           <div className="glance-mini-info">
             <span className="glance-mini-label">{item.label}</span>
-            <span className="glance-mini-val">{item.value}</span>
-            {item.subValue && <span className="glance-mini-val-sub">{item.subValue}</span>}
+            <div className="glance-mini-val-wrapper">
+              <span className="glance-mini-val" title={cleanVal}>{cleanVal}</span>
+              {item.subValue && (
+                <span className="glance-mini-val-sub" title={item.subValue}>
+                  {item.subValue}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       );
@@ -50,25 +84,36 @@ const AboutInner = React.memo(function AboutInner({ aboutData }) {
   const renderedExploreItems = React.useMemo(() => {
     const list = data.timelineItems || [];
 
-    return list.map((item) => {
-      const Icon = item.type === 'education' ? BookOpen : Briefcase;
+    return list.map((item, idx) => {
+      const Icon = item.type === 'education' ? GraduationCap : Briefcase;
       return (
-        <div className="explore-card" key={item.id}>
+        <div
+          className="explore-card"
+          key={item.id || idx}
+          style={{ '--i': idx }}
+        >
           <div className="explore-icon-wrapper" aria-hidden="true">
             <Icon size={16} strokeWidth={2.2} />
           </div>
           <div className="explore-content">
-            <div className="explore-date" style={{ fontSize: '10px', color: 'var(--ds-color-accent-secondary)', marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <div className="explore-date">
               <Calendar size={10} />
-              {item.date}
+              <span>{item.date}</span>
             </div>
-            <h3 style={{ fontSize: '13px', margin: 0 }}>{item.title}</h3>
-            {item.institution && <span style={{ fontSize: '11px', color: 'var(--ds-color-text-muted)' }}>{item.institution}</span>}
+            <h3 className="explore-title" title={item.title}>{item.title}</h3>
+            {item.institution && (
+              <span className="explore-institution" title={item.institution}>
+                {item.institution}
+              </span>
+            )}
           </div>
         </div>
       );
     });
   }, [data.timelineItems]);
+
+  const glanceCount = (data.glanceItems || []).length;
+  const countClass = glanceCount > 5 ? 'glance-count-more' : `glance-count-${Math.max(glanceCount, 1)}`;
 
   return (
     <div className="about-wrap">
@@ -89,7 +134,7 @@ const AboutInner = React.memo(function AboutInner({ aboutData }) {
             {data.paragraph2 || "My journey started with a passion for video editing and visual storytelling, which naturally evolved into web development and AI integration. Today, I build full-stack applications with React and Firebase, experiment with AI-powered chat systems, and still keep my creative side alive through video editing and graphic design."}
           </p>
           <div className="quote-box">
-            <Quote size={16} strokeWidth={2} className="quote-icon" aria-hidden="true" />
+            <Quote size={18} strokeWidth={2} className="quote-icon" aria-hidden="true" />
             <p>
               {data.quoteText || "I love solving real-world problems — whether that's through clean code or a well-cut video."}
             </p>
@@ -98,9 +143,20 @@ const AboutInner = React.memo(function AboutInner({ aboutData }) {
 
         <div className="about-right">
           <div className="glass glance-container">
-            <span className="glance-title">At a Glance</span>
+            <div className="glance-header">
+              <div className="glance-title-row">
+                <Sparkles size={13} className="glance-sparkle-icon" aria-hidden="true" />
+                <span className="glance-title">At a Glance</span>
+              </div>
+              <span className="glance-count-tag">
+                {glanceCount} {glanceCount === 1 ? 'Metric' : 'Metrics'}
+              </span>
+            </div>
             <div className="glance-divider" aria-hidden="true" />
-            <div className="glance-list">
+            <div
+              className={`glance-list ${countClass}`}
+              style={{ '--glance-count': glanceCount }}
+            >
               {renderedGlanceItems}
             </div>
           </div>

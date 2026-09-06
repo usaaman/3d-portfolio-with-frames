@@ -74,16 +74,16 @@ const FALLBACK_RESUME = {
 const FALLBACK_AI_CONFIG = {
   enabled: true,
   systemPrompt: '',
-  greetingMessage: "Hi there! I'm Usman's AI assistant. Ask me anything about his technical skills, software projects, video editing background, or university timeline!",
+  greetingMessage: "Hi there! I'm Usman's portfolio AI assistant. Ask me anything about his full-stack projects, AI agents, technical skills, or professional experience!",
   suggestedQuestions: [
-    "Tell me about FitSphere",
+    "Who is Muhammad Usman?",
+    "Tell me about MedCore POS",
     "What technologies do you use?",
-    "Show your best projects",
-    "What creative services do you offer?"
+    "What AI services do you offer?"
   ],
   temperature: 0.6,
-  conversationLimit: 20,
-  modelSelection: 'openai/gpt-oss-20b'
+  conversationLimit: 25,
+  modelSelection: 'gemini-flash-lite-latest'
 };
 
 const FALLBACK_PROJECTS = [

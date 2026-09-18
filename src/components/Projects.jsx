@@ -35,7 +35,7 @@ const DEFAULT_PROJECTS = [
     longDesc: 'A premium, high-performance point-of-sale system tailored for modern medical clinics and pharmacies. Integrates real-time patient billing, prescription insurance clearance pipelines, and secure drug inventory tracking under strict healthcare regulations.',
     techStack: 'React.js, Node.js, Express.js, REST APIs, MySQL, Tailwind CSS',
     githubUrl: 'https://github.com/usaaman/medcore-pos',
-    liveUrl: 'https://medcore-pos.demo.com',
+    liveUrl: '',
     coverImage: '/projects/medcore.png',
     gallery: ['/projects/medcore.png'],
     displayOrder: 1,
@@ -51,7 +51,7 @@ const DEFAULT_PROJECTS = [
     longDesc: 'An advanced chat assistant with real-time streaming answers, code highlight syntaxes, chat history management, and multi-model toggle selectors. Connects with state-of-the-art LLMs via a secure serverless backend.',
     techStack: 'Next.js, TypeScript, OpenAI API, Claude API, Framer Motion, Tailwind CSS',
     githubUrl: 'https://github.com/usaaman/ai-chat-app',
-    liveUrl: 'https://ai-chat-app.demo.com',
+    liveUrl: '',
     coverImage: '/projects/ai-chat.png',
     gallery: ['/projects/ai-chat.png'],
     displayOrder: 2,
@@ -67,7 +67,7 @@ const DEFAULT_PROJECTS = [
     longDesc: 'A high-end developer portfolio utilizing a custom serverless CMS powered by natural language commands. Allows writing, deleting, or reordering case study cards using simple English text commands.',
     techStack: 'React.js, Vite, Firebase, Firestore, Generative AI, Tailwind CSS',
     githubUrl: 'https://github.com/usaaman/portfolio-cms',
-    liveUrl: 'https://portfolio-cms.demo.com',
+    liveUrl: '',
     coverImage: '/projects/portfolio.png',
     gallery: ['/projects/portfolio.png'],
     displayOrder: 3,
@@ -83,7 +83,7 @@ const DEFAULT_PROJECTS = [
     longDesc: 'A recommendation platform analyzing user taste preferences, movie genres, and visual themes to curate tailored watchlist suggestions. Employs vector search matching logic and real-time movie rating statistics.',
     techStack: 'React.js, Python, FastAPI, REST APIs, PostgreSQL, Tailwind CSS',
     githubUrl: 'https://github.com/usaaman/movie-recommender',
-    liveUrl: 'https://movie-recommender.demo.com',
+    liveUrl: '',
     coverImage: '/projects/movie.png',
     gallery: ['/projects/movie.png'],
     displayOrder: 4,
@@ -99,7 +99,7 @@ const DEFAULT_PROJECTS = [
     longDesc: 'A collaborative real-time messaging client featuring persistent text channels, live typing indicators, online status tags, active thread replies, and structured image/file share capabilities.',
     techStack: 'React.js, Node.js, Express.js, Firebase, REST APIs, Tailwind CSS',
     githubUrl: 'https://github.com/usaaman/chat-app',
-    liveUrl: 'https://chat-app.demo.com',
+    liveUrl: '',
     coverImage: '/projects/chat.png',
     gallery: ['/projects/chat.png'],
     displayOrder: 5,
@@ -115,7 +115,7 @@ const DEFAULT_PROJECTS = [
     longDesc: 'A playground showcasing premium interface design tokens, glassmorphic layout experiments, rich interactive micro-animations, and cutting-edge dark mode theme styling systems.',
     techStack: 'HTML, CSS, JavaScript, Responsive Design, Figma, UI Design',
     githubUrl: 'https://github.com/usaaman/design-showcase',
-    liveUrl: 'https://design-showcase.demo.com',
+    liveUrl: '',
     coverImage: '/projects/design.png',
     gallery: ['/projects/design.png'],
     displayOrder: 6,
@@ -447,7 +447,13 @@ export default function Projects({ projects }) {
               : [];
 
             const githubUrl = project.githubUrl || project.github || '';
-            const liveUrl = project.liveUrl || project.liveDemo || '';
+            const liveUrl = (project.liveUrl || project.liveDemo || '').trim();
+            const hasValidLiveUrl = Boolean(
+              liveUrl &&
+              liveUrl !== 'https://demo.com' &&
+              !liveUrl.endsWith('.demo.com') &&
+              (liveUrl.startsWith('http://') || liveUrl.startsWith('https://'))
+            );
             const projectYear = project.year || (project.createdAt ? new Date(project.createdAt).getFullYear() : '2026');
             const isFeatured = project.featured || false;
 
@@ -606,7 +612,7 @@ export default function Projects({ projects }) {
                       Repository
                     </a>
                   )}
-                  {liveUrl && (
+                  {hasValidLiveUrl && (
                     <button
                       onClick={() => {
                         trackProjectClick(project.title);
@@ -674,7 +680,13 @@ export default function Projects({ projects }) {
                 </div>
                 <div className="projects-modal-browser-url">
                   <span className="url-lock-icon">🔒</span>
-                  <span className="url-address-text">{modalProject.liveUrl}</span>
+                  <span className="url-address-text">
+                    {(() => {
+                      const mUrl = (modalProject.liveUrl || modalProject.liveDemo || '').trim();
+                      const isValid = Boolean(mUrl && mUrl !== 'https://demo.com' && !mUrl.endsWith('.demo.com'));
+                      return isValid ? mUrl : 'Archive Showcase Preview';
+                    })()}
+                  </span>
                 </div>
                 <div className="projects-modal-browser-tag">
                   <span className="browser-live-pulse" />
@@ -756,16 +768,25 @@ export default function Projects({ projects }) {
                     Repository
                   </a>
                 )}
-                {modalProject.liveUrl && (
-                  <a
-                    href={modalProject.liveUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="projects-modal-btn btn-modal-primary"
-                  >
-                    Launch Live Project <ExternalLinkSvg />
-                  </a>
-                )}
+                {(() => {
+                  const mUrl = (modalProject.liveUrl || modalProject.liveDemo || '').trim();
+                  const isValid = Boolean(
+                    mUrl &&
+                    mUrl !== 'https://demo.com' &&
+                    !mUrl.endsWith('.demo.com') &&
+                    (mUrl.startsWith('http://') || mUrl.startsWith('https://'))
+                  );
+                  return isValid ? (
+                    <a
+                      href={mUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="projects-modal-btn btn-modal-primary"
+                    >
+                      Launch Live Project <ExternalLinkSvg />
+                    </a>
+                  ) : null;
+                })()}
                 <button
                   onClick={() => setModalProject(null)}
                   className="projects-modal-btn btn-modal-ghost"

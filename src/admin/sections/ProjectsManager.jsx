@@ -93,6 +93,57 @@ const readFileAsDataUrl = (file) => {
   });
 };
 
+// Helper: Upload media (especially videos up to 50MB) directly to Cloudinary CDN
+const uploadToCloudinary = (file, onProgress) => {
+  return new Promise((resolve, reject) => {
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+    if (!cloudName || !uploadPreset) {
+      return reject(new Error('Cloudinary environment variables are missing in .env'));
+    }
+
+    const resourceType = file.type.startsWith('video/') ? 'video' : 'auto';
+    const url = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', uploadPreset);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', url);
+
+    if (xhr.upload && onProgress) {
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percent = Math.round((event.loaded / event.total) * 100);
+          onProgress(percent);
+        }
+      };
+    }
+
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          const res = JSON.parse(xhr.responseText);
+          resolve(res.secure_url || res.url);
+        } catch {
+          reject(new Error('Failed to parse Cloudinary response'));
+        }
+      } else {
+        try {
+          const errRes = JSON.parse(xhr.responseText);
+          reject(new Error(errRes?.error?.message || `Upload failed with status ${xhr.status}`));
+        } catch {
+          reject(new Error(`Upload failed with status ${xhr.status}`));
+        }
+      }
+    };
+
+    xhr.onerror = () => reject(new Error('Network error while uploading to Cloudinary CDN.'));
+    xhr.send(formData);
+  });
+};
+
 export default function ProjectsManager({ initialProjects }) {
   const [projects, setProjects] = useState(initialProjects || []);
   const [activeProject, setActiveProject] = useState(null);
@@ -102,6 +153,7 @@ export default function ProjectsManager({ initialProjects }) {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [uploadingMedia, setUploadingMedia] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -135,7 +187,7 @@ export default function ProjectsManager({ initialProjects }) {
       longDesc: 'Comprehensive details explaining problem architecture, system integration, and outcomes.',
       techStack: 'React.js, Node.js, Tailwind CSS',
       githubUrl: 'https://github.com/usaaman/',
-      liveUrl: 'https://demo.com',
+      liveUrl: '',
       coverImage: '/projects/medcore.png',
       gallery: ['/projects/medcore.png'],
       displayOrder: projects.length + 1,
@@ -221,23 +273,52 @@ export default function ProjectsManager({ initialProjects }) {
       setFeedback({ type: 'error', message: `Only ${availableSlots} more item(s) could be added (Max 5 limit).` });
     }
 
+    const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 50MB limit as requested
+    const MAX_IMAGE_SIZE = 15 * 1024 * 1024; // 15MB
+
     setUploadingMedia(true);
+    setUploadProgress('Preparing media...');
     try {
       const newMediaItems = [];
       for (const file of filesToProcess) {
         if (file.type.startsWith('image/')) {
-          const compressed = await compressImageFile(file);
-          newMediaItems.push(compressed);
-        } else if (file.type.startsWith('video/')) {
-          if (file.size > 3.5 * 1024 * 1024) {
+          if (file.size > MAX_IMAGE_SIZE) {
             setFeedback({
               type: 'error',
-              message: `Video "${file.name}" is over 3.5MB. For large videos, paste an MP4 URL or upload a smaller clip.`
+              message: `Image "${file.name}" is over 15MB. Please choose a smaller image.`
             });
             continue;
           }
-          const videoData = await readFileAsDataUrl(file);
-          newMediaItems.push(videoData);
+          const compressed = await compressImageFile(file);
+          newMediaItems.push(compressed);
+        } else if (file.type.startsWith('video/')) {
+          if (file.size > MAX_VIDEO_SIZE) {
+            const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+            setFeedback({
+              type: 'error',
+              message: `Video "${file.name}" is ${sizeMB}MB (Maximum limit is 50MB). Please select a video under 50MB.`
+            });
+            continue;
+          }
+
+          setUploadProgress(`Uploading ${file.name} to Cloud CDN (0%)...`);
+          try {
+            const cdnUrl = await uploadToCloudinary(file, (percent) => {
+              setUploadProgress(`Uploading ${file.name}: ${percent}%...`);
+            });
+            newMediaItems.push(cdnUrl);
+          } catch (cloudErr) {
+            console.warn('Cloudinary upload notice:', cloudErr);
+            if (file.size <= 1.2 * 1024 * 1024) {
+              const videoData = await readFileAsDataUrl(file);
+              newMediaItems.push(videoData);
+            } else {
+              setFeedback({
+                type: 'error',
+                message: `Failed to upload video "${file.name}" to CDN: ${cloudErr.message}. For large videos, check network connection or paste direct MP4 URL.`
+              });
+            }
+          }
         } else {
           setFeedback({ type: 'error', message: `File "${file.name}" is not a supported image or video format.` });
         }
@@ -250,13 +331,14 @@ export default function ProjectsManager({ initialProjects }) {
           gallery: updatedGallery,
           coverImage: prev.coverImage || updatedGallery[0]
         }));
-        setFeedback({ type: 'success', message: `Added ${newMediaItems.length} media item(s) from device successfully!` });
+        setFeedback({ type: 'success', message: `Added ${newMediaItems.length} media item(s) successfully!` });
       }
     } catch (err) {
       console.error('File upload error:', err);
-      setFeedback({ type: 'error', message: 'Failed to read file from device: ' + err.message });
+      setFeedback({ type: 'error', message: 'Failed to process media file: ' + err.message });
     } finally {
       setUploadingMedia(false);
+      setUploadProgress(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
@@ -447,14 +529,17 @@ export default function ProjectsManager({ initialProjects }) {
               </div>
 
               <div className="adm-field">
-                <label className="adm-label">Live Preview / Demo URL</label>
+                <label className="adm-label">Live Preview / Demo URL (Optional)</label>
                 <input
                   type="url"
                   value={activeProject.liveUrl || ''}
                   onChange={(e) => handleFieldChange('liveUrl', e.target.value)}
                   className="adm-input"
-                  placeholder="https://example.com"
+                  placeholder="https://your-live-app.vercel.app"
                 />
+                <span style={{ fontSize: '11px', color: 'var(--adm-text-muted)', marginTop: '4px', display: 'block' }}>
+                  Note: Website par "Live Preview" button sirf tabhi show hoga jab aap yahan valid URL paste karenge.
+                </span>
               </div>
 
               {/* Media Gallery (Max 5 items) */}
@@ -711,7 +796,7 @@ export default function ProjectsManager({ initialProjects }) {
                           }}
                         >
                           {uploadingMedia
-                            ? 'Processing & Optimizing Selected Media...'
+                            ? (uploadProgress || 'Processing & Uploading Selected Media...')
                             : 'Click to Browse & Upload from this Device'}
                         </div>
                         <div
@@ -721,7 +806,7 @@ export default function ProjectsManager({ initialProjects }) {
                             marginTop: '2px'
                           }}
                         >
-                          Select photos or videos from your computer / phone (PNG, JPG, WebP, MP4)
+                          Select photos or videos from your computer / phone (PNG, JPG, WebP, MP4 — up to 50MB)
                         </div>
                       </div>
                     </div>

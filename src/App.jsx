@@ -9,12 +9,12 @@ import Contact from './components/Contact';
 import LogoLoader from './components/LogoLoader';
 import usePortfolioData from './hooks/usePortfolioData';
 import useAdminAuth from './admin/useAdminAuth';
-import AdminLogin from './admin/AdminLogin';
-import AdminDashboard from './admin/AdminDashboard';
 import { initAnalytics, trackSectionView } from './utils/analytics';
 import './App.css';
 
 const AIChatbot = React.lazy(() => import('./components/AIChatbot'));
+const AdminLogin = React.lazy(() => import('./admin/AdminLogin'));
+const AdminDashboard = React.lazy(() => import('./admin/AdminDashboard'));
 
 // Portfolio landing view
 function PortfolioView() {
@@ -81,10 +81,24 @@ export default function App() {
         <Route path="/" element={<PortfolioView />} />
 
         {/* Brand-New Exclusive Admin Login */}
-        <Route path="/admin/login" element={<AdminLogin auth={auth} />} />
+        <Route 
+          path="/admin/login" 
+          element={
+            <React.Suspense fallback={null}>
+              <AdminLogin auth={auth} />
+            </React.Suspense>
+          } 
+        />
 
         {/* Brand-New Modern Admin Dashboard */}
-        <Route path="/admin" element={<AdminDashboard auth={auth} />} />
+        <Route 
+          path="/admin" 
+          element={
+            <React.Suspense fallback={null}>
+              <AdminDashboard auth={auth} />
+            </React.Suspense>
+          } 
+        />
 
         {/* Global Fallback to Portfolio */}
         <Route path="*" element={<Navigate to="/" replace />} />

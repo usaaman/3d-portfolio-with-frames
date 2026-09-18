@@ -118,9 +118,9 @@ export default function HeroAboutScroll({ hero, about, resume, skills, skillsCon
 
     if (!canvas || !img || !img.complete || img.naturalWidth === 0) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
+    ctx.imageSmoothingQuality = 'medium';
 
     const cw = canvas.width;
     const ch = canvas.height;
@@ -163,27 +163,30 @@ export default function HeroAboutScroll({ hero, about, resume, skills, skillsCon
     };
     imgs[1] = firstImg;
 
-    // 2. Stream remaining frames in non-blocking batches of 6 frames every 25ms
-    // This leaves the main thread completely unblocked for smooth 60fps animations!
+    // 2. Stream remaining frames with priority front-loading and off-thread GPU decode
     let nextFrame = 2;
     let batchTimer = null;
 
     const streamNextBatch = () => {
       if (cancelled || nextFrame > FRAME_COUNT) return;
-      const end = Math.min(nextFrame + 6, FRAME_COUNT);
+      const batchSize = nextFrame <= 50 ? 12 : 8;
+      const end = Math.min(nextFrame + batchSize, FRAME_COUNT);
       for (let i = nextFrame; i <= end; i++) {
         const img = new Image();
         img.src = FRAME_PATH(i);
+        if (typeof img.decode === 'function') {
+          img.decode().catch(() => {});
+        }
         imgs[i] = img;
       }
       nextFrame = end + 1;
       if (nextFrame <= FRAME_COUNT) {
-        batchTimer = setTimeout(streamNextBatch, 25);
+        batchTimer = setTimeout(streamNextBatch, nextFrame <= 50 ? 15 : 25);
       }
     };
 
     // Small delay to allow initial splash animation to execute at solid 60fps
-    batchTimer = setTimeout(streamNextBatch, 150);
+    batchTimer = setTimeout(streamNextBatch, 100);
 
     return () => {
       cancelled = true;
@@ -191,20 +194,20 @@ export default function HeroAboutScroll({ hero, about, resume, skills, skillsCon
     };
   }, [drawFrame]);
 
-  // Canvas physical pixel resolution sizing (handles high-DPI retina screens)
+  // Canvas physical pixel resolution sizing (capped at DPR 1.5 for optimal 120fps throughput)
   useEffect(() => {
     const canvas = canvasRef.current;
     const resize = () => {
       if (!canvas) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = window.innerWidth * dpr;
-      canvas.height = window.innerHeight * dpr;
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      canvas.width = Math.round(window.innerWidth * dpr);
+      canvas.height = Math.round(window.innerHeight * dpr);
       canvas.style.width = '100%';
       canvas.style.height = '100%';
       drawFrame(currentFrameRef.current || 1);
     };
     resize();
-    window.addEventListener('resize', resize);
+    window.addEventListener('resize', resize, { passive: true });
     return () => window.removeEventListener('resize', resize);
   }, [drawFrame, ready]);
 
@@ -403,7 +406,7 @@ export default function HeroAboutScroll({ hero, about, resume, skills, skillsCon
       const diff = target - current;
 
       if (Math.abs(diff) > 0.0003) {
-        smoothProgressRef.current += diff * 0.18;
+        smoothProgressRef.current += diff * 0.35;
       } else {
         smoothProgressRef.current = target;
       }

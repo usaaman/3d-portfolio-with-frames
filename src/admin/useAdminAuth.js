@@ -1,27 +1,24 @@
 import { useState, useEffect, useCallback } from 'react';
 import { auth } from '../services/firebase';
-import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import { 
+  signInWithEmailAndPassword, 
+  signOut, 
+  onAuthStateChanged,
+  sendPasswordResetEmail 
+} from 'firebase/auth';
 
 const ADMIN_EMAIL = 'usman.nazir.dev@gmail.com';
-const ADMIN_PASSWORD_PRIMARY = 'U sman.142';
-const ADMIN_PASSWORD_FALLBACK = 'Usman.142';
 
 export default function useAdminAuth() {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return localStorage.getItem('portfolio_admin_auth') === 'true';
-  });
-  const [adminUser, setAdminUser] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('portfolio_admin_user') || 'null');
-    } catch {
-      return null;
-    }
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [adminUser, setAdminUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Sync Firebase Auth if available
+  // Strictly sync authentication status with Firebase Auth session state
   useEffect(() => {
     if (!auth) {
+      setIsAuthenticated(false);
+      setAdminUser(null);
       setLoading(false);
       return;
     }
@@ -38,6 +35,12 @@ export default function useAdminAuth() {
         localStorage.setItem('portfolio_admin_user', JSON.stringify(adminProfile));
         setIsAuthenticated(true);
         setAdminUser(adminProfile);
+      } else {
+        // Any unauthorized session or logout immediately revokes local auth flags
+        localStorage.removeItem('portfolio_admin_auth');
+        localStorage.removeItem('portfolio_admin_user');
+        setIsAuthenticated(false);
+        setAdminUser(null);
       }
       setLoading(false);
     });
@@ -45,11 +48,12 @@ export default function useAdminAuth() {
     return () => unsubscribe();
   }, []);
 
+  // Secure login verified exclusively through Firebase Authentication servers
   const login = useCallback(async (emailInput, passwordInput) => {
     const cleanEmail = (emailInput || '').trim().toLowerCase();
     const cleanPassword = (passwordInput || '').trim();
 
-    // Check if email matches exclusive admin email
+    // Check if email matches authorized administrator
     if (cleanEmail !== ADMIN_EMAIL.toLowerCase()) {
       return {
         success: false,
@@ -57,47 +61,71 @@ export default function useAdminAuth() {
       };
     }
 
-    // Check password
-    const isPasswordValid = 
-      cleanPassword === ADMIN_PASSWORD_PRIMARY || 
-      cleanPassword === ADMIN_PASSWORD_FALLBACK;
-
-    if (!isPasswordValid) {
+    if (!cleanPassword) {
       return {
         success: false,
-        error: 'Invalid password. Please check your credentials and try again.'
+        error: 'Please enter your administrator password.'
       };
     }
 
-    // Attempt Firebase sync if auth is online
-    let firebaseUid = 'admin_' + Date.now();
-    let authProvider = 'Direct Admin Verification';
-
-    if (auth) {
-      try {
-        const cred = await signInWithEmailAndPassword(auth, cleanEmail, passwordInput);
-        firebaseUid = cred.user.uid;
-        authProvider = 'Firebase Auth';
-      } catch (fbErr) {
-        // If password in Firebase needs sync or rate-limited, local master validation allows seamless entry
-        console.warn('Firebase Auth sync note:', fbErr.code, fbErr.message);
-      }
+    if (!auth) {
+      return {
+        success: false,
+        error: 'Firebase Authentication service is unavailable. Please check your network connection.'
+      };
     }
 
-    const adminProfile = {
-      email: ADMIN_EMAIL,
-      uid: firebaseUid,
-      role: 'Super Administrator',
-      provider: authProvider,
-      loginTime: new Date().toISOString()
-    };
+    try {
+      const cred = await signInWithEmailAndPassword(auth, cleanEmail, cleanPassword);
+      const adminProfile = {
+        email: cred.user.email,
+        uid: cred.user.uid,
+        role: 'Super Administrator',
+        provider: 'Firebase Auth',
+        loginTime: new Date().toISOString()
+      };
 
-    localStorage.setItem('portfolio_admin_auth', 'true');
-    localStorage.setItem('portfolio_admin_user', JSON.stringify(adminProfile));
-    setIsAuthenticated(true);
-    setAdminUser(adminProfile);
+      localStorage.setItem('portfolio_admin_auth', 'true');
+      localStorage.setItem('portfolio_admin_user', JSON.stringify(adminProfile));
+      setIsAuthenticated(true);
+      setAdminUser(adminProfile);
 
-    return { success: true };
+      return { success: true };
+    } catch (fbErr) {
+      console.error('Firebase Auth error:', fbErr.code, fbErr.message);
+      let errorMsg = 'Authentication failed. Please verify your credentials.';
+      if (fbErr.code === 'auth/wrong-password' || fbErr.code === 'auth/invalid-credential') {
+        errorMsg = 'Invalid email or password. Please verify credentials or use password reset.';
+      } else if (fbErr.code === 'auth/user-not-found') {
+        errorMsg = 'Administrator account not registered in Firebase Authentication.';
+      } else if (fbErr.code === 'auth/too-many-requests') {
+        errorMsg = 'Too many failed login attempts. Temporarily blocked for security. Please wait a few minutes or reset your password.';
+      } else if (fbErr.code === 'auth/network-request-failed') {
+        errorMsg = 'Network error. Please check your internet connection.';
+      }
+      return {
+        success: false,
+        error: errorMsg
+      };
+    }
+  }, []);
+
+  // Password reset service via Firebase
+  const resetPassword = useCallback(async (emailInput) => {
+    const cleanEmail = (emailInput || ADMIN_EMAIL).trim().toLowerCase();
+    if (!auth) {
+      return { success: false, error: 'Firebase Auth service is unavailable.' };
+    }
+    try {
+      await sendPasswordResetEmail(auth, cleanEmail);
+      return { 
+        success: true, 
+        message: `Password reset link has been dispatched to ${cleanEmail}. Please check your inbox and spam folder.` 
+      };
+    } catch (err) {
+      console.error('Reset password error:', err);
+      return { success: false, error: err.message || 'Failed to dispatch password reset email.' };
+    }
   }, []);
 
   const logout = useCallback(async () => {
@@ -120,6 +148,7 @@ export default function useAdminAuth() {
     adminUser,
     loading,
     login,
+    resetPassword,
     logout
   };
 }

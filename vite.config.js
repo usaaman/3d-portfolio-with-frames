@@ -10,5 +10,18 @@ export default defineConfig({
       ignored: ['**/public/*.mp4', '**/public/hero-video.mp4'],
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules/three') || id.includes('node_modules/@react-three')) {
+            return 'vendor-three';
+          }
+          if (id.includes('node_modules/firebase')) {
+            return 'vendor-firebase';
+          }
+        },
+      },
+    },
+  },
 })
-

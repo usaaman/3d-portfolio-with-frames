@@ -9,7 +9,9 @@ export default function AdminLogin({ auth }) {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [infoMsg, setInfoMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
 
   // If already authenticated, redirect to dashboard
   React.useEffect(() => {
@@ -21,6 +23,7 @@ export default function AdminLogin({ auth }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setInfoMsg('');
 
     if (!email.trim() || !password) {
       setError('Please enter both your administrator email and password.');
@@ -42,6 +45,25 @@ export default function AdminLogin({ auth }) {
     }
   };
 
+  const handleForgotPassword = async () => {
+    setError('');
+    setInfoMsg('');
+    const targetEmail = email.trim() || 'usman.nazir.dev@gmail.com';
+    setIsResetting(true);
+    try {
+      const res = await auth.resetPassword(targetEmail);
+      if (res.success) {
+        setInfoMsg(res.message);
+      } else {
+        setError(res.error || 'Failed to dispatch password reset email.');
+      }
+    } catch (err) {
+      setError('Unable to send password reset email at this moment.');
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   return (
     <div className="admin-login-root">
       <div className="admin-login-ambient" />
@@ -59,6 +81,12 @@ export default function AdminLogin({ auth }) {
           <div className="admin-login-error">
             <AlertCircle size={18} style={{ flexShrink: 0 }} />
             <span>{error}</span>
+          </div>
+        )}
+
+        {infoMsg && (
+          <div className="admin-login-success">
+            <span>✓ {infoMsg}</span>
           </div>
         )}
 
@@ -83,9 +111,19 @@ export default function AdminLogin({ auth }) {
           </div>
 
           <div className="admin-field-group">
-            <label className="admin-field-label" htmlFor="admin-password">
-              Master Password
-            </label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <label className="admin-field-label" htmlFor="admin-password">
+                Master Password
+              </label>
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                disabled={isResetting}
+                className="admin-forgot-btn"
+              >
+                {isResetting ? 'Sending link...' : 'Forgot password?'}
+              </button>
+            </div>
             <div className="admin-input-wrapper">
               <input
                 id="admin-password"

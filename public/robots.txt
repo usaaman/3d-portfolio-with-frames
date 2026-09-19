@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://usman-potfolio-work.vercel.app/sitemap.xml

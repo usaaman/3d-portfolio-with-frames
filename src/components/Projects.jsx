@@ -364,11 +364,12 @@ export default function Projects({ projects }) {
   const totalScrollHeightVh = Math.max(1, activeProjects.length) * 115;
 
   return (
-    <div
+    <section
       id="projects"
       ref={scrollWrapperRef}
       className="projects-scroll-wrapper relative w-full"
       style={{ height: `${totalScrollHeightVh}vh` }}
+      aria-label="Projects"
     >
       {/* Sticky Stage Viewport Container */}
       <div className="projects-sticky-viewport">
@@ -517,7 +518,9 @@ export default function Projects({ projects }) {
                     ) : (
                       <img
                         src={currentImg}
-                        alt={project.title}
+                        alt={`${project.title} — project screenshot`}
+                        loading="lazy"
+                        decoding="async"
                         onError={(e) => { e.target.src = '/favicon.svg'; }}
                       />
                     )}
@@ -568,7 +571,9 @@ export default function Projects({ projects }) {
                             key={imgUrl + thumbIdx}
                             className={`${thumbClass} ${isActive ? 'active' : ''}`}
                             src={imgUrl}
-                            alt={`Thumb ${thumbIdx + 1}`}
+                            alt={`${project.title} thumbnail ${thumbIdx + 1}`}
+                            loading="lazy"
+                            decoding="async"
                             onClick={() => {
                               setActiveImgIndices(prev => ({
                                   ...prev,
@@ -712,7 +717,7 @@ export default function Projects({ projects }) {
                   ) : (
                     <img
                       src={modalMedia}
-                      alt={modalProject.title}
+                      alt={`${modalProject.title} — project preview`}
                       className="projects-modal-image"
                       onError={(e) => { e.target.src = '/favicon.svg'; }}
                     />
@@ -798,6 +803,6 @@ export default function Projects({ projects }) {
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 }

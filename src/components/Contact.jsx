@@ -72,7 +72,8 @@ export default function Contact({ socials }) {
   };
 
   return (
-    <section id="contact" className="contact-section" aria-labelledby="contact-heading">
+    <footer id="contact" aria-labelledby="contact-heading">
+    <section className="contact-section" aria-label="Contact Section">
       <div className="contact-eyebrow">
         <span className="dot"></span>
         Get in touch
@@ -298,5 +299,13 @@ export default function Contact({ socials }) {
         </div>
       </div>
     </section>
+
+    {/* Site footer copyright */}
+    <div className="site-footer-bar" role="contentinfo" aria-label="Site copyright">
+      <p>
+        &copy; {new Date().getFullYear()} Muhammad Usman. All rights reserved.
+      </p>
+    </div>
+    </footer>
   );
 }

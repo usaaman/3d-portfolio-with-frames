@@ -10,7 +10,6 @@ import LogoLoader from './components/LogoLoader';
 import usePortfolioData from './hooks/usePortfolioData';
 import useAdminAuth from './admin/useAdminAuth';
 import { initAnalytics, trackSectionView } from './utils/analytics';
-import './App.css';
 
 const AIChatbot = React.lazy(() => import('./components/AIChatbot'));
 const AdminLogin = React.lazy(() => import('./admin/AdminLogin'));
